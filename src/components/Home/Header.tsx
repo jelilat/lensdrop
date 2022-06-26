@@ -18,7 +18,7 @@ const Header = () => {
 
     return (
         <>
-            <div className="flex text-sm p-3 border-b-2 border-b-black-500 sticky top-0">
+            <div className="flex text-sm p-3 border-b-2 border-b-black-500 sticky top-0 bg-white">
                 <div className="w-2/5 float-right p-2 font-semibold">
                     Lensdrop
                 </div>
@@ -65,6 +65,9 @@ const Header = () => {
                             </Modal>
                     </button>
                 </div>
+            </div>
+            <div className="hidden mobile-menu">
+
             </div>
         </>
     )

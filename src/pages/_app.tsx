@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app'
 import {
   WagmiConfig,
   createClient,
-  defaultChains,
+  chain,
   configureChains,
 } from "wagmi";
 
@@ -18,9 +18,11 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
 import client from 'src/apollo'
 
+import Head from 'next/head'
+
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 
-const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
+const { chains, provider, webSocketProvider } = configureChains([chain.polygon, chain.polygonMumbai], [
   infuraProvider({ infuraId }),
   publicProvider(),
 ]);
@@ -57,7 +59,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig client={wagmiClient}>
       <ApolloProvider client={client}>
-        <Component {...pageProps} />
+        <div>
+            <Component {...pageProps} />
+            <Head>
+                  <link rel="shortcut icon" href="/air-hot-balloon.png" />
+            </Head>
+        </div>
       </ApolloProvider>
     </WagmiConfig>
   )
