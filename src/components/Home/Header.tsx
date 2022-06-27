@@ -60,7 +60,6 @@ const Header = () => {
                             show={connectModal}
                             onClose={()=>{
                                 setConnectModal(false)
-                                window.location.reload()
                             }}>
                                 <Connect />
                             </Modal>
