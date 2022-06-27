@@ -789,7 +789,7 @@
   "resolved" "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz"
   "version" "0.0.29"
 
-"@types/node@*", "@types/node@18.0.0":
+"@types/node@*", "@types/node@^18.0.0":
   "integrity" "sha512-cHlGmko4gWLVI27cGJntjs/Sj8th9aYwplmZFwmmgYQQvL5NUsgVJG7OddLvNfLqYS31KFN0s3qlaD9qCaxACA=="
   "resolved" "https://registry.npmjs.org/@types/node/-/node-18.0.0.tgz"
   "version" "18.0.0"
@@ -813,7 +813,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@18.0.14":
+"@types/react@*", "@types/react@^18.0.14":
   "integrity" "sha512-x4gGuASSiWmo0xjDLpm5mPb52syZHJx02VKbqUKdLmKtAwIh63XClGsiTI1K6DO5q7ox4xAsQrU+Gl3+gGXF9Q=="
   "resolved" "https://registry.npmjs.org/@types/react/-/react-18.0.14.tgz"
   "version" "18.0.14"
@@ -3082,7 +3082,7 @@
   "resolved" "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   "version" "1.4.0"
 
-"next@>=10.2.0", "next@12.1.6":
+"next@^12.1.6", "next@>=10.2.0":
   "integrity" "sha512-cebwKxL3/DhNKfg9tPZDQmbRKjueqykHHbgaoG4VBRH3AHQJ2HO0dbKFiS1hPhe1/qgc2d/hFeadsbPicmLD+A=="
   "resolved" "https://registry.npmjs.org/next/-/next-12.1.6.tgz"
   "version" "12.1.6"
@@ -4013,7 +4013,7 @@
   dependencies:
     "is-typedarray" "^1.0.0"
 
-"typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta", "typescript@>=3.3.1", "typescript@4.7.4":
+"typescript@^4.7.4", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta", "typescript@>=3.3.1":
   "integrity" "sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.7.4.tgz"
   "version" "4.7.4"
