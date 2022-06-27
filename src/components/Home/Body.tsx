@@ -12,7 +12,7 @@ import Image from 'next/image'
 
 const Body = ()=> {
     const { data: account } = useAccount()
-    const { data: chain } = useNetwork()
+    const { activeChain } = useNetwork(); 
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [profiles, setProfiles] = useState<Profile[]>([])
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
@@ -186,7 +186,7 @@ const Body = ()=> {
             return
         }
 
-        if (chain?.name !== "polygon") {
+        if (activeChain?.name !== "Polygon") {
             setModal(true)
             setErrorMessage("Please connect to polygon network")
             return
