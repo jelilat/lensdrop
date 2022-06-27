@@ -21,7 +21,7 @@ import client from 'src/apollo'
 import Head from 'next/head'
 import Footer from '@components/Footer/Footer'
 
-const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
+const infuraId = process.env.INFURA_ID;
 
 const { chains, provider, webSocketProvider } = configureChains([chain.polygon], [
   infuraProvider({ infuraId }),
