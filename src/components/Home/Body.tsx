@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useLazyQuery } from '@apollo/client'
-import { useAccount, useContractWrite, erc20ABI, useBalance, useContractRead } from 'wagmi'
+import { useAccount, useContractWrite, erc20ABI, useBalance, useContractRead, useNetwork } from 'wagmi'
 import { GET_PROFILES } from '@graphql/Queries/Profile'
 import { GET_FOLLOWING, GET_FOLLOWERS } from '@graphql/Queries/Follow'
 import { Profile, Follower, Following } from '@generated/types'
@@ -12,6 +12,7 @@ import Image from 'next/image'
 
 const Body = ()=> {
     const { data: account } = useAccount()
+    const { data: chain } = useNetwork()
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [profiles, setProfiles] = useState<Profile[]>([])
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
@@ -182,6 +183,12 @@ const Body = ()=> {
         if (receivers.length === 0) {
             setModal(true)
             setErrorMessage("Can't airdrop tokens to 0 addresses")
+            return
+        }
+
+        if (chain?.name !== "polygon") {
+            setModal(true)
+            setErrorMessage("Please connect to polygon network")
             return
         }
         setState("Approve")

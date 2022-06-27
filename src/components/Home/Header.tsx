@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from "next/router";
 import { Modal } from '@components/UI/Modal';
 import Connect from './Connect'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 const Header = () => {
     const { data: account } = useAccount()
@@ -60,6 +60,7 @@ const Header = () => {
                             show={connectModal}
                             onClose={()=>{
                                 setConnectModal(false)
+                                window.location.reload()
                             }}>
                                 <Connect />
                             </Modal>

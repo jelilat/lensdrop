@@ -19,6 +19,7 @@ export default function Connect() {
           className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
           onClick={() => {
             disconnect();
+            window.location.reload();
           }}
         >
           Disconnect
@@ -34,7 +35,10 @@ export default function Connect() {
         <button
           disabled={!connector.ready}
           key={connector.id}
-          onClick={() => connect(connector)}
+          onClick={() => {
+            connect(connector)
+            window.location.reload()
+          }}
           className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
         >
           {connector.name}
