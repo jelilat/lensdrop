@@ -1,17 +1,4 @@
-export const AirdropAbi = [
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint8",
-				"name": "version",
-				"type": "uint8"
-			}
-		],
-		"name": "Initialized",
-		"type": "event"
-	},
+export const MultisenderAbi = [
 	{
 		"inputs": [
 			{
@@ -51,13 +38,6 @@ export const AirdropAbi = [
 		"name": "batchSendNativeToken",
 		"outputs": [],
 		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

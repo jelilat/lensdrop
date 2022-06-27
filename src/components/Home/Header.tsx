@@ -51,7 +51,7 @@ const Header = () => {
                             setConnectModal(true)
                         }}
                         data-bs-toggle="modal">
-                        {!connected ? 
+                        {!connected || account?.address == undefined ? 
                             "Connect wallet"
                             : (account?.address)?.slice(0, 6) + "..." + (account?.address)?.slice(-4)
                             }

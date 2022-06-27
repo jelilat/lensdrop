@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useLazyQuery } from '@apollo/client'
-import { useAccount, useContractWrite, erc20ABI, erc721ABI, useContractRead } from 'wagmi'
+import { useAccount, useContractWrite, erc20ABI, useBalance, useContractRead } from 'wagmi'
 import { GET_PROFILES } from '@graphql/Queries/Profile'
 import { GET_FOLLOWING, GET_FOLLOWERS } from '@graphql/Queries/Follow'
 import { Profile, Follower, Following } from '@generated/types'
-import { AirdropAbi } from 'src/abis/Airdrop'
+import { MultisenderAbi } from 'src/abis/Airdrop'
 import { Modal } from '@components/UI/Modal'
-import { BigNumber } from 'ethers'
+import { MULTISENDER_ADDRESS } from 'src/constants'
+import { BigNumber, ethers } from 'ethers'
 import Image from 'next/image'
 
 const Body = ()=> {
@@ -18,24 +19,49 @@ const Body = ()=> {
     const [following, setFollowing] = useState<string[]>([])
     const [func, setFunc] = useState<string>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
-    const [amount, setAmount] = useState<number>(0)
+    const [amount, setAmount] = useState<string>("")
     const [receivers, setReceivers] = useState<string[]>([])
     const [decimal, setDecimal] = useState<number>(10**18)
     const [modal, setModal] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
+    const [loading, isLoading] = useState<boolean>()
 
     const tokenContract = useContractWrite({
         addressOrName: tokenAddress,
-        contractInterface: func === "batchsendNFT" ? erc721ABI : erc20ABI
+        contractInterface: erc20ABI,
     }, 'approve', {
-        args: ['', amount]
+        args: [MULTISENDER_ADDRESS, parseFloat(amount) * decimal],
+        onSuccess(data){
+            isLoading(false)
+            setState("Airdrop")
+        },
+        onError(err){
+            isLoading(false)
+            setErrorMessage(`Transaction failed ${err.message}`)
+            setModal(true)
+        }
     })
 
     const airdropContract = useContractWrite({
-        addressOrName: "",
-        contractInterface: AirdropAbi
+        addressOrName: MULTISENDER_ADDRESS,
+        contractInterface: MultisenderAbi
     }, func, {
-        args: func !== "batchSendNativeToken" ? [receivers, amount, tokenAddress] : [receivers, amount]
+        args: func !== "batchSendNativeToken" ? [receivers, parseFloat(amount) * decimal, tokenAddress] : [receivers, parseFloat(amount) * 10**18],
+        overrides: {
+            from: account?.address,
+            value: func === "batchSendNativeToken" ? parseFloat(amount) * receivers.length * 10**18 : 0,
+          },
+        onSuccess(data){
+            isLoading(false)
+            setErrorMessage("Transaction successful!")
+            setModal(true)
+            window.location.reload
+        },
+        onError(err){
+            isLoading(false)
+            setErrorMessage(`Transaction failed ${err.message}`)
+            setModal(true)
+        }
     })
 
     const decimals = useContractRead({
@@ -52,6 +78,27 @@ const Body = ()=> {
         chainId: 137
     })
 
+    const allowance = useContractRead({
+        addressOrName: tokenAddress,
+        contractInterface: erc20ABI,
+    }, 'allowance', {
+        args: [account?.address, MULTISENDER_ADDRESS],
+        chainId: 137
+    })
+
+    const balanceOf = useContractRead({
+        addressOrName: tokenAddress,
+        contractInterface: erc20ABI,
+    }, 'balanceOf', {
+        args: [account?.address],
+        chainId: 137
+    })
+
+    const balance = useBalance({
+        addressOrName: account?.address,
+        chainId: 137
+    })
+    
     useQuery(GET_PROFILES, {
         variables: {
             request: {
@@ -114,17 +161,54 @@ const Body = ()=> {
             return
         } 
 
-        if (amount === 0) {
+        if (amount === "") {
             setModal(true)
             setErrorMessage("Please enter a valid amount")
+            return
+        }
+
+        if (profiles.length === 0) {
+            setModal(true)
+            setErrorMessage("You don't have a Lens profile")
+            return
+        }
+
+        if (receivers.length === 0) {
+            setModal(true)
+            setErrorMessage("Can't airdrop tokens to 0 addresses")
             return
         }
         setState("Approve")
     }
 
+    const approve = () => {
+        let bal;
+        if (func === "batchSendNativeToken") {
+            const formattedBalance = balance?.data?.formatted !== undefined ? balance?.data?.formatted : '0'
+            bal = parseFloat(formattedBalance)
+        } else {
+            const formattedBalance = balanceOf?.data?._hex
+            bal = parseInt(formattedBalance)/decimal
+        }
+
+        if (bal < parseFloat(amount) * receivers.length) {
+            setModal(true)
+            setErrorMessage("Insufficient funds")
+            return
+        }
+
+        const allowed = parseInt(allowance?.data?._hex)/decimal
+        if (func !== "batchSendNativeToken" && allowed >= parseFloat(amount) * receivers.length){
+            setState("Airdrop")
+            return
+        }
+
+        tokenContract.write()
+    }
+
     return (
         <>
-            <div className="flex text-sm my-3">
+            <div className="flex text-sm my-3 mb-10">
                 <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
                 <div className="lg:w-1/2 sm:w-full md:2/3 flex">
                     <div className="flex w-1/3">
@@ -223,7 +307,7 @@ const Body = ()=> {
                                     multiplier = 10**18
                                 }; 
                                 setDecimal(multiplier)
-                                setAmount(parseFloat(e.target.value) * multiplier);
+                                setAmount(e.target.value);
                             }}
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div> :
@@ -232,7 +316,7 @@ const Body = ()=> {
                                 Token Id
                             </div>
                             <input type="number" onChange={(e)=> {
-                                setAmount(parseFloat(e.target.value));
+                                setAmount(e.target.value);
                             }}
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div>}
@@ -275,7 +359,7 @@ const Body = ()=> {
                             <div className="font-semibold my-1">
                                 Total tokens
                             </div>
-                            {func !== "batchSendNFT" ? <div>{(amount * receivers.length)/decimal + " "} <span>
+                            {func !== "batchSendNFT" ? <div>{(parseFloat(amount) * receivers.length) + " "} <span>
                                 {func === "batchSendNativeToken" ? "MATIC" : name?.data}</span></div> :
                                 <div>{receivers.length}</div>}
                         </div>
@@ -289,10 +373,24 @@ const Body = ()=> {
                            </div>
                         </div>
                         <div>
-                            <button onClick={()=>{setState("Airdrop")}}
-                                className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                            <button onClick={()=>{
+                                isLoading(true)
+                                approve()
+                            }}
+                                className={`w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800`}
+                                disabled={loading}
                                 >
-                                Approve
+                                {loading ? "Confirming..." : "Approve"}
+                                <Modal
+                                    title=""
+                                    show={modal}
+                                    onClose={()=>{
+                                        setModal(false)
+                                    }}>
+                                        <div className="text-red-500 text-center mb-10">
+                                            {errorMessage}
+                                        </div>
+                                </Modal>
                             </button>
                         </div>
                     </div>
@@ -304,26 +402,47 @@ const Body = ()=> {
 
                     </div>
                     <div className="lg:w-1/2 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
-                        <div>
-                            <div className="font-semibold">
+                    {func !== "batchSendNativeToken" && <div>
+                            <div className="font-semibold my-2">
                                 Token Address
                             </div>
-                        </div>
+                            <div>{tokenAddress}</div>
+                        </div>}
                         <div>
                             <div className="font-semibold my-1">
                                 Total tokens
                             </div>
+                            {func !== "batchSendNFT" ? <div>{(parseFloat(amount) * receivers.length) + " "} <span>
+                                {func === "batchSendNativeToken" ? "MATIC" : name?.data}</span></div> :
+                                <div>{receivers.length}</div>}
                         </div>
                         <div>
                             <div className="font-semibold my-1">
                                 Recepients
                             </div>
+                            <div>
+                               <textarea className="h-96 w-full p-3 rounded-lg border-2 border-b-black-500" 
+                                    value={receivers} readOnly />
+                           </div>
                         </div>
                         <div>
-                            <button onClick={()=>{setState("Prepare")}}
+                            <button onClick={()=>{
+                                airdropContract.write()
+                            }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                                disabled={loading}
                                 >
-                                Complete
+                                {loading ? "Confirming..." : "Complete"}
+                                <Modal
+                                    title=""
+                                    show={modal}
+                                    onClose={()=>{
+                                        setModal(false)
+                                    }}>
+                                        <div className="text-red-500 text-center mb-10">
+                                            {errorMessage}
+                                        </div>
+                                </Modal>
                             </button>
                         </div>
                     </div>

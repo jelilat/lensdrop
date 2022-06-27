@@ -22,7 +22,7 @@ import Head from 'next/head'
 
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 
-const { chains, provider, webSocketProvider } = configureChains([chain.polygon, chain.polygonMumbai], [
+const { chains, provider, webSocketProvider } = configureChains([chain.polygon], [
   infuraProvider({ infuraId }),
   publicProvider(),
 ]);

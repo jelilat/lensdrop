@@ -55,7 +55,7 @@ const Followers: FC = () => {
                                     getFollowing()
                                     setShowFollowing(true)
                                 }}>
-                            Get Following
+                            View Following
                         </button>
                        : <div>
                            <div className="my-5 font-semibold">
@@ -63,7 +63,7 @@ const Followers: FC = () => {
                             </div>
                            <div>
                                <textarea className="h-96 w-full p-3 rounded-lg border-2 border-b-black-500" 
-                                    value={followings} />
+                                    value={followings} readOnly />
                            </div>
                         <div>
                             <CsvDownloader 
