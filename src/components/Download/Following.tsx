@@ -57,6 +57,10 @@ const Followers: FC = () => {
                                 }}>
                             View Following
                         </button>
+                       : account?.address == undefined ? 
+                       <div className="text-center">
+                           Connect your wallet to view following
+                       </div>
                        : <div>
                            <div className="my-5 font-semibold">
                            Following addresses

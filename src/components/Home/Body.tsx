@@ -167,6 +167,12 @@ const Body = ()=> {
             return
         }
 
+        if (account?.address === undefined) {
+            setModal(true)
+            setErrorMessage("Please connect your wallet")
+            return
+        }
+
         if (profiles.length === 0) {
             setModal(true)
             setErrorMessage("You don't have a Lens profile")
