@@ -176,7 +176,7 @@ const Body = ()=> {
 
         if (profiles.length === 0) {
             setModal(true)
-            setErrorMessage("You don't have a Lens profile")
+            setErrorMessage("You don't have a Lens profile. Visit https://claim.lens.xyz/ to claim your handle")
             return
         }
 
@@ -347,7 +347,7 @@ const Body = ()=> {
                                     onClose={()=>{
                                         setModal(false)
                                     }}>
-                                        <div className="text-red-500 text-center mb-10">
+                                        <div className="font-semibold text-center mb-10">
                                             {errorMessage}
                                         </div>
                                 </Modal>
@@ -400,7 +400,7 @@ const Body = ()=> {
                                     onClose={()=>{
                                         setModal(false)
                                     }}>
-                                        <div className="text-red-500 text-center mb-10">
+                                        <div className="font-semibold text-center mb-10">
                                             {errorMessage}
                                         </div>
                                 </Modal>
@@ -452,7 +452,7 @@ const Body = ()=> {
                                     onClose={()=>{
                                         setModal(false)
                                     }}>
-                                        <div className="text-red-500 text-center mb-10">
+                                        <div className="font-semibold text-center mb-10">
                                             {errorMessage}
                                         </div>
                                 </Modal>
