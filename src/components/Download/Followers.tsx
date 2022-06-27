@@ -47,8 +47,8 @@ const Followers: FC = () => {
     return (
         <>
             <div className="flex text-sm">
-                <div className="w-1/4"></div>
-                <div className="w-1/2">
+                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                <div className="lg:w-1/2 sm:w-full grow">
                     { !showFollowers ? 
                         <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 onClick={() => {
@@ -81,7 +81,7 @@ const Followers: FC = () => {
                        </div>
                     }
                 </div>
-                <div className="w-1/4"></div>
+                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
             </div>
         </>
     )

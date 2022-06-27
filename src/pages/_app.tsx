@@ -19,6 +19,7 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import client from 'src/apollo'
 
 import Head from 'next/head'
+import Footer from '@components/Footer/Footer'
 
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 
@@ -60,10 +61,20 @@ function MyApp({ Component, pageProps }: AppProps) {
     <WagmiConfig client={wagmiClient}>
       <ApolloProvider client={client}>
         <div>
-            <Component {...pageProps} />
             <Head>
-                  <link rel="shortcut icon" href="/air-hot-balloon.png" />
+              <title>Lensdrop</title>
+              <link rel="shortcut icon" href="/air-hot-balloon.png" />
+              <meta property="og:title" content="Lensdrop" />
+              <meta property="og:image" content="/air-hot-balloon.png" />
+              <meta property="og:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
+
+              <meta property="twitter:title" content="Lensdrop" />
+              <meta property="twitter:image" content="/air-hot-balloon.png" />
+              <meta property="twitter:card" content="summary_large_image" />
+              <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
             </Head>
+            <Component {...pageProps} />
+            <Footer />
         </div>
       </ApolloProvider>
     </WagmiConfig>
