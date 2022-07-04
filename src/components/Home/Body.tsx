@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useLazyQuery } from '@apollo/client'
-import { useAccount, useContractWrite, erc20ABI, useBalance, useContractRead, useNetwork } from 'wagmi'
+import { 
+    chain as chains,
+    useAccount, 
+    useContractWrite, 
+    erc20ABI, 
+    useBalance, 
+    useContractRead, 
+    useNetwork,
+    useSwitchNetwork
+ } from 'wagmi'
 import { GET_PROFILES } from '@graphql/Queries/Profile'
 import { GET_FOLLOWING, GET_FOLLOWERS } from '@graphql/Queries/Follow'
 import { Profile, Follower, Following } from '@generated/types'
@@ -11,8 +20,9 @@ import { BigNumber, ethers } from 'ethers'
 import Image from 'next/image'
 
 const Body = ()=> {
-    const { data: account } = useAccount()
-    const { activeChain } = useNetwork(); 
+    const { address } = useAccount();
+    const { chain } = useNetwork(); 
+    const { switchNetwork } = useSwitchNetwork();
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [profiles, setProfiles] = useState<Profile[]>([])
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
@@ -30,7 +40,7 @@ const Body = ()=> {
     const tokenContract = useContractWrite({
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
-    }, 'approve', {
+        functionName: 'approve', 
         args: [MULTISENDER_ADDRESS, parseFloat(amount) * decimal],
         onSuccess(data){
             isLoading(false)
@@ -45,11 +55,11 @@ const Body = ()=> {
 
     const airdropContract = useContractWrite({
         addressOrName: MULTISENDER_ADDRESS,
-        contractInterface: MultisenderAbi
-    }, func, {
+        contractInterface: MultisenderAbi,
+        functionName: func, 
         args: func !== "batchSendNativeToken" ? [receivers, parseFloat(amount) * decimal, tokenAddress] : [receivers, parseFloat(amount) * 10**18],
         overrides: {
-            from: account?.address,
+            from: address,
             value: func === "batchSendNativeToken" ? parseFloat(amount) * receivers.length * 10**18 : 0,
           },
         onSuccess(data){
@@ -68,42 +78,42 @@ const Body = ()=> {
     const decimals = useContractRead({
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
-    }, 'decimals', {
+        functionName: 'decimals', 
         chainId: 137
     })
 
     const name = useContractRead({
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
-    }, 'name', {
+        functionName: 'name', 
         chainId: 137
     })
 
     const allowance = useContractRead({
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
-    }, 'allowance', {
-        args: [account?.address, MULTISENDER_ADDRESS],
+        functionName: 'allowance',
+        args: [address, MULTISENDER_ADDRESS],
         chainId: 137
     })
 
     const balanceOf = useContractRead({
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
-    }, 'balanceOf', {
-        args: [account?.address],
+        functionName: 'balanceOf', 
+        args: [address],
         chainId: 137
     })
 
     const balance = useBalance({
-        addressOrName: account?.address,
+        addressOrName: address,
         chainId: 137
     })
     
     useQuery(GET_PROFILES, {
         variables: {
             request: {
-                ownedBy: account?.address
+                ownedBy: address
             }
         },
         fetchPolicy: "no-cache",
@@ -149,7 +159,11 @@ const Body = ()=> {
     useEffect(() => {
         getFollowing()
         getFollowers()
-    }, [defaultProfile, getFollowing, getFollowers])
+        if (chain?.name !== "Polygon" && address) {
+            switchNetwork?.(chains.polygon.id)
+            window.location.reload()
+          }
+    }, [defaultProfile, getFollowing, getFollowers, address, chain, switchNetwork])
 
     useEffect(() => {
         setReceivers(followers)
@@ -168,7 +182,7 @@ const Body = ()=> {
             return
         }
 
-        if (account?.address === undefined) {
+        if (address === undefined) {
             setModal(true)
             setErrorMessage("Please connect your wallet")
             return
@@ -186,11 +200,6 @@ const Body = ()=> {
             return
         }
 
-        if (activeChain?.name !== "Polygon") {
-            setModal(true)
-            setErrorMessage("Please connect to polygon network")
-            return
-        }
         setState("Approve")
     }
 

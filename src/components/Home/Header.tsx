@@ -6,15 +6,8 @@ import Connect from './Connect'
 import { useAccount } from 'wagmi'
 
 const Header = () => {
-    const { data: account } = useAccount()
-    const [connected, setConnected] = useState<boolean>()
+    const { address, isConnected } = useAccount()
     const [connectModal, setConnectModal] = useState<boolean>(false)
-
-    useEffect(() => {
-        if (window.localStorage.getItem('wagmi.connected') === 'true') {
-            setConnected(true);
-        }
-    }, [])
 
     return (
         <>
@@ -51,9 +44,9 @@ const Header = () => {
                             setConnectModal(true)
                         }}
                         data-bs-toggle="modal">
-                        {!connected || account?.address == undefined ? 
+                        {!isConnected || address == undefined ? 
                             "Connect wallet"
-                            : (account?.address)?.slice(0, 6) + "..." + (account?.address)?.slice(-4)
+                            : (address)?.slice(0, 6) + "..." + (address)?.slice(-4)
                             }
                         <Modal
                             title="Connect Wallet"
