@@ -8,7 +8,7 @@ import Image from 'next/image'
 import CsvDownloader from 'react-csv-downloader';
 
 const Followers: FC = () => {
-    const { data: account } = useAccount()
+    const { address } = useAccount()
     const [followings, setFollowings] = useState<string[]>([])
     const [defaultProfile, setDefaultProfile] = useState<Profile>()
     const [showFollowing, setShowFollowing] = useState<boolean>(false)
@@ -34,7 +34,7 @@ const Followers: FC = () => {
     useQuery(GET_DEFAULT_PROFILE, {
         variables: {
             request: {
-                ethereumAddress: account?.address
+                ethereumAddress: address
             }
         },
         fetchPolicy: 'no-cache',
@@ -57,7 +57,7 @@ const Followers: FC = () => {
                                 }}>
                             View Following
                         </button>
-                       : account?.address == undefined ? 
+                       : address == undefined ? 
                        <div className="text-center">
                            Connect your wallet to view following
                        </div>
