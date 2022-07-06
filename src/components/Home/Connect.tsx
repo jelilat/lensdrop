@@ -8,6 +8,7 @@ global.Buffer = global.Buffer || require('buffer').Buffer;
 
 export default function Connect() {
   const {
+    address,
     connector, 
     isConnected,
     isConnecting,
@@ -17,7 +18,7 @@ export default function Connect() {
     chainId: chain.polygon.id
   });
   const { disconnect } = useDisconnect();
-
+  
   if (isConnected) {
     return (
       <div className="m-5">

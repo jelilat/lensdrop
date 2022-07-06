@@ -1,58 +1,29 @@
 import { FC, useState, useEffect } from 'react'
-import { useQuery, useLazyQuery } from '@apollo/client'
-import { GET_FOLLOWERS } from '@graphql/Queries/Follow'
-import { Follower, Profile } from '@generated/types'
-import { useAccount } from 'wagmi'
-import { GET_DEFAULT_PROFILE } from '@graphql/Queries/Profile'
+import Filter from '@components/Filter'
 import Image from 'next/image'
 import CsvDownloader from 'react-csv-downloader';
+import { useAppContext } from '@components/utils/AppContext'
 
 const Followers: FC = () => {
-    const { address } = useAccount()
-    const [followers, setFollowers] = useState<string[]>([])
-    const [defaultProfile, setDefaultProfile] = useState<Profile>()
+    const { address, followers } = useAppContext()
     const [showFollowers, setShowFollowers] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
 
-    const [getFollowers] = useLazyQuery(GET_FOLLOWERS, {
-        variables: {
-            request: {
-                profileId: defaultProfile?.id
-            }
-        },
-        fetchPolicy: "no-cache",
-        onCompleted(data) {
-            const follow = data?.followers?.items; 
-            follow.map((follower: Follower) => {
-                const address = follower?.wallet?.address; 
-                setFollowers(followers => [...followers, address]); 
-                setdatas(datas => [...datas, {address: address}])
-            })
+    useEffect(() => {
+        if (followers.length > 0) { 
+            setdatas(followers.map(follower => ({address: follower})))
         }
-    })
-
-    useQuery(GET_DEFAULT_PROFILE, {
-        variables: {
-            request: {
-                ethereumAddress: address
-            }
-        },
-        fetchPolicy: 'no-cache',
-        onCompleted(data) {
-            setDefaultProfile(data?.defaultProfile);
-        }
-    })
-
+    }, [followers])
 
     return (
         <>
             <div className="flex text-sm">
                 <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
                 <div className="lg:w-1/2 sm:w-full grow">
+                    <Filter />
                     { !showFollowers ? 
                         <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 onClick={() => {
-                                    getFollowers()
                                     setShowFollowers(true)
                                 }}>
                             View Followers

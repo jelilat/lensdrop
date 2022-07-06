@@ -20,6 +20,7 @@ import client from 'src/apollo'
 
 import Head from 'next/head'
 import Footer from '@components/Footer/Footer'
+import { AppWrapper } from '@components/utils/AppContext'
 
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 
@@ -58,26 +59,28 @@ const wagmiClient = createClient({
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig client={wagmiClient}>
-      <ApolloProvider client={client}>
-        <div>
-            <Head>
-              <title>Lensdrop</title>
-              <link rel="shortcut icon" href="/air-hot-balloon.png" />
-              <meta property="og:title" content="Lensdrop" />
-              <meta property="og:image" content="/air-hot-balloon.png" />
-              <meta property="og:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
+    <AppWrapper>
+      <WagmiConfig client={wagmiClient}>
+        <ApolloProvider client={client}>
+          <div>
+              <Head>
+                <title>Lensdrop</title>
+                <link rel="shortcut icon" href="/air-hot-balloon.png" />
+                <meta property="og:title" content="Lensdrop" />
+                <meta property="og:image" content="/air-hot-balloon.png" />
+                <meta property="og:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
 
-              <meta property="twitter:title" content="Lensdrop" />
-              <meta property="twitter:image" content="/air-hot-balloon.png" />
-              <meta property="twitter:card" content="summary_large_image" />
-              <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
-            </Head>
-            <Component {...pageProps} />
-            <Footer />
-        </div>
-      </ApolloProvider>
-    </WagmiConfig>
+                <meta property="twitter:title" content="Lensdrop" />
+                <meta property="twitter:image" content="/air-hot-balloon.png" />
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
+              </Head>
+              <Component {...pageProps} />
+              <Footer />
+          </div>
+        </ApolloProvider>
+      </WagmiConfig>
+    </AppWrapper>
   )
   
 }

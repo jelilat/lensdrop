@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { Modal } from '@components/UI/Modal';
 import Connect from './Connect'
 import { useAccount } from 'wagmi'
+import SetContext from '@components/utils/SetContext'
 
 const Header = () => {
     const { address, isConnected } = useAccount()
@@ -11,6 +12,7 @@ const Header = () => {
 
     return (
         <>
+            <SetContext />
             <div className="flex text-sm p-3 border-b-2 border-b-black-500 sticky top-0 bg-white">
                 <div className="lg:w-2/5 sm:w-1/5 float-right p-2 font-semibold">
                     Lensdrop

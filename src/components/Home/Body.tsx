@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useQuery, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { 
     chain as chains,
-    useAccount, 
     useContractWrite, 
     erc20ABI, 
     useBalance, 
@@ -10,24 +9,19 @@ import {
     useNetwork,
     useSwitchNetwork
  } from 'wagmi'
-import { GET_PROFILES } from '@graphql/Queries/Profile'
-import { GET_FOLLOWING, GET_FOLLOWERS } from '@graphql/Queries/Follow'
-import { Profile, Follower, Following } from '@generated/types'
 import { MultisenderAbi } from 'src/abis/Airdrop'
 import { Modal } from '@components/UI/Modal'
 import { MULTISENDER_ADDRESS } from 'src/constants'
+import { useAppContext } from '@components/utils/AppContext'
 import { BigNumber, ethers } from 'ethers'
 import Image from 'next/image'
 
 const Body = ()=> {
-    const { address } = useAccount();
+    const { address, profiles, followers, followings } = useAppContext();
     const { chain } = useNetwork(); 
     const { switchNetwork } = useSwitchNetwork();
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
-    const [profiles, setProfiles] = useState<Profile[]>([])
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
-    const [followers, setFollowers] = useState<string[]>([])
-    const [following, setFollowing] = useState<string[]>([])
     const [func, setFunc] = useState<string>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
     const [amount, setAmount] = useState<string>("")
@@ -109,61 +103,13 @@ const Body = ()=> {
         addressOrName: address,
         chainId: 137
     })
-    
-    useQuery(GET_PROFILES, {
-        variables: {
-            request: {
-                ownedBy: address
-            }
-        },
-        fetchPolicy: "no-cache",
-        onCompleted(data) {
-            setProfiles(data?.profiles?.items)
-            setDefaultProfile(data?.profiles?.items[0])
-            console.log(data?.profiles)
-        }
-    })
-
-    const [getFollowers] = useLazyQuery(GET_FOLLOWERS, {
-        variables: {
-            request: {
-                profileId: defaultProfile?.id
-            }
-        },
-        fetchPolicy: 'no-cache',
-        onCompleted(data) {
-            const follow = data?.followers?.items; 
-            follow.map((follower: Follower) => {
-                const address = follower?.wallet?.address; 
-                setFollowers(followers => [...followers, address]); 
-            })
-        }
-    })
-
-    const [getFollowing] = useLazyQuery(GET_FOLLOWING, {
-        variables: {
-            request: {
-                address: defaultProfile?.ownedBy
-            }
-        },
-        fetchPolicy: 'no-cache',
-        onCompleted(data) {
-            const follow = data?.following?.items; 
-            follow.map((following: Following) => {
-                const address = following?.profile?.ownedBy; 
-                setFollowing(following => [...following, address]);
-            })
-        }
-    })
 
     useEffect(() => {
-        getFollowing()
-        getFollowers()
         if (chain?.name !== "Polygon" && address) {
             switchNetwork?.(chains.polygon.id)
             window.location.reload()
           }
-    }, [defaultProfile, getFollowing, getFollowers, address, chain, switchNetwork])
+    }, [address, chain, switchNetwork])
 
     useEffect(() => {
         setReceivers(followers)
@@ -313,7 +259,7 @@ const Body = ()=> {
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value={followers}>Followers ({followers?.length})</option>
-                                <option value={following}>Following ({following?.length})</option>
+                                <option value={followings}>Following ({followings?.length})</option>
                             </select>
                         </div>
                         {func !== "batchSendNFT" ? <div>
