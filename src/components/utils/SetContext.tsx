@@ -31,11 +31,11 @@ const SetContext = () => {
       const [getFollowing] = useLazyQuery(GET_FOLLOWING, {
         variables: {
           request: {
-            profileId: profiles[0]?.id
+            address: address
           }
         },
         fetchPolicy: 'no-cache',
-        onCompleted(data) {console.log(data)
+        onCompleted(data) {
           let followings: string[] = [];
           const follow = data?.following?.items; 
           follow.map((following: Following) => {
