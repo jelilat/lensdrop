@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { GET_PUBLICATION, GET_PUBLICATIONS } from '@graphql/Queries/Publications'
+import { Publication } from '@generated/types'
+import { useAppContext } from '@components/utils/AppContext'
 
 const Filter = () => {
-    const [publications, setPublications] = useState([])
+    const { profiles } = useAppContext();
+    const [publications, setPublications] = useState<Publication[]>([])
 
     useQuery(GET_PUBLICATIONS, {
         variables: {
             request: {
-                profileId: "",
+                profileId: profiles[0]?.id,
                 publicationTypes: ["POST"]
             }
+        },
+        fetchPolicy: 'no-cache',
+        onCompleted(data) {console.log(data)
+            setPublications(data?.publications?.items);
         }
     })
     
@@ -28,7 +35,15 @@ const Filter = () => {
             </select> 
             <div className="m-1 p-2 px-2 rounded-lg">the publication</div>
             <select className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
-
+                {
+                    publications?.map((publication, index) => {
+                        return (
+                            <option key={index} value={publication?.id}>
+                                {publication?.id}
+                            </option>
+                        )
+                    })
+                }
             </select>
         </div>
         <button className="mr-1 p-2 rounded-lg border-2 border-b-black-500">
