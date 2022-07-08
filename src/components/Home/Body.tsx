@@ -16,7 +16,7 @@ import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
 import { BigNumber, ethers } from 'ethers'
-import Image from 'next/image'
+import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
 
 const Body = ()=> {
     const { address, profiles, followers, followings, filters } = useAppContext();
@@ -62,7 +62,7 @@ const Body = ()=> {
             isLoading(false)
             setErrorMessage("Transaction successful!")
             setModal(true)
-            window.location.reload
+            // window.location.reload
         },
         onError(err){
             isLoading(false)
@@ -431,6 +431,16 @@ const Body = ()=> {
                                     }}>
                                         <div className="font-semibold text-center mb-10">
                                             {errorMessage}
+                                            {errorMessage == "Transaction successful!" && 
+                                                <div>
+                                                    <a 
+                                                        className="text-blue-600"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        href={BuildTwitterUrl(`I just airdropped ${parseFloat(amount) * receivers.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${receivers.length} friends on @lensprotocol with Lensdrop`)}>
+                                                                Share to twitter
+                                                    </a>
+                                                </div>}
                                         </div>
                                 </Modal>
                             </button>
