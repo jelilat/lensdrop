@@ -13,11 +13,13 @@ import { MultisenderAbi } from 'src/abis/Airdrop'
 import { Modal } from '@components/UI/Modal'
 import { MULTISENDER_ADDRESS } from 'src/constants'
 import { useAppContext } from '@components/utils/AppContext'
+import Filter from '@components/Filter'
+import { Filterer } from '@components/utils/Filterer'
 import { BigNumber, ethers } from 'ethers'
 import Image from 'next/image'
 
 const Body = ()=> {
-    const { address, profiles, followers, followings } = useAppContext();
+    const { address, profiles, followers, followings, filters } = useAppContext();
     const { chain } = useNetwork(); 
     const { switchNetwork } = useSwitchNetwork();
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
@@ -118,19 +120,19 @@ const Body = ()=> {
     const _continue = () => {
         if (func !== 'batchSendNativeToken' && tokenAddress === "") {
             setModal(true)
-            setErrorMessage("Please enter a token address")
+            setErrorMessage("Enter a token address")
             return
         } 
 
         if (amount === "") {
             setModal(true)
-            setErrorMessage("Please enter a valid amount")
+            setErrorMessage("Enter a valid amount")
             return
         }
 
         if (address === undefined) {
             setModal(true)
-            setErrorMessage("Please connect your wallet")
+            setErrorMessage("Connect your wallet")
             return
         }
 
@@ -140,9 +142,27 @@ const Body = ()=> {
             return
         }
 
+        if (filters[0].reaction !== "") {
+            const filteredAddresses = Filterer(filters);
+            if (filteredAddresses.length > 0) {
+                let addresses: string[]
+                if (receivers[0] !== "") {
+                    addresses = filteredAddresses?.filter(address => {
+                        return receivers.includes(address)
+                    })
+                } else {
+                    addresses = filteredAddresses
+                }
+                
+                setReceivers(addresses)
+            }
+        }
+
         if (receivers.length === 0) {
             setModal(true)
-            setErrorMessage("Can't airdrop tokens to 0 addresses")
+            setErrorMessage(`${filters[0].reaction !== "" ?
+            "Can't airdrop tokens to 0 addresses" :
+            "Can't airdrop tokens to 0 addresses. Adjust your filters"}`)
             return
         }
 
@@ -260,7 +280,9 @@ const Body = ()=> {
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value={followers}>Followers ({followers?.length})</option>
                                 <option value={followings}>Following ({followings?.length})</option>
+                                <option value={[]}>Any</option>
                             </select>
+                            <Filter />
                         </div>
                         {func !== "batchSendNFT" ? <div>
                             <div className="font-semibold my-1">

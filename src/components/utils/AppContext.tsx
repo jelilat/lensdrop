@@ -8,15 +8,22 @@ import {
 } from 'react';
 import { Profile } from '@generated/types'
 
+export type Filter = {
+  reaction: "Comment" | "Mirror" | "Collect" | "Like" | ""
+  publicationId: string
+}
+
 export interface ContextType {
     address: string | undefined;
     profiles: Profile[];
     followers: string[];
     followings: string[];
+    filters: Filter[];
     setUserAddress: Dispatch<SetStateAction<string>>;
     setProfiles: Dispatch<SetStateAction<Profile[]>>;
     setFollowers: Dispatch<SetStateAction<string[]>>;
     setFollowings: Dispatch<SetStateAction<string[]>>;
+    setFilters: Dispatch<SetStateAction<Filter[]>>;
   }
 
 type Props = {
@@ -28,10 +35,12 @@ const AppContext = createContext<ContextType>({
   profiles: [],
   followers: [],
   followings: [],
+  filters: [],
   setUserAddress: () => {},
   setProfiles: () => {},
   setFollowers: () => {},
-  setFollowings: () => {}
+  setFollowings: () => {},
+  setFilters: () => {}
 })
 
 export function AppWrapper({ children }: Props) {
@@ -39,16 +48,19 @@ export function AppWrapper({ children }: Props) {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [followers, setFollowers] = useState<string[]>([])
   const [followings, setFollowings] = useState<string[]>([])
+  const [filters, setFilters] = useState<Filter[]>([]);
 
   const value = {
     address,
     profiles,
     followers,
     followings,
+    filters,
     setUserAddress,
     setProfiles,
     setFollowers,
-    setFollowings
+    setFollowings,
+    setFilters
   }
 
   return (
