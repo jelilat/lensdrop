@@ -4,6 +4,7 @@ import CsvDownloader from 'react-csv-downloader';
 import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
+import Script from 'next/script'
 
 const Followers: FC = () => {
     const { address, followings, filters } = useAppContext()
@@ -73,6 +74,8 @@ const Followers: FC = () => {
                 </div>
                 <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
             </div>
+            {/* <span className="w-32"
+            id="lens-embed" data-post-id="0xf5-0x17" /><Script src="https://embed.withlens.app/script.js" defer /> */}
         </>
     )
 }

@@ -4,6 +4,8 @@ import { GET_PUBLICATION, GET_PUBLICATIONS } from '@graphql/Queries/Publications
 import { Post } from '@generated/types'
 import { useAppContext } from '@components/utils/AppContext'
 import { MinusIcon, PlusIcon } from '@heroicons/react/solid'
+import { EyeIcon } from '@heroicons/react/outline'
+import Script from 'next/script'
 
 const Filter = () => {
     const { profiles, filters, setFilters } = useAppContext();
@@ -71,13 +73,31 @@ const Filter = () => {
                             {
                                 publications?.map((publication, index) => {
                                     return (
-                                        <option key={index} value={publication?.id}>
+                                        <option key={index} value={publication?.id}
+                                            className="group flex">
                                             {publication?.id}
                                         </option>
                                     )
                                 })
                             }
                         </select>
+                        <button className="group flex">
+                            <div 
+                                className="flex my-1 p-2">
+                                <EyeIcon className="w-5" />
+                            </div>
+                            <div className="invisible group-hover:visible inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 tooltip">
+                                {
+                                filter.publicationId !== "" ?
+                                <div>
+                                    <span id="lens-embed" data-post-id={filter.publicationId} /><Script src="https://embed.withlens.app/script.js" defer />
+                                </div>
+                                : <div className="border-2 border-b-black-500 bg-black text-white p-2 rounded-lg">
+                                    <span>Select a post to preview</span>
+                                 </div>
+                             }
+                            </div>
+                        </button>
                         {
                             index == filters.length - 1 ?
                             <button 
@@ -108,8 +128,7 @@ const Filter = () => {
                                     <MinusIcon className="w-6 h-5" />
                                 </div>
                             </button>
-                        }
-                        
+                        } 
                     </div>
                 )
             })
