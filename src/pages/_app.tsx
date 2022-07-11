@@ -69,10 +69,12 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <meta property="og:title" content="Lensdrop" />
                 <meta property="og:image" content="/air-hot-balloon.png" />
                 <meta property="og:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
+                <meta property="og:url" content="https://lensdrop.xyz" />
 
                 <meta property="twitter:title" content="Lensdrop" />
+                <meta property="twitter:site" content="@tjelailah" />
                 <meta property="twitter:image" content="/air-hot-balloon.png" />
-                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:card" content="summary" />
                 <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
               </Head>
               <Component {...pageProps} />
