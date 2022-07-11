@@ -6,11 +6,12 @@ import {
   useContext,
   useState 
 } from 'react';
-import { Profile } from '@generated/types'
+import { Profile, Post} from '@generated/types'
 
 export type Filter = {
   reaction: "Comment" | "Mirror" | "Collect" | "Like" | ""
   publicationId: string
+  publication: Post | undefined
 }
 
 export interface ContextType {

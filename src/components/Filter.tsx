@@ -5,6 +5,8 @@ import { Post } from '@generated/types'
 import { useAppContext } from '@components/utils/AppContext'
 import { MinusIcon, PlusIcon } from '@heroicons/react/solid'
 import { EyeIcon } from '@heroicons/react/outline'
+import Image from 'next/image'
+import apolloClient from 'src/apollo'
 import Script from 'next/script'
 
 const Filter = () => {
@@ -19,7 +21,7 @@ const Filter = () => {
             }
         },
         fetchPolicy: 'no-cache',
-        onCompleted(data) {console.log(data)
+        onCompleted(data) {
             setPublications(data?.publications?.items);
         }
     })
@@ -27,16 +29,35 @@ const Filter = () => {
     useEffect(() => {
         setFilters([{
             reaction: "",
-            publicationId: ""
+            publicationId: "",
+            publication: undefined
         }])
     }, [])
+
+    const getPublication =  async (publicationId: string) => {
+        let publication
+         await apolloClient.query({
+            query: GET_PUBLICATION,
+            variables: {
+                request: {
+                    publicationId: publicationId
+                }
+            },
+            fetchPolicy: 'no-cache',
+        })
+        .then(response => {
+            publication = response?.data?.publication
+        })
+
+        return publication;
+    }
     
     return (
         <>
         <div className="font-semibold my-1">
             Filter by those who
         </div>
-        {
+        {publications &&
             filters.map((filter, index) => {
                 return(
                     <div key={index}
@@ -60,10 +81,14 @@ const Filter = () => {
                         </select> 
                         <div className="m-1 p-2 px-2 rounded-lg">the post</div>
                         <select 
-                            onChange={(e) => {
-                                const newFilters = [...filters];
-                                const tempFilter = {...newFilters[index]};
+                            onChange={async  (e) => {
+                                let newFilters = [...filters];
+                                let tempFilter = {...newFilters[index]};
                                 tempFilter.publicationId = e.target.value;
+                                // newFilters[index] = tempFilter;
+                                // setFilters(newFilters);
+                                const pub = await getPublication(e.target.value as string)
+                                tempFilter.publication = pub;
                                 newFilters[index] = tempFilter;
                                 setFilters(newFilters);
                             }}
@@ -86,16 +111,30 @@ const Filter = () => {
                                 className="flex my-1 p-2">
                                 <EyeIcon className="w-5" />
                             </div>
-                            <div className="invisible group-hover:visible inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 tooltip">
-                                {
-                                filter.publicationId !== "" ?
-                                <div>
-                                    <span id="lens-embed" data-post-id={filter.publicationId} /><Script src="https://embed.withlens.app/script.js" defer />
-                                </div>
+                            <div className="invisible group-hover:visible inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 tooltip">  
+                                {filter?.publicationId !== "" ?
+                                    <div>
+                                        <span id="lens-embed" data-post-id={filter?.publicationId} /><Script src="https://embed.withlens.app/script.js" async /> 
+                                    </div>
                                 : <div className="border-2 border-b-black-500 bg-black text-white p-2 rounded-lg">
                                     <span>Select a post to preview</span>
-                                 </div>
-                             }
+                                </div>}
+                                 {/* <div className="flex">
+                                    <div className="px-1">
+                                    {
+                                        filter?.publication?.profile?.picture?.original?.url ? <Image src={filter?.publication?.profile?.picture?.original?.url} alt="profile-picture" width={35} height={35}
+                                            className="rounded-full" />
+                                            : <div className="rounded-full bg-gray-200 h-6 w-6"></div>
+                                            }
+                                    </div>  
+                                    <div>
+                                        <p className="top-0">{filter?.publication?.profile?.name}</p>
+                                        <p className="text-xs">@{filter?.publication?.profile?.handle}</p>
+                                    </div>
+                                </div> */}
+                                <div>
+                                    <p className="text-xs">{filters[index]?.publication?.metadata?.content}</p>
+                                </div>
                             </div>
                         </button>
                         {
@@ -105,7 +144,8 @@ const Filter = () => {
                                 onClick={() => {
                                     setFilters([...filters, {
                                         reaction: "",
-                                        publicationId: ""
+                                        publicationId: "",
+                                        publication: undefined
                                     }])
                                 }}
                                 className="flex m-1 p-2 rounded-lg border-2 border-b-black-500">

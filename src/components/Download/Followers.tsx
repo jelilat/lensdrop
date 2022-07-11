@@ -4,6 +4,7 @@ import Image from 'next/image'
 import CsvDownloader from 'react-csv-downloader';
 import { useAppContext } from '@components/utils/AppContext'
 import { Filterer } from '@components/utils/Filterer'
+import Script from 'next/script'
 
 const Followers: FC = () => {
     const { address, followers, filters } = useAppContext()
