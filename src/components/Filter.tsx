@@ -90,7 +90,7 @@ const Filter = () => {
                                 const pub = await getPublication(e.target.value as string)
                                 tempFilter.publication = pub;
                                 newFilters[index] = tempFilter;
-                                setFilters(newFilters);
+                                setFilters(newFilters);console.log(pub)
                             }}
                             value={filter.publicationId}
                             className="m-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
@@ -111,12 +111,19 @@ const Filter = () => {
                                 className="flex my-1 p-2">
                                 <EyeIcon className="w-5" />
                             </div>
-                            <div className="invisible group-hover:visible inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 tooltip">  
+                            <div className="invisible group-hover:visible inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 max-w-lg text-white bg-black">  
                                 {filter?.publicationId !== "" ?
                                     <div>
-                                        <span id="lens-embed" data-post-id={filter?.publicationId} /><Script src="https://embed.withlens.app/script.js" async /> 
+                                        <p className="py-1 my-1">{filter?.publication?.metadata?.content}</p>
+                                        {filter?.publication?.metadata?.media[0]?.original?.url && 
+                                            <Image src={
+                                                filter?.publication?.metadata?.media[0]?.original?.url
+                                            } alt="image" width={300} height={200} />
+                                        }
+                                        {/* <span 
+                                            id="lens-embed" data-post-id={filter?.publicationId} /><script src="https://embed.withlens.app/script.js" async />  */}
                                     </div>
-                                : <div className="border-2 border-b-black-500 bg-black text-white p-2 rounded-lg">
+                                : <div className="rounded-lg">
                                     <span>Select a post to preview</span>
                                 </div>}
                                  {/* <div className="flex">
@@ -132,9 +139,7 @@ const Filter = () => {
                                         <p className="text-xs">@{filter?.publication?.profile?.handle}</p>
                                     </div>
                                 </div> */}
-                                <div>
-                                    <p className="text-xs">{filters[index]?.publication?.metadata?.content}</p>
-                                </div>
+                                
                             </div>
                         </button>
                         {
