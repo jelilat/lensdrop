@@ -57,7 +57,7 @@ const Body = ()=> {
         overrides: {
             from: address,
             value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(receivers.length) : 0,
-            gasLimit: 1e7
+            gasLimit: 1e8
           },
         onSuccess(data){
             isLoading(false)
@@ -188,6 +188,7 @@ const Body = ()=> {
 
         const allowed = parseInt(allowance?.data?._hex)/decimal
         if (func !== "batchSendNativeToken" && allowed >= parseFloat(amount) * receivers.length){
+            isLoading(false)
             setState("Airdrop")
             return
         }
