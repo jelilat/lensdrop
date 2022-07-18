@@ -447,14 +447,19 @@ const Body = ()=> {
                                     }}>
                                         <div className="font-semibold text-center mb-10">
                                             {errorMessage}
-                                            {errorMessage == "Transaction successful!" && 
+                                            {errorMessage === "Transaction successful!" && 
                                                 <div>
                                                     <a 
                                                         className="text-blue-600"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        href={BuildTwitterUrl(`I just airdropped ${parseFloat(amount) * receivers.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${receivers.length} friends on @lensprotocol with Lensdrop`)}>
-                                                                Share to twitter
+                                                        href={BuildTwitterUrl(`I just airdropped ${parseFloat(amount) * receivers.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${receivers.length} friends on @LensProtocol with Lensdrop`)}>
+                                                                <button onClick={() => {
+                                                                    setModal(false)
+                                                                    window.location.reload()
+                                                                    }}>
+                                                                    Share to twitter
+                                                                </button>
                                                     </a>
                                                 </div>}
                                         </div>
