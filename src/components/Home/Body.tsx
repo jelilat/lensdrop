@@ -295,7 +295,7 @@ const Body = ()=> {
                             <div className="font-semibold my-1">
                                 Amount per address
                             </div>
-                            <input type="number" onChange={(e)=> {
+                            <input type="number" min="0" onChange={(e)=> {
                                 const decimal = decimals?.data
                                 let multiplier: number
                                 if (func === "batchSendERC20") {
