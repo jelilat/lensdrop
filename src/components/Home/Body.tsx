@@ -15,7 +15,7 @@ import { MULTISENDER_ADDRESS } from 'src/constants'
 import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
-import { BigNumber, ethers } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
 
 const Body = ()=> {
@@ -26,9 +26,9 @@ const Body = ()=> {
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
     const [func, setFunc] = useState<string>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
-    const [amount, setAmount] = useState<string>("")
+    const [amount, setAmount] = useState<string>("0")
     const [receivers, setReceivers] = useState<string[]>([])
-    const [decimal, setDecimal] = useState<number>(10**18)
+    const [decimal, setDecimal] = useState<number>(0)
     const [modal, setModal] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [loading, isLoading] = useState<boolean>()
@@ -53,10 +53,11 @@ const Body = ()=> {
         addressOrName: MULTISENDER_ADDRESS,
         contractInterface: MultisenderAbi,
         functionName: func, 
-        args: func !== "batchSendNativeToken" ? [receivers, parseFloat(amount) * decimal, tokenAddress] : [receivers, parseFloat(amount) * 10**18],
+        args: func !== "batchSendNativeToken" ? [receivers, utils.parseEther(amount).mul(decimal).div(utils.parseEther("1")), tokenAddress] : [receivers, utils.parseEther(amount)],
         overrides: {
             from: address,
-            value: func === "batchSendNativeToken" ? parseFloat(amount) * receivers.length * 10**18 : 0,
+            value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(receivers.length) : 0,
+            gasLimit: 1e7
           },
         onSuccess(data){
             isLoading(false)
@@ -191,7 +192,12 @@ const Body = ()=> {
             return
         }
 
-        tokenContract.write()
+        if (func !== "batchSendNativeToken") {
+            tokenContract.write()
+        } else {
+            isLoading(false)
+            setState("Airdrop")
+        }
     }
 
     return (
@@ -323,6 +329,7 @@ const Body = ()=> {
                                     show={modal}
                                     onClose={()=>{
                                         setModal(false)
+                                        setErrorMessage("")
                                     }}>
                                         <div className="font-semibold text-center mb-10">
                                             {errorMessage}
@@ -368,7 +375,7 @@ const Body = ()=> {
                                 approve()
                             }}
                                 className={`w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800`}
-                                disabled={loading}
+                                // disabled={loading}
                                 >
                                 {loading ? "Confirming..." : "Approve"}
                                 <Modal
@@ -376,9 +383,17 @@ const Body = ()=> {
                                     show={modal}
                                     onClose={()=>{
                                         setModal(false)
+                                        setErrorMessage("")
                                     }}>
                                         <div className="font-semibold text-center mb-10">
                                             {errorMessage}
+                                            {errorMessage === "Insufficient funds" &&
+                                                <iframe
+                                                src={`https://app.uniswap.org/#/swap?exactField=output&exactAmount=${parseFloat(amount) * receivers.length}&outputCurrency=${tokenAddress}`}
+                                                // height="660px"
+                                                width="100%"
+                                                className="border-2 border-b-black-500 my-2 w-full h-96"
+                                            /> }
                                         </div>
                                 </Modal>
                             </button>
@@ -428,6 +443,7 @@ const Body = ()=> {
                                     show={modal}
                                     onClose={()=>{
                                         setModal(false)
+                                        setErrorMessage("")
                                     }}>
                                         <div className="font-semibold text-center mb-10">
                                             {errorMessage}
