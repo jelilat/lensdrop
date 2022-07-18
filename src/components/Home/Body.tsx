@@ -37,7 +37,7 @@ const Body = ()=> {
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
         functionName: 'approve', 
-        args: [MULTISENDER_ADDRESS, parseFloat(amount) * decimal],
+        args: [MULTISENDER_ADDRESS, parseFloat(amount) * decimal * receivers.length],
         onSuccess(data){
             isLoading(false)
             setState("Airdrop")
@@ -57,7 +57,7 @@ const Body = ()=> {
         overrides: {
             from: address,
             value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(receivers.length) : 0,
-            gasLimit: 1e8
+            gasLimit: 1e6
           },
         onSuccess(data){
             isLoading(false)
@@ -376,7 +376,7 @@ const Body = ()=> {
                                 approve()
                             }}
                                 className={`w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800`}
-                                // disabled={loading}
+                                disabled={loading}
                                 >
                                 {loading ? "Confirming..." : "Approve"}
                                 <Modal
