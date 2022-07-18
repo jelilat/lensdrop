@@ -159,7 +159,7 @@ const Body = ()=> {
             }
         }
 
-        if (receivers.length === 0) {
+        if (receivers[0] === "") {
             setModal(true)
             setErrorMessage(`${filters[0].reaction !== "" ?
             "Can't airdrop tokens to 0 addresses" :

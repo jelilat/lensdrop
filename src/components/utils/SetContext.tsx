@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi'
 import { useAppContext } from '@components/utils/AppContext'
-import { useLazyQuery, useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { GET_PROFILES } from '@graphql/Queries/Profile'
 import { GET_FOLLOWING, GET_FOLLOWERS } from '@graphql/Queries/Follow'
 import { Follower, Following } from '@generated/types'
@@ -9,7 +9,7 @@ import { Follower, Following } from '@generated/types'
 const SetContext = () => {
     const { address, isConnected } = useAccount()
     const { 
-        profiles, 
+        profiles,
         setUserAddress, 
         setProfiles, 
         setFollowers, 
@@ -61,24 +61,6 @@ const SetContext = () => {
               followers.push(address);
           }); 
           setFollowers(followers);
-        }
-      })
-    
-      useQuery(GET_FOLLOWERS, {
-        variables: {
-          request: {
-            profileId: profiles[0]?.id
-          }
-        },
-        fetchPolicy: 'no-cache',
-        onCompleted(data) {
-          let followers: string[] = [];
-          const follow = data?.followers?.items; 
-          follow.map((follower: Follower) => {
-              const address = follower?.wallet?.address; 
-              followers.push(address);
-          }); 
-          setFollowings(followers);
         }
       })
     
