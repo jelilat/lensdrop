@@ -19,12 +19,13 @@ import { BigNumber, utils } from 'ethers'
 import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
 
 const Body = ()=> {
+    type Func = 'batchSendNativeToken' | 'batchSendERC20' | 'batchSendNFT'
     const { address, profiles, followers, followings, filters } = useAppContext();
     const { chain } = useNetwork(); 
     const { switchNetwork } = useSwitchNetwork();
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
-    const [func, setFunc] = useState<string>("batchSendNativeToken")
+    const [func, setFunc] = useState<Func>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
     const [amount, setAmount] = useState<string>("0")
     const [receivers, setReceivers] = useState<string[]>([])
@@ -195,6 +196,7 @@ const Body = ()=> {
 
         if (func !== "batchSendNativeToken") {
             tokenContract.write()
+            return
         } else {
             isLoading(false)
             setState("Airdrop")
@@ -241,7 +243,7 @@ const Body = ()=> {
                                 Token type
                             </div>
                             <select onChange={(e)=>{
-                                setFunc(e.target.value);
+                                setFunc(e.target.value as unknown as Func);
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value="batchSendNativeToken">NATIVE - (MATIC)</option>
@@ -296,7 +298,7 @@ const Body = ()=> {
                                 Amount per address
                             </div>
                             <input type="number" min="0" onChange={(e)=> {
-                                const decimal = decimals?.data
+                                const decimal = decimals?.data;
                                 let multiplier: number
                                 if (func === "batchSendERC20") {
                                     multiplier = decimal === undefined ? 1 : 10**(Number(decimal))
@@ -434,11 +436,13 @@ const Body = ()=> {
                         <div>
                             <button onClick={()=>{
                                 airdropContract.write()
+                                return
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 disabled={loading}
                                 >
                                 {loading ? "Confirming..." : "Complete"}
+                            </button>
                                 <Modal
                                     title=""
                                     show={modal}
@@ -457,7 +461,6 @@ const Body = ()=> {
                                                         href={BuildTwitterUrl(`I just airdropped ${parseFloat(amount) * receivers.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${receivers.length} friends on @LensProtocol with Lensdrop`)}>
                                                                 <button onClick={() => {
                                                                     setModal(false)
-                                                                    window.location.reload()
                                                                     }}>
                                                                     Share to twitter
                                                                 </button>
@@ -465,7 +468,6 @@ const Body = ()=> {
                                                 </div>}
                                         </div>
                                 </Modal>
-                            </button>
                         </div>
                     </div>
                     <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
