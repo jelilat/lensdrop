@@ -156,6 +156,8 @@ const Body = ()=> {
                 }
       
                 setReceivers(addresses)
+            } else {
+                setReceivers([])
             }
         }
 

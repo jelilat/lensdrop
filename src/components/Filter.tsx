@@ -7,10 +7,9 @@ import { MinusIcon, PlusIcon } from '@heroicons/react/solid'
 import { EyeIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
 import apolloClient from 'src/apollo'
-import Script from 'next/script'
 
 const Filter = () => {
-    const { profiles, filters, setFilters } = useAppContext();
+    const { profiles, filters, address, setFilters } = useAppContext();
     const [publications, setPublications] = useState<Post[]>([])
 
     useQuery(GET_PUBLICATIONS, {
@@ -75,37 +74,51 @@ const Filter = () => {
                             className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
                             <option value=""></option>
                             <option value="Collect">Collected</option>
-                            <option value="Comment">Comment</option>
+                            <option value="Comment">Commented</option>
                             {/* <option value="Like">Like</option> */}
-                            <option value="Mirror">Mirror</option>
+                            <option value="Mirror">Mirrored</option>
                         </select> 
                         <div className="m-1 p-2 px-2 rounded-lg">the post</div>
-                        <select 
-                            onChange={async  (e) => {
+                        <div>
+                            <input onChange={async (e) => {
                                 let newFilters = [...filters];
                                 let tempFilter = {...newFilters[index]};
                                 tempFilter.publicationId = e.target.value;
-                                // newFilters[index] = tempFilter;
-                                // setFilters(newFilters);
                                 const pub = await getPublication(e.target.value as string)
-                                tempFilter.publication = pub;
+                                tempFilter.publication = pub; 
                                 newFilters[index] = tempFilter;
                                 setFilters(newFilters);
                             }}
-                            value={filter.publicationId}
-                            className="m-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
-                                <option value=""></option>
-                            {
-                                publications?.map((publication, index) => {
-                                    return (
-                                        <option key={index} value={publication?.id}
-                                            className="group flex">
-                                            {publication?.id}
-                                        </option>
-                                    )
-                                })
-                            }
-                        </select>
+                                type="text" 
+                                list="publications"
+                                placeholder="0x2cb8-0x0d"
+                                className="m-1 p-2 border-2 border-b-black-500 px-2 rounded-lg" />
+                            <datalist id="publications">
+                                <select  onChange={async  (e) => {
+                                    let newFilters = [...filters];
+                                    let tempFilter = {...newFilters[index]};
+                                    tempFilter.publicationId = e.target.value;
+                                    const pub = await getPublication(e.target.value as string)
+                                    tempFilter.publication = pub;
+                                    newFilters[index] = tempFilter;
+                                    setFilters(newFilters);
+                                }}
+                                    value={filter.publicationId}
+                                    className="m-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
+                                        <option value=""></option>
+                                        {address &&
+                                            publications?.map((publication, index) => {
+                                                return (
+                                                    <option key={index} value={publication?.id}
+                                                        className="group flex">
+                                                        {publication?.id}
+                                                    </option>
+                                                )
+                                            })
+                                        }
+                                </select>
+                            </datalist>
+                            </div>
                         <button className="group flex">
                             <div 
                                 className="flex my-1 p-2">

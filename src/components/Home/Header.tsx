@@ -39,6 +39,13 @@ const Header = () => {
                             Following
                         </Link>
                     </div>
+                    <div className={`mx-1 p-2 ${useRouter().pathname === "/all" ?
+                            "bg-gray-200 rounded-lg" : null}`}>
+                        <Link className=""
+                            href="/all" >
+                            All
+                        </Link>
+                    </div>
                 </div>
                 <div className="w-1/5">
                     <button className="rounded-lg bg-black text-white p-2"
