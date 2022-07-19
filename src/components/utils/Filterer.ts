@@ -1,5 +1,5 @@
 import apolloClient from 'src/apollo'
-import { WHO_COLLECTED, GET_COMMENTS } from 'src/graphql/Queries/Publications';
+import { WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION } from 'src/graphql/Queries/Publications';
 import { GET_PROFILES } from 'src/graphql/Queries/Profile';
 import { Filter } from './AppContext'
 import { DocumentNode } from 'graphql';
@@ -38,10 +38,13 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 reactionRequest: null!
             }
         } else {
-            query = GET_PROFILES
+            query = GET_PUBLICATION
             variables = {
                 request: {
-                    whoPublishedPublicationId: filter.publicationId
+                    publicationId: filter.publicationId
+                },
+                reactionRequest: {
+                    reaction: 'UPVOTE'
                 }
             }
         }
@@ -52,7 +55,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 variables: variables,
                 fetchPolicy: 'no-cache',
             })
-            .then((result) => {console.log(result)
+            .then((result) => {
                 let allAddresses: any
                 
                 if (filter.reaction === 'Collect') {

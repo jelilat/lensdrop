@@ -30,7 +30,7 @@ const Followers: FC = () => {
                                     if (filters[0].reaction !== "") {
                                         const filteredAddresses = await Filterer(filters);
                                         if (filteredAddresses.length > 0) {
-                                            const addresses = filteredAddresses?.filter(address => {console.log(address)
+                                            const addresses = filteredAddresses?.filter(address => {
                                                 return followings.includes(address)
                                             }); 
                                             setData(addresses)

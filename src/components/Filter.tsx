@@ -21,7 +21,7 @@ const Filter = () => {
             }
         },
         fetchPolicy: 'no-cache',
-        onCompleted(data) {console.log(data?.publications?.items)
+        onCompleted(data) {
             setPublications(data?.publications?.items);
         }
     })

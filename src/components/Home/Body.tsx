@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useLazyQuery } from '@apollo/client'
 import { 
     chain as chains,
     useContractWrite, 

@@ -1,10 +1,8 @@
-import { FC, useState, useEffect } from 'react'
+import { FC, useState } from 'react'
 import Filter from '@components/Filter'
-import Image from 'next/image'
 import CsvDownloader from 'react-csv-downloader';
 import { useAppContext } from '@components/utils/AppContext'
 import { Filterer } from '@components/utils/Filterer'
-import Script from 'next/script'
 
 const Followers: FC = () => {
     const { address, followers, filters } = useAppContext()
