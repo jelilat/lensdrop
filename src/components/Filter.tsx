@@ -21,7 +21,7 @@ const Filter = () => {
             }
         },
         fetchPolicy: 'no-cache',
-        onCompleted(data) {
+        onCompleted(data) {console.log(data?.publications?.items)
             setPublications(data?.publications?.items);
         }
     })
@@ -75,8 +75,8 @@ const Filter = () => {
                             className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
                             <option value=""></option>
                             <option value="Collect">Collected</option>
-                            {/* <option value="Comment">Comment</option>
-                            <option value="Like">Like</option> */}
+                            <option value="Comment">Comment</option>
+                            {/* <option value="Like">Like</option> */}
                             <option value="Mirror">Mirror</option>
                         </select> 
                         <div className="m-1 p-2 px-2 rounded-lg">the post</div>

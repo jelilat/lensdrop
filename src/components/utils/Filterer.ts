@@ -1,5 +1,5 @@
 import apolloClient from 'src/apollo'
-import { WHO_COLLECTED } from 'src/graphql/Queries/Publications';
+import { WHO_COLLECTED, GET_COMMENTS } from 'src/graphql/Queries/Publications';
 import { GET_PROFILES } from 'src/graphql/Queries/Profile';
 import { Filter } from './AppContext'
 import { DocumentNode } from 'graphql';
@@ -9,42 +9,58 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
     const executeFilter = filters.map(async (filter) => {
         let query: DocumentNode
-        let request: {
-            [key: string]: string
+        let variables: {
+            [key: string]: {
+                [key: string]: string | null,
+            },
         } = {}
 
         if (filter.reaction === 'Collect') {
             query = WHO_COLLECTED
-            request = {
-                publicationId: filter.publicationId
+            variables = {
+                request: {
+                    publicationId: filter.publicationId
+                }
             }
         } else if (filter.reaction === 'Mirror') {
             query = GET_PROFILES
-            request = {
-                whoMirroredPublicationId: filter.publicationId
+            variables = {
+                request: {
+                    whoMirroredPublicationId: filter.publicationId
+                }
+            }
+        } else if (filter.reaction === 'Comment') {
+            query = GET_COMMENTS
+            variables = {
+                request: {
+                    commentsOf: filter.publicationId
+                },
+                reactionRequest: null!
             }
         } else {
             query = GET_PROFILES
-            request = {
-                whoPublishedPublicationId: filter.publicationId
+            variables = {
+                request: {
+                    whoPublishedPublicationId: filter.publicationId
+                }
             }
         }
 
         if (filter.reaction !== "") {
             await apolloClient.query({
                 query: query,
-                variables: {
-                    request: request
-                },
+                variables: variables,
                 fetchPolicy: 'no-cache',
             })
-            .then((result) => {
+            .then((result) => {console.log(result)
                 let allAddresses: any
                 
                 if (filter.reaction === 'Collect') {
                     allAddresses = result?.data?.whoCollectedPublication?.items       
                 } else if (filter.reaction === 'Mirror') {
                     allAddresses = result?.data?.profiles?.items
+                } else if (filter.reaction === 'Comment') {
+                    allAddresses = result?.data?.publications?.items
                 }
                 
                 allAddresses?.map((item: any) => {
@@ -54,7 +70,10 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     } else if (filter.reaction === 'Mirror') {
                         const address: string = item?.ownedBy; 
                         addresses?.push(address); 
-                    } 
+                    } else if (filter.reaction === 'Comment') {
+                        const address: string = item?.profile?.ownedBy; 
+                        addresses?.push(address); 
+                    }
                 }); 
             })
         }
