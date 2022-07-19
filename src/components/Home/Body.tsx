@@ -14,7 +14,7 @@ import { MULTISENDER_ADDRESS } from 'src/constants'
 import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
-import { BigNumber, utils } from 'ethers'
+import { utils } from 'ethers'
 import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
 
 const Body = ()=> {
@@ -378,12 +378,13 @@ const Body = ()=> {
                                 className={`w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800`}
                                 disabled={loading}
                                 >
-                                {loading ? "Confirming..." : "Approve"}
+                                {loading ? "Approving..." : "Approve"}
                                 <Modal
                                     title=""
                                     show={modal}
                                     onClose={()=>{
                                         setModal(false)
+                                        isLoading(false)
                                         setErrorMessage("")
                                     }}>
                                         <div className="font-semibold text-center mb-10">

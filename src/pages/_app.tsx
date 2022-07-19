@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <meta property="twitter:card" content="summary" />
                 <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
               </Head>
-              <Component {...pageProps} />
+                <Component {...pageProps} />
               <Footer />
           </div>
         </ApolloProvider>
