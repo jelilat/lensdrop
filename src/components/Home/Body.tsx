@@ -137,12 +137,6 @@ const Body = ()=> {
             return
         }
 
-        if (profiles.length === 0) {
-            setModal(true)
-            setErrorMessage("You don't have a Lens profile. Visit https://claim.lens.xyz/ to claim your handle")
-            return
-        }
-
         if (filters[0].reaction !== "") {
             const filteredAddresses = await Filterer(filters);
             if (filteredAddresses.length > 0) {
