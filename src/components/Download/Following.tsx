@@ -26,13 +26,13 @@ const Followers: FC = () => {
                     <Filter />
                     { !showFollowing ? 
                         <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
-                                onClick={() => {
+                                onClick={async () => {
                                     if (filters[0].reaction !== "") {
-                                        const filteredAddresses = Filterer(filters);
+                                        const filteredAddresses = await Filterer(filters);
                                         if (filteredAddresses.length > 0) {
-                                            const addresses = filteredAddresses?.filter(address => {
+                                            const addresses = filteredAddresses?.filter(address => {console.log(address)
                                                 return followings.includes(address)
-                                            })
+                                            }); 
                                             setData(addresses)
                                             const data = addresses.map(addr => {
                                                 return {address: addr}

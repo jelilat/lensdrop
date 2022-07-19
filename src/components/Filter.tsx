@@ -76,8 +76,8 @@ const Filter = () => {
                             <option value=""></option>
                             <option value="Collect">Collected</option>
                             {/* <option value="Comment">Comment</option>
-                            <option value="Like">Like</option>
-                            <option value="Mirror">Mirror</option> */}
+                            <option value="Like">Like</option> */}
+                            <option value="Mirror">Mirror</option>
                         </select> 
                         <div className="m-1 p-2 px-2 rounded-lg">the post</div>
                         <select 
@@ -90,7 +90,7 @@ const Filter = () => {
                                 const pub = await getPublication(e.target.value as string)
                                 tempFilter.publication = pub;
                                 newFilters[index] = tempFilter;
-                                setFilters(newFilters);console.log(pub)
+                                setFilters(newFilters);
                             }}
                             value={filter.publicationId}
                             className="m-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">

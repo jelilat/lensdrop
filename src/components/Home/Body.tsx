@@ -119,7 +119,7 @@ const Body = ()=> {
         setReceivers(followers)
     }, [followers])
 
-    const _continue = () => {
+    const _continue = async () => {
         if (func !== 'batchSendNativeToken' && tokenAddress === "") {
             setModal(true)
             setErrorMessage("Enter a token address")
@@ -145,7 +145,7 @@ const Body = ()=> {
         }
 
         if (filters[0].reaction !== "") {
-            const filteredAddresses = Filterer(filters);
+            const filteredAddresses = await Filterer(filters);
             if (filteredAddresses.length > 0) {
                 let addresses: string[]
                 if (receivers[0] !== "") {
