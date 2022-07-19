@@ -155,15 +155,14 @@ const Body = ()=> {
                 } else {
                     addresses = filteredAddresses
                 }
-                
+      
                 setReceivers(addresses)
             }
         }
 
         if (receivers[0] === "") {
-            setModal(true)
-            setErrorMessage(`${filters[0].reaction !== "" ?
-            "Can't airdrop tokens to 0 addresses" :
+            filters[0].reaction === "" ? setModal(true): setState("Approve")
+            setErrorMessage(`${filters[0].reaction === "" &&
             "Can't airdrop tokens to 0 addresses. Adjust your filters"}`)
             return
         }
