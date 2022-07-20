@@ -63,7 +63,9 @@ export const Modal: FC<Props> = ({
               <div className="flex justify-between items-center py-3.5 px-5 divider">
                 <div className="flex items-center space-x-2 font-bold">
                   {icon}
-                  <div>{title}</div>
+                  <div className="dark:text-gray-100 justify-center">
+                    {title}
+                  </div>
                 </div>
                 <button
                   type="button"

@@ -6,7 +6,8 @@ import {
     useBalance, 
     useContractRead, 
     useNetwork,
-    useSwitchNetwork
+    useSwitchNetwork,
+    useAccount
  } from 'wagmi'
 import { MultisenderAbi } from 'src/abis/Airdrop'
 import { Modal } from '@components/UI/Modal'
@@ -21,6 +22,7 @@ const Body = ()=> {
     type Func = 'batchSendNativeToken' | 'batchSendERC20' | 'batchSendNFT'
     const { address, profiles, followers, followings, filters } = useAppContext();
     const { chain } = useNetwork(); 
+    const { isConnected } = useAccount();
     const { switchNetwork } = useSwitchNetwork();
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
@@ -131,7 +133,7 @@ const Body = ()=> {
             return
         }
 
-        if (address === undefined) {
+        if (!isConnected) {
             setModal(true)
             setErrorMessage("Connect your wallet")
             return
@@ -328,7 +330,7 @@ const Body = ()=> {
                                         setModal(false)
                                         setErrorMessage("")
                                     }}>
-                                        <div className="font-semibold text-center mb-10">
+                                        <div className="font-semibold text-center dark:text-white mb-10">
                                             {errorMessage}
                                         </div>
                                 </Modal>
@@ -383,7 +385,7 @@ const Body = ()=> {
                                         isLoading(false)
                                         setErrorMessage("")
                                     }}>
-                                        <div className="font-semibold text-center mb-10">
+                                        <div className="font-semibold text-center dark:text-white mb-10">
                                             {errorMessage}
                                             {errorMessage === "Insufficient funds" &&
                                                 <iframe
@@ -445,7 +447,7 @@ const Body = ()=> {
                                         setModal(false)
                                         setErrorMessage("")
                                     }}>
-                                        <div className="font-semibold text-center mb-10">
+                                        <div className="font-semibold dark:text-white text-center mb-10">
                                             {errorMessage}
                                             {errorMessage === "Transaction successful!" && 
                                                 <div>
