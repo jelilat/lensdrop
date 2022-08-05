@@ -18,7 +18,7 @@ const Hero = ()=> {
                             {APP_NAME} 🪂
                             </div>
                             <div className="leading-7 text-gray-700">
-                                Airdrop tokens to your followers on Lens Protocol 🌿
+                                Reward your Lens Protocol 🌿 followers and fans with airdrops and special prizes.
                             </div>
                         </div>
                         <div className="hidden flex-1 flex-shrink-0 w-full sm:block" />

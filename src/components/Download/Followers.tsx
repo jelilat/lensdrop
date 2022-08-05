@@ -5,6 +5,7 @@ import { useAppContext } from '@components/utils/AppContext'
 import { Filterer } from '@components/utils/Filterer'
 import { Draw } from '@components/utils/draw'
 import { Profile } from '@generated/types'
+import PrizeDraw from './PrizeDraw';
 
 const Followers: FC = () => {
     const { address, followers, filters } = useAppContext()
@@ -29,14 +30,6 @@ const Followers: FC = () => {
         } else {
             setData(followers)
         }
-    }
-
-    const createDraw = async () => {
-        await addressFilterer()
-        const winner = await Draw(followers)
-        console.log("winner", winner)
-
-        setWinner(winner!)
     }
 
     return (
@@ -80,22 +73,7 @@ const Followers: FC = () => {
                         </div>
                        </div>
                     }
-                    <div>
-                        <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
-                                onClick={async () => {
-                                    await createDraw()
-                                }}
-                            >
-                            Create Prize Draw
-                        </button>
-                        <div>
-                            {
-                                winner && <div>
-                                    The Winner is <span className="font-bold">{winner?.handle}</span>, and is owned by <span className="font-bold">{winner?.ownedBy}</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
+                    <PrizeDraw addresses={followers} />
                 </div>
                 <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
             </div>

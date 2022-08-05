@@ -4,16 +4,13 @@ import CsvDownloader from 'react-csv-downloader';
 import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
-import Script from 'next/script'
-import { Draw } from '@components/utils/draw'
-import { Profile } from '@generated/types'
+import PrizeDraw from './PrizeDraw';
 
 const Followers: FC = () => {
     const { address, followings, filters } = useAppContext()
     const [showFollowing, setShowFollowing] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
-    const [winner, setWinner] = useState<Profile>()
 
     const addressFilterer = async () => {
         if (filters[0].reaction !== "") {
@@ -31,14 +28,6 @@ const Followers: FC = () => {
         } else {
             setData(followings)
         }
-    }
-
-    const createDraw = async () => {
-        await addressFilterer()
-        const winner = await Draw(followings)
-        console.log("winner", winner)
-
-        setWinner(winner!)
     }
 
     useEffect(() => {
@@ -88,27 +77,10 @@ const Followers: FC = () => {
                         </div>
                        </div>
                     }
-                    <div>
-                        <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
-                                onClick={async () => {
-                                    await createDraw()
-                                }}
-                            >
-                            Create Prize Draw
-                        </button>
-                        <div>
-                            {
-                                winner && <div>
-                                    The Winner is <span className="font-bold">{winner?.handle}</span>, and is owned by <span className="font-bold">{winner?.ownedBy}</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
+                    <PrizeDraw addresses={followings} />
                 </div>
                 <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
             </div>
-            {/* <span className="w-32"
-            id="lens-embed" data-post-id="0xf5-0x17" /><Script src="https://embed.withlens.app/script.js" defer /> */}
         </>
     )
 }
