@@ -3,12 +3,41 @@ import Filter from '@components/Filter'
 import CsvDownloader from 'react-csv-downloader';
 import { useAppContext } from '@components/utils/AppContext'
 import { Filterer } from '@components/utils/Filterer'
+import { Draw } from '@components/utils/draw'
+import { Profile } from '@generated/types'
 
 const Followers: FC = () => {
     const { address, followers, filters } = useAppContext()
     const [showFollowers, setShowFollowers] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
+    const [winner, setWinner] = useState<Profile>()
+
+    const addressFilterer = async () => {
+        if (filters[0].reaction !== "") {
+            const filteredAddresses = await Filterer(filters);
+            if (filteredAddresses.length > 0) {
+                const addresses = filteredAddresses?.filter(address => {
+                    return followers.includes(address)
+                })
+                setData(addresses)
+                const data = addresses.map(addr => {
+                    return {address: addr}
+                })
+                setdatas(datas => [...datas, ...data])
+            }
+        } else {
+            setData(followers)
+        }
+    }
+
+    const createDraw = async () => {
+        await addressFilterer()
+        const winner = await Draw(followers)
+        console.log("winner", winner)
+
+        setWinner(winner!)
+    }
 
     return (
         <>
@@ -19,21 +48,7 @@ const Followers: FC = () => {
                     { !showFollowers ? 
                         <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 onClick={async () => {
-                                    if (filters[0].reaction !== "") {
-                                        const filteredAddresses = await Filterer(filters);
-                                        if (filteredAddresses.length > 0) {
-                                            const addresses = filteredAddresses?.filter(address => {
-                                                return followers.includes(address)
-                                            })
-                                            setData(addresses)
-                                            const data = addresses.map(addr => {
-                                                return {address: addr}
-                                            })
-                                            setdatas(datas => [...datas, ...data])
-                                        }
-                                    } else {
-                                        setData(followers)
-                                    }
+                                    await addressFilterer()
                                     setShowFollowers(true)
                                 }}>
                             View Followers
@@ -65,6 +80,22 @@ const Followers: FC = () => {
                         </div>
                        </div>
                     }
+                    <div>
+                        <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                                onClick={async () => {
+                                    await createDraw()
+                                }}
+                            >
+                            Create Prize Draw
+                        </button>
+                        <div>
+                            {
+                                winner && <div>
+                                    The Winner is <span className="font-bold">{winner?.handle}</span>, and is owned by <span className="font-bold">{winner?.ownedBy}</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
                 <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
             </div>
