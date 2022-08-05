@@ -39,6 +39,8 @@ const Followers: FC = () => {
                                             })
                                             setdatas(datas => [...datas, ...data])
                                         }
+                                    } else {
+                                        setData(followings)
                                     }
                                     setShowFollowing(true)
                                 }}>
