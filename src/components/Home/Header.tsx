@@ -24,7 +24,7 @@ const Header = () => {
                         navOpen ? 
                             <div>
                                 <div onClick={() => {setNavOpen(false)}}
-                                    className="absolute top-0 right-0 p-2"
+                                    className="absolute top-0 right-0 p-2 cursor-pointer"
                                 >
                                     <XIcon className="w-5" />
                                 </div>
@@ -84,7 +84,7 @@ const Header = () => {
                                 </ul>
                             </div>
                     :   <div onClick={() => {setNavOpen(true)}}
-                            className="absolute top-0 right-0 p-2 space-y-1"
+                            className="absolute top-0 right-0 p-2 space-y-1 cursor-pointer"
                         >
                             <span className="block h-0.5 w-5 animate-pulse bg-black"></span>
                             <span className="block h-0.5 w-5 animate-pulse bg-black"></span>
