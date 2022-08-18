@@ -143,9 +143,6 @@ const Header = () => {
                     </button>
                 </div>
             </div>
-            <div className="hidden mobile-menu">
-
-            </div>
         </>
     )
 }
