@@ -16,13 +16,12 @@ export const Draw = async (addresses: Array<string>, numberOfWinners: number): P
         const defaultProfile = generateDraw(updatedAddresses)
         if (await defaultProfile.profile) {
             winners.push(await defaultProfile.profile)
-            console.log(winners)
-            updatedAddresses.splice(defaultProfile.index, 1)
+            updatedAddresses = updatedAddresses.filter((address, index) => index !== defaultProfile.index)
             if (winners.length === numberOfWinners) {
                 return winners
             }
         } else {
-            updatedAddresses.splice(defaultProfile.index, 1)
+            updatedAddresses = updatedAddresses.filter((address, index) => index !== defaultProfile.index)
         }
 
     }

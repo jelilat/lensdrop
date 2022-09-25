@@ -73,7 +73,7 @@ const Followers: FC = () => {
                         </div>
                        </div>
                     }
-                    <PrizeDraw addresses={followers} />
+                    <PrizeDraw addresses={followers} type={'Offchain'} />
                 </div>
                 <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
             </div>
