@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi'
 import { useAppContext } from '@components/utils/AppContext'
 import { useLazyQuery } from '@apollo/client'
@@ -7,9 +7,13 @@ import { GET_FOLLOWING, GET_FOLLOWERS } from '@graphql/Queries/Follow'
 import { Follower, Following } from '@generated/types'
 
 const SetContext = () => {
+  const [pageInfo, setPageInfo] = useState({next: "{\"offset\":0}", prev: "{\"offset\":0}"})
+  const [pageInfoz, setPageInfoz] = useState({next: "{\"offset\":0}", prev: "{\"offset\":0}"})
     const { address, isConnected } = useAccount()
     const { 
         profiles,
+        followers,
+        followings,
         setUserAddress, 
         setProfiles, 
         setFollowers, 
@@ -31,36 +35,40 @@ const SetContext = () => {
       const [getFollowing] = useLazyQuery(GET_FOLLOWING, {
         variables: {
           request: {
-            address: address
+            address: address,
+            cursor: pageInfoz.next
           }
         },
         fetchPolicy: 'no-cache',
         onCompleted(data) {
-          let followings: string[] = [];
+          setPageInfoz(data?.following?.pageInfo)
+          let _followings: string[] = [];
           const follow = data?.following?.items; 
           follow.map((following: Following) => {
               const address = following?.profile?.ownedBy; 
-              followings.push(address);
+              _followings.push(address);
           })
-          setFollowings(followings);
+          setFollowings(followings => [...followings, ..._followings]);
         }
       })
     
       const [getFollowers] = useLazyQuery(GET_FOLLOWERS, {
         variables: {
           request: {
-            profileId: profiles[0]?.id
+            profileId: profiles[0]?.id,
+            cursor: pageInfo.next
           }
         },
         fetchPolicy: 'no-cache',
         onCompleted(data) {
-          let followers: string[] = [];
+          setPageInfo(data?.followers?.pageInfo);
+          let _followers: string[] = [];
           const follow = data?.followers?.items; 
           follow.map((follower: Follower) => {
               const address = follower?.wallet?.address; 
-              followers.push(address);
+              _followers.push(address);
           }); 
-          setFollowers(followers);
+          setFollowers(followers => [...followers, ..._followers]);
         }
       })
     
@@ -68,10 +76,10 @@ const SetContext = () => {
         if (isConnected) {
           setUserAddress(address!);
           getProfiles();
-          getFollowing();
           getFollowers();
+          getFollowing();
         }
-      }, [isConnected, address, setUserAddress, getProfiles, getFollowers, getFollowing]);
+      }, [isConnected, address, profiles, setUserAddress, getProfiles, getFollowers, getFollowing]);
     
       return (
         <></>
