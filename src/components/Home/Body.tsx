@@ -21,9 +21,9 @@ import PrizeDraw from '@components/Download/PrizeDraw'
 
 const Body = ()=> {
     type Func = 'batchSendNativeToken' | 'batchSendERC20' | 'batchSendNFT'
-    const { address, profiles, followers, followings, filters, recipients, setRecipients } = useAppContext();
+    const { profiles, followers, followings, filters, recipients, setRecipients } = useAppContext();
     const { chain } = useNetwork(); 
-    const { isConnected } = useAccount();
+    const { isConnected, address } = useAccount();
     const { switchNetwork } = useSwitchNetwork();
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
@@ -39,7 +39,7 @@ const Body = ()=> {
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
         functionName: 'approve', 
-        args: [MULTISENDER_ADDRESS, parseFloat(amount) * decimal * recipients.length],
+        args: [MULTISENDER_ADDRESS, BigInt(parseFloat(amount) * decimal * recipients.length)],
         onSuccess(data){
             isLoading(false)
             setState("Airdrop")
@@ -55,7 +55,7 @@ const Body = ()=> {
         addressOrName: MULTISENDER_ADDRESS,
         contractInterface: MultisenderAbi,
         functionName: func, 
-        args: func !== "batchSendNativeToken" ? [recipients, utils.parseEther(amount).mul(BigInt(decimal)).div(utils.parseEther("1")), tokenAddress] : [recipients, utils.parseEther(amount)],
+        args: func !== "batchSendNativeToken" ? [recipients, BigInt(parseFloat(amount) * decimal), tokenAddress] : [recipients, utils.parseEther(amount)],
         overrides: {
             from: address,
             value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(BigInt(recipients.length)) : 0,
@@ -105,7 +105,7 @@ const Body = ()=> {
     })
 
     const balance = useBalance({
-        addressOrName: address,
+        addressOrName: address!,
         chainId: 137
     })
 
@@ -168,6 +168,10 @@ const Body = ()=> {
     }
 
     const approve = () => {
+        if (recipients.length > 50) {
+            alert("Can only airdrop tokens to 50 addresses at a time")
+        }
+
         let bal;
         if (func === "batchSendNativeToken") {
             const formattedBalance = balance?.data?.formatted !== undefined ? balance?.data?.formatted : '0'
@@ -302,7 +306,7 @@ const Body = ()=> {
                                     multiplier = 10**18
                                 }; 
                                 setDecimal(multiplier)
-                                setAmount(e.target.value);
+                                setAmount(e.target.value ? e.target.value : "0");
                             }}
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div> :
@@ -311,7 +315,7 @@ const Body = ()=> {
                                 Token Id
                             </div>
                             <input type="number" onChange={(e)=> {
-                                setAmount(e.target.value);
+                                setAmount(e.target.value ? e.target.value : "0");
                             }}
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div>}
