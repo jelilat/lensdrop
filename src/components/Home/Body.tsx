@@ -283,8 +283,8 @@ const Body = ()=> {
                                 setRecipients((e.target.value).split(","))
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
-                                <option value={followers}>Followers ({followers?.length})</option>
-                                <option value={followings}>Following ({followings?.length})</option>
+                                <option value={followers}>Followers ({profiles[0]?.stats?.totalFollowers})</option>
+                                <option value={followings}>Following ({profiles[0]?.stats?.totalFollowing})</option>
                                 <option value={[]}>Any</option>
                             </select>
                             <Filter />
