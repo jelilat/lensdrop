@@ -74,8 +74,14 @@ const SetContext = () => {
     
       useEffect(() => {
         if (isConnected) {
-          setUserAddress(address!);
-          getProfiles();
+          if (!address) {
+            setUserAddress(address!);
+          }
+          
+          if (profiles.length === 0) {
+            getProfiles();
+          }
+
           const totalFollowers = profiles[0]?.stats?.totalFollowers  
           if (followers.length < totalFollowers) {
             getFollowers();
