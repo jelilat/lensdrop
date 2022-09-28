@@ -55,10 +55,10 @@ const Body = ()=> {
         addressOrName: MULTISENDER_ADDRESS,
         contractInterface: MultisenderAbi,
         functionName: func, 
-        args: func !== "batchSendNativeToken" ? [recipients, utils.parseEther(amount).mul(decimal).div(utils.parseEther("1")), tokenAddress] : [recipients, utils.parseEther(amount)],
+        args: func !== "batchSendNativeToken" ? [recipients, utils.parseEther(amount).mul(BigInt(decimal)).div(utils.parseEther("1")), tokenAddress] : [recipients, utils.parseEther(amount)],
         overrides: {
             from: address,
-            value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(recipients.length) : 0,
+            value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(BigInt(recipients.length)) : 0,
             gasLimit: 1e6
           },
         onSuccess(data){
