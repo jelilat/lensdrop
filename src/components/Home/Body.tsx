@@ -26,12 +26,13 @@ const config = {
 }
 
 const alchemy = new Alchemy(config)
+import PrizeDraw from '@components/Download/PrizeDraw'
 
 const Body = ()=> {
     type Func = 'batchSendNativeToken' | 'batchSendERC20' | 'batchSendNFT'
-    const { address, profiles, followers, followings, filters } = useAppContext();
+    const { profiles, followers, followings, filters, recipients, setRecipients } = useAppContext();
     const { chain } = useNetwork(); 
-    const { isConnected } = useAccount();
+    const { isConnected, address } = useAccount();
     const { switchNetwork } = useSwitchNetwork();
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
@@ -39,7 +40,6 @@ const Body = ()=> {
     const [tokenAddress, setTokenAddress] = useState<string>("")
     const [tokenBalances, setTokenBalances] = useState<Array<{name: string, address: string, balance: string}>>([])
     const [amount, setAmount] = useState<string>("0")
-    const [receivers, setReceivers] = useState<string[]>([])
     const [decimal, setDecimal] = useState<number>(0)
     const [modal, setModal] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -50,7 +50,7 @@ const Body = ()=> {
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
         functionName: 'approve', 
-        args: [MULTISENDER_ADDRESS, parseFloat(amount) * decimal * receivers.length],
+        args: [MULTISENDER_ADDRESS, BigInt(parseFloat(amount) * decimal * recipients.length)],
         onSuccess(data){
             isLoading(false)
             setState("Airdrop")
@@ -66,10 +66,10 @@ const Body = ()=> {
         addressOrName: MULTISENDER_ADDRESS,
         contractInterface: MultisenderAbi,
         functionName: func, 
-        args: func !== "batchSendNativeToken" ? [receivers, utils.parseEther(amount).mul(decimal).div(utils.parseEther("1")), tokenAddress] : [receivers, utils.parseEther(amount)],
+        args: func !== "batchSendNativeToken" ? [recipients, BigInt(parseFloat(amount) * decimal), tokenAddress] : [recipients, utils.parseEther(amount)],
         overrides: {
             from: address,
-            value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(receivers.length) : 0,
+            value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(BigInt(recipients.length)) : 0,
             gasLimit: 1e6
           },
         onSuccess(data){
@@ -116,7 +116,7 @@ const Body = ()=> {
     })
 
     const balance = useBalance({
-        addressOrName: address,
+        addressOrName: address!,
         chainId: 137
     })
 
@@ -128,8 +128,8 @@ const Body = ()=> {
     }, [address, chain, switchNetwork])
 
     useEffect(() => {
-        setReceivers(followers)
-    }, [followers])
+        setRecipients(followers)
+    }, [followers, setRecipients])
 
     const _continue = async () => {
         if (func !== 'batchSendNativeToken' && tokenAddress === "") {
@@ -154,21 +154,21 @@ const Body = ()=> {
             const filteredAddresses = await Filterer(filters);
             if (filteredAddresses.length > 0) {
                 let addresses: string[]
-                if (receivers[0] !== "") {
+                if (recipients[0] !== "") {
                     addresses = filteredAddresses?.filter(address => {
-                        return receivers.includes(address)
+                        return recipients.includes(address)
                     })
                 } else {
                     addresses = filteredAddresses
                 }
       
-                setReceivers(addresses)
+                setRecipients(addresses)
             } else {
-                setReceivers([])
+                setRecipients([])
             }
         }
 
-        if (receivers[0] === "") {
+        if (recipients[0] === "") {
             filters[0].reaction === "" ? setModal(true): setState("Approve")
             setErrorMessage(`${filters[0].reaction === "" &&
             "Can't airdrop tokens to 0 addresses. Adjust your filters"}`)
@@ -179,6 +179,10 @@ const Body = ()=> {
     }
 
     const approve = () => {
+        if (recipients.length > 50) {
+            alert("Can only airdrop tokens to 50 addresses at a time")
+        }
+
         let bal;
         if (func === "batchSendNativeToken") {
             const formattedBalance = balance?.data?.formatted !== undefined ? balance?.data?.formatted : '0'
@@ -188,14 +192,14 @@ const Body = ()=> {
             bal = parseInt(formattedBalance)/decimal
         }
 
-        if (bal < parseFloat(amount) * receivers.length) {
+        if (bal < parseFloat(amount) * recipients.length) {
             setModal(true)
             setErrorMessage("Insufficient funds")
             return
         }
 
         const allowed = parseInt(allowance?.data?._hex)/decimal
-        if (func !== "batchSendNativeToken" && allowed >= parseFloat(amount) * receivers.length){
+        if (func !== "batchSendNativeToken" && allowed >= parseFloat(amount) * recipients.length){
             isLoading(false)
             setState("Airdrop")
             return
@@ -331,14 +335,14 @@ const Body = ()=> {
                         </div>
                         <div>
                             <div className="font-semibold my-1">
-                                Receivers
+                                recipients
                             </div>
                             <select onChange={(e) => {
-                                setReceivers((e.target.value).split(","))
+                                setRecipients((e.target.value).split(","))
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
-                                <option value={followers}>Followers ({followers?.length})</option>
-                                <option value={followings}>Following ({followings?.length})</option>
+                                <option value={followers}>Followers ({profiles[0]?.stats?.totalFollowers})</option>
+                                <option value={followings}>Following ({profiles[0]?.stats?.totalFollowing})</option>
                                 <option value={[]}>Any</option>
                             </select>
                             <Filter />
@@ -356,7 +360,7 @@ const Body = ()=> {
                                     multiplier = 10**18
                                 }; 
                                 setDecimal(multiplier)
-                                setAmount(e.target.value);
+                                setAmount(e.target.value ? e.target.value : "0");
                             }}
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div> :
@@ -365,7 +369,7 @@ const Body = ()=> {
                                 Token Id
                             </div>
                             <input type="number" onChange={(e)=> {
-                                setAmount(e.target.value);
+                                setAmount(e.target.value ? e.target.value : "0");
                             }}
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div>}
@@ -433,9 +437,9 @@ const Body = ()=> {
                             <div className="font-semibold my-1">
                                 Total tokens
                             </div>
-                            {func !== "batchSendNFT" ? <div>{(parseFloat(amount) * receivers.length) + " "} <span>
+                            {func !== "batchSendNFT" ? <div>{(parseFloat(amount) * recipients.length) + " "} <span>
                                 {func === "batchSendNativeToken" ? "MATIC" : name?.data}</span></div> :
-                                <div>{receivers.length}</div>}
+                                <div>{recipients.length}</div>}
                         </div>
                         <div>
                             <div className="font-semibold my-1">
@@ -443,8 +447,11 @@ const Body = ()=> {
                             </div>
                             <div>
                                <textarea className="h-96 w-full p-3 rounded-lg border-2 border-b-black-500" 
-                                    value={receivers} readOnly />
+                                    value={recipients} readOnly />
                            </div>
+                        </div>
+                        <div>
+                            <PrizeDraw addresses={recipients} type="Onchain" />
                         </div>
                         <div>
                             <button onClick={()=>{
@@ -467,7 +474,7 @@ const Body = ()=> {
                                             {errorMessage}
                                             {errorMessage === "Insufficient funds" &&
                                                 <iframe
-                                                src={`https://app.uniswap.org/#/swap?exactField=output&exactAmount=${parseFloat(amount) * receivers.length}&outputCurrency=${tokenAddress}`}
+                                                src={`https://app.uniswap.org/#/swap?exactField=output&exactAmount=${parseFloat(amount) * recipients.length}&outputCurrency=${tokenAddress}`}
                                                 // height="660px"
                                                 width="100%"
                                                 className="border-2 border-b-black-500 my-2 w-full h-96"
@@ -495,9 +502,9 @@ const Body = ()=> {
                             <div className="font-semibold my-1">
                                 Total tokens
                             </div>
-                            {func !== "batchSendNFT" ? <div>{(parseFloat(amount) * receivers.length) + " "} <span>
+                            {func !== "batchSendNFT" ? <div>{(parseFloat(amount) * recipients.length) + " "} <span>
                                 {func === "batchSendNativeToken" ? "MATIC" : name?.data}</span></div> :
-                                <div>{receivers.length}</div>}
+                                <div>{recipients.length}</div>}
                         </div>
                         <div>
                             <div className="font-semibold my-1">
@@ -505,7 +512,7 @@ const Body = ()=> {
                             </div>
                             <div>
                                <textarea className="h-96 w-full p-3 rounded-lg border-2 border-b-black-500" 
-                                    value={receivers} readOnly />
+                                    value={recipients} readOnly />
                            </div>
                         </div>
                         <div>
@@ -533,7 +540,7 @@ const Body = ()=> {
                                                         className="text-blue-600"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        href={BuildTwitterUrl(`I just airdropped ${parseFloat(amount) * receivers.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${receivers.length} friends on @LensProtocol with Lensdrop`)}>
+                                                        href={BuildTwitterUrl(`I just airdropped ${parseFloat(amount) * recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @LensProtocol with Lensdrop`)}>
                                                                 <button onClick={() => {
                                                                     setModal(false)
                                                                     }}>

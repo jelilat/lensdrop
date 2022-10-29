@@ -20,11 +20,13 @@ export interface ContextType {
     followers: string[];
     followings: string[];
     filters: Filter[];
+    recipients: string[];
     setUserAddress: Dispatch<SetStateAction<string>>;
     setProfiles: Dispatch<SetStateAction<Profile[]>>;
     setFollowers: Dispatch<SetStateAction<string[]>>;
     setFollowings: Dispatch<SetStateAction<string[]>>;
     setFilters: Dispatch<SetStateAction<Filter[]>>;
+    setRecipients: Dispatch<SetStateAction<string[]>>;
   }
 
 type Props = {
@@ -37,11 +39,13 @@ const AppContext = createContext<ContextType>({
   followers: [],
   followings: [],
   filters: [],
+  recipients: [],
   setUserAddress: () => {},
   setProfiles: () => {},
   setFollowers: () => {},
   setFollowings: () => {},
-  setFilters: () => {}
+  setFilters: () => {},
+  setRecipients: () => {},
 })
 
 export function AppWrapper({ children }: Props) {
@@ -50,6 +54,7 @@ export function AppWrapper({ children }: Props) {
   const [followers, setFollowers] = useState<string[]>([])
   const [followings, setFollowings] = useState<string[]>([])
   const [filters, setFilters] = useState<Filter[]>([]);
+  const [recipients, setRecipients] = useState<string[]>([]);
 
   const value = {
     address,
@@ -57,11 +62,13 @@ export function AppWrapper({ children }: Props) {
     followers,
     followings,
     filters,
+    recipients,
     setUserAddress,
     setProfiles,
     setFollowers,
     setFollowings,
-    setFilters
+    setFilters,
+    setRecipients
   }
 
   return (

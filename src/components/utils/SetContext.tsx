@@ -71,12 +71,25 @@ const SetContext = () => {
     
       useEffect(() => {
         if (isConnected) {
-          setUserAddress(address!);
-          getProfiles();
-          getFollowers();
-          getFollowing();
+          if (!address) {
+            setUserAddress(address!);
+          }
+          
+          if (profiles.length === 0) {
+            getProfiles();
+          }
+
+          const totalFollowers = profiles[0]?.stats?.totalFollowers  
+          if (followers.length < totalFollowers) {
+            getFollowers();
+          }
+          
+          const totalFollowings = profiles[0]?.stats?.totalFollowing
+          if (followings.length < totalFollowings) {
+            getFollowing();
+          }
         }
-      }, [isConnected, address, profiles, setUserAddress, getProfiles, getFollowers, getFollowing]);
+      }, [isConnected, address, profiles, followers, followings, setUserAddress, getProfiles, getFollowers, getFollowing]);
     
       return (
         <></>
