@@ -26,7 +26,6 @@ const SetContext = () => {
             ownedBy: address
           }
         },
-        fetchPolicy: 'no-cache',
         onCompleted(data) {
           setProfiles(data?.profiles?.items);
         },
@@ -39,7 +38,6 @@ const SetContext = () => {
             cursor: pageInfoz.next
           }
         },
-        fetchPolicy: 'no-cache',
         onCompleted(data) {
           setPageInfoz(data?.following?.pageInfo)
           let _followings: string[] = [];
@@ -59,7 +57,6 @@ const SetContext = () => {
             cursor: pageInfo.next
           }
         },
-        fetchPolicy: 'no-cache',
         onCompleted(data) {
           setPageInfo(data?.followers?.pageInfo);
           let _followers: string[] = [];

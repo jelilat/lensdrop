@@ -7,7 +7,7 @@ import {
   configureChains,
 } from "wagmi";
 
-import { infuraProvider } from "wagmi/providers/infura";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { ApolloProvider } from '@apollo/client'
 
@@ -22,10 +22,10 @@ import Head from 'next/head'
 import Footer from '@components/Footer/Footer'
 import { AppWrapper } from '@components/utils/AppContext'
 
-const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
+const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
 
 const { chains, provider, webSocketProvider } = configureChains([chain.polygon], [
-  infuraProvider({ infuraId }),
+  alchemyProvider({ alchemyId }),
   publicProvider(),
 ]);
 

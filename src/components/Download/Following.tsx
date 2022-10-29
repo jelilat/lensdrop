@@ -5,12 +5,15 @@ import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
 import PrizeDraw from './PrizeDraw';
+import Connect from '@components/Home/Connect'
+import { Modal } from '@components/UI/Modal';
 
 const Followers: FC = () => {
     const { address, followings, filters } = useAppContext()
     const [showFollowing, setShowFollowing] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
+    const [connectModal, setConnectModal] = useState<boolean>(false)
 
     const addressFilterer = async () => {
         if (filters[0].reaction !== "") {
@@ -50,9 +53,23 @@ const Followers: FC = () => {
                                 }}>
                             View Following
                         </button>
-                       : address == undefined ? 
+                       : !address ? 
                        <div className="text-center">
-                           Connect your wallet to view following
+                           <button className="rounded-lg bg-black text-white p-2"
+                                onClick={() => {
+                                    setConnectModal(true)
+                                }}
+                                data-bs-toggle="modal">
+                                Connect wallet
+                                <Modal
+                                    title="Connect Wallet"
+                                    show={connectModal}
+                                    onClose={()=>{
+                                        setConnectModal(false)
+                                    }}>
+                                        <Connect />
+                                </Modal>
+                            </button> to view following
                        </div>
                        : <div>
                            <div className="my-5 font-semibold">

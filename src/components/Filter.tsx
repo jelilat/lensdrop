@@ -19,7 +19,6 @@ const Filter = () => {
                 publicationTypes: ["POST"]
             }
         },
-        fetchPolicy: 'no-cache',
         onCompleted(data) {
             setPublications(data?.publications?.items);
         }
@@ -42,7 +41,6 @@ const Filter = () => {
                     publicationId: publicationId
                 }
             },
-            fetchPolicy: 'no-cache',
         })
         .then(response => {
             publication = response?.data?.publication

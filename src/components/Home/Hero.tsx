@@ -5,7 +5,7 @@ const Hero = ()=> {
 
     return (
         <>
-            <div className="flex">
+            <div className="flex w-full">
                 <div className="lg:w-1/4">
 
                 </div>
