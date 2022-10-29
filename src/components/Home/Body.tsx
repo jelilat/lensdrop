@@ -17,6 +17,15 @@ import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
 import { utils } from 'ethers'
 import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
+import { Alchemy, Network } from "alchemy-sdk";
+import Connect from '@components/Home/Connect'
+
+const config = {
+    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+    network: Network.MATIC_MAINNET,
+}
+
+const alchemy = new Alchemy(config)
 import PrizeDraw from '@components/Download/PrizeDraw'
 
 const Body = ()=> {
@@ -29,11 +38,13 @@ const Body = ()=> {
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
     const [func, setFunc] = useState<Func>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
+    const [tokenBalances, setTokenBalances] = useState<Array<{name: string, address: string, balance: string}>>([])
     const [amount, setAmount] = useState<string>("0")
     const [decimal, setDecimal] = useState<number>(0)
     const [modal, setModal] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [loading, isLoading] = useState<boolean>()
+    const [connectModal, setConnectModal] = useState<boolean>(false)
 
     const tokenContract = useContractWrite({
         addressOrName: tokenAddress,
@@ -203,6 +214,32 @@ const Body = ()=> {
         }
     }
 
+    const getAddressTokens = async () => {
+        const balances = await alchemy.core.getTokenBalances(address!)
+        const nonZeroBalances = balances.tokenBalances.filter((token) => {
+            return token.tokenBalance !== "0x0000000000000000000000000000000000000000000000000000000000000000";
+          })
+
+        if (tokenBalances.length > 0) {
+            setTokenBalances([])
+        }
+
+        for (let token of nonZeroBalances) {
+            // Get balance of token
+            let balance = token.tokenBalance;
+        
+            // Get metadata of token
+            const metadata = await alchemy.core.getTokenMetadata(token.contractAddress);
+        
+            // Compute token balance in human-readable format
+            const tokenBalance = parseInt(balance!, 16) / Math.pow(10, metadata.decimals!);
+            balance = tokenBalance.toFixed(2);
+
+            // append metadata to list of tokens
+            setTokenBalances((prev) => [...prev, {name: metadata.name!, address: token.contractAddress!, balance: balance!}])
+        }
+    }
+
     return (
         <>
             <div className="flex text-sm my-3 mb-10">
@@ -244,21 +281,38 @@ const Body = ()=> {
                             </div>
                             <select onChange={(e)=>{
                                 setFunc(e.target.value as unknown as Func);
+                                if (e.target.value === "batchSendERC20") {
+                                    getAddressTokens()
+                                }
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value="batchSendNativeToken">NATIVE - (MATIC)</option>
                                 <option value="batchSendERC20">FT - (ERC20)</option>
-                                {/* <option value="batchSendNFT">NFT - (ERC721)</option> */}
+                                {/* <option value="batchSendNFT">NFT - (ERC721 and ERC1155)</option> */}
                             </select>
                         </div>
                         {func !== "batchSendNativeToken" && <div>
                             <div className="font-semibold">
                                 Token address
                             </div>
-                            <input type="text" onChange={(e)=> {
-                                setTokenAddress(e.target.value);
+                            <input type="text" list="tokenAddresses" onChange={(e)=> {
+                                    setTokenAddress(e.target.value);
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full" />
+                            <datalist id="tokenAddresses">
+                                <select onChange={(e)=> {
+                                    const token = e.target.value
+                                    setTokenAddress(token);
+                                }}>
+                                    <option value=""></option>
+                                    {
+                                        tokenBalances.map((token) => {
+                                            return <option value={token.address}
+                                                key={token.address}>{token.name + " Balance (" + token.balance +")"}</option>
+                                        })
+                                    }
+                                </select>
+                            </datalist>
                         </div>}
                         <div>
                             <div className="font-semibold my-1">
@@ -335,7 +389,31 @@ const Body = ()=> {
                                         setErrorMessage("")
                                     }}>
                                         <div className="font-semibold text-center dark:text-white mb-10">
-                                            {errorMessage}
+                                            {errorMessage === "Connect your wallet" ?
+                                                <div>
+                                                    {!isConnected ?
+                                                    <div>
+                                                        <button className="rounded-lg bg-black text-white p-2"
+                                                            onClick={() => {
+                                                                setConnectModal(true)
+                                                            }}
+                                                            data-bs-toggle="modal">
+                                                            Connect wallet
+                                                            <Modal
+                                                                title="Connect Wallet"
+                                                                show={connectModal}
+                                                                onClose={()=>{
+                                                                    setConnectModal(false)
+                                                                    setModal(false)
+                                                                }}>
+                                                                    <Connect />
+                                                            </Modal>
+                                                        </button> to continue
+                                                    </div>
+                                                    : <div>Wallet Connected. Close modal to continue</div>
+                                                }
+                                                </div>
+                                            : <div>{errorMessage}</div>}
                                         </div>
                                 </Modal>
                             </button>

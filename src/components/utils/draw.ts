@@ -37,7 +37,6 @@ const getDefaultProfile = async(winnerAddress: string): Promise<Profile> => {
                 ethereumAddress: winnerAddress
             }
         },
-        fetchPolicy: 'no-cache',
     })
 
     return profile.data.defaultProfile

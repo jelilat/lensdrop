@@ -6,6 +6,8 @@ import { Filterer } from '@components/utils/Filterer'
 import { Draw } from '@components/utils/draw'
 import { Profile } from '@generated/types'
 import PrizeDraw from './PrizeDraw';
+import Connect from '@components/Home/Connect'
+import { Modal } from '@components/UI/Modal';
 
 const Followers: FC = () => {
     const { address, followers, filters } = useAppContext()
@@ -13,6 +15,7 @@ const Followers: FC = () => {
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
     const [winner, setWinner] = useState<Profile>()
+    const [connectModal, setConnectModal] = useState<boolean>(false)
 
     const addressFilterer = async () => {
         if (filters[0].reaction !== "") {
@@ -46,9 +49,23 @@ const Followers: FC = () => {
                                 }}>
                             View Followers
                         </button>
-                       : address == undefined ? 
+                       : !address ? 
                        <div className="text-center">
-                           Connect your wallet to view followers
+                            <button className="rounded-lg bg-black text-white p-2"
+                                onClick={() => {
+                                    setConnectModal(true)
+                                }}
+                                data-bs-toggle="modal">
+                                Connect wallet
+                                <Modal
+                                    title="Connect Wallet"
+                                    show={connectModal}
+                                    onClose={()=>{
+                                        setConnectModal(false)
+                                    }}>
+                                        <Connect />
+                                </Modal>
+                    </button> to view followers
                        </div>
                        : <div>
                            <div className="my-5 font-semibold">
