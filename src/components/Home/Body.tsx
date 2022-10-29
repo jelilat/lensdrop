@@ -296,7 +296,7 @@ const Body = ()=> {
                                 Token address
                             </div>
                             <input type="text" list="tokenAddresses" onChange={(e)=> {
-                                    const token = e.target.value
+                                    setTokenAddress(e.target.value);
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full" />
                             <datalist id="tokenAddresses">
