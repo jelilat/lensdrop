@@ -241,6 +241,11 @@ const Body = ()=> {
         }
 
         if (func === "batchSendNFT") {
+            if (recipients.length > nftBalances.length) {
+                alert("Insufficient token balance. Can't airdrop more NFTs than you have")
+                isLoading(false)
+                return
+            }
             for (let i = 0; i < recipients.length; i++) {
                 setTokenIds((prev) => [...prev, parseFloat(nftBalances[i]?.tokenId)])
             }
@@ -363,11 +368,11 @@ const Body = ()=> {
 
                     </div>
                     <div className="lg:w-1/2 md:w-3/5 sm:w-full grow rounded-lg border-2 border-b-black-500 p-5">
-                        <div>
+                        <div className="group">
                             <div className="font-semibold my-1">
                                 Token type
                             </div>
-                            <select onChange={(e)=>{
+                            <select disabled={!isConnected} onChange={(e)=>{
                                 setFunc(e.target.value as unknown as Func);
                                 if (e.target.value === "batchSendERC20") {
                                     getAddressTokens()
@@ -377,11 +382,16 @@ const Body = ()=> {
                                     getNftBalances()
                                 }
                             }}
-                                className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
+                                className="flex my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value="batchSendNativeToken">NATIVE - (MATIC)</option>
                                 <option value="batchSendERC20">FT - (ERC20)</option>
                                 <option value="batchSendNFT">NFT - (ERC721)</option>
                             </select>
+                            <div className={`invisible ${!isConnected && "group-hover:visible"} inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 max-w-lg text-white bg-black`}>  
+                                <div className="rounded-lg">
+                                            <span>Connect wallet to select token type</span>
+                                        </div>
+                            </div>
                         </div>
                         {func !== "batchSendNativeToken" && <div>
                             <div className="font-semibold">
