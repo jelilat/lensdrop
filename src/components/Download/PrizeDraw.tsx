@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Draw } from '@components/utils/draw'
 import { Profile } from '@generated/types'
 import { useAppContext } from '@components/utils/AppContext'
@@ -44,12 +44,17 @@ const PrizeDraw = ({...props}: DrawProps) => {
                 winners.push(win?.ownedBy)
             })
             setRecipients(winners)
-            
         }
         if (!winner) {
             setErrorMessage("No winner!")
         }
     }
+
+    useEffect(() => {
+        if (winner) {
+            setDisableButton(false)
+        }
+    }, [winner])
 
     return(
         <>

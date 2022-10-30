@@ -7,9 +7,11 @@ import { Filterer } from '@components/utils/Filterer'
 import PrizeDraw from './PrizeDraw';
 import Connect from '@components/Home/Connect'
 import { Modal } from '@components/UI/Modal';
+import { useAccount } from 'wagmi'
 
 const Followers: FC = () => {
     const { address, followings, filters } = useAppContext()
+    const { isConnected } = useAccount()
     const [showFollowing, setShowFollowing] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
@@ -42,7 +44,7 @@ const Followers: FC = () => {
     return (
         <>
             <div className="flex text-sm">
-                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 <div className="lg:w-1/2 sm:w-full grow sm:mx-3 md:mx-">
                     <Filter />
                     { !showFollowing ? 
@@ -53,7 +55,7 @@ const Followers: FC = () => {
                                 }}>
                             View Following
                         </button>
-                       : !address ? 
+                       : !isConnected ? 
                        <div className="text-center">
                            <button className="rounded-lg bg-black text-white p-2"
                                 onClick={() => {
@@ -96,7 +98,7 @@ const Followers: FC = () => {
                     }
                     <PrizeDraw addresses={followings} type={'Offchain'} />
                 </div>
-                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
             </div>
         </>
     )

@@ -3,6 +3,7 @@ import {
     chain as chains,
     useContractWrite, 
     erc20ABI, 
+    erc721ABI,
     useBalance, 
     useContractRead, 
     useNetwork,
@@ -38,6 +39,7 @@ const Body = ()=> {
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
     const [func, setFunc] = useState<Func>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
+    const [tokenIds, setTokenIds] = useState<Array<number | BigInt>>([])
     const [tokenBalances, setTokenBalances] = useState<Array<{name: string, address: string, balance: string}>>([])
     const [nftBalances, setNftBalances] = useState<Array<{name: string, address: string, tokenId: string}>>([])
     const [amount, setAmount] = useState<string>("0")
@@ -63,6 +65,22 @@ const Body = ()=> {
         }
     })
 
+    const setApproval = useContractWrite({
+        addressOrName: tokenAddress,
+        contractInterface: erc721ABI,
+        functionName: 'setApprovalForAll',
+        args: [MULTISENDER_ADDRESS, true],
+        onSuccess(data){
+            isLoading(false)
+            setState("Airdrop")
+        },
+        onError(err){
+            isLoading(false)
+            setErrorMessage(`Transaction failed ${err.message}`)
+            setModal(true)
+        }
+    })
+
     const airdropContract = useContractWrite({
         addressOrName: MULTISENDER_ADDRESS,
         contractInterface: MultisenderAbi,
@@ -73,6 +91,28 @@ const Body = ()=> {
             value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(BigInt(recipients.length)) : 0,
             gasLimit: 1e6
           },
+        onSuccess(data){
+            isLoading(false)
+            setErrorMessage("Transaction successful!")
+            setModal(true)
+            // window.location.reload
+        },
+        onError(err){
+            isLoading(false)
+            setErrorMessage(`Transaction failed ${err.message}`)
+            setModal(true)
+        }
+    })
+
+    const airdropNFT = useContractWrite({
+        addressOrName: MULTISENDER_ADDRESS,
+        contractInterface: MultisenderAbi,
+        functionName: func,
+        args: [tokenAddress, recipients, tokenIds],
+        overrides: {
+            from: address,
+            gasLimit: 1e6
+            },
         onSuccess(data){
             isLoading(false)
             setErrorMessage("Transaction successful!")
@@ -108,6 +148,14 @@ const Body = ()=> {
         chainId: 137
     })
 
+    const approval = useContractRead({
+        addressOrName: tokenAddress,
+        contractInterface: erc721ABI,
+        functionName: 'isApprovedForAll',
+        args: [address, MULTISENDER_ADDRESS],
+        chainId: 137
+    })
+
     const balanceOf = useContractRead({
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
@@ -128,10 +176,6 @@ const Body = ()=> {
           }
     }, [address, chain, switchNetwork])
 
-    useEffect(() => {
-        setRecipients(followers)
-    }, [followers, setRecipients])
-
     const _continue = async () => {
         if (func !== 'batchSendNativeToken' && tokenAddress === "") {
             setModal(true)
@@ -149,6 +193,16 @@ const Body = ()=> {
             setModal(true)
             setErrorMessage("Connect your wallet")
             return
+        }
+
+        if (func === 'batchSendNFT') {
+            // Filter nftBalances
+            const filtered = nftBalances.filter(nft => nft.address === tokenAddress)
+            setNftBalances(filtered)
+        }
+
+        if (recipients.length === 0) {
+            setRecipients(followers)
         }
 
         if (filters[0].reaction !== "") {
@@ -182,6 +236,14 @@ const Body = ()=> {
     const approve = () => {
         if (recipients.length > 50) {
             alert("Can only airdrop tokens to 50 addresses at a time")
+            isLoading(false)
+            return
+        }
+
+        if (func === "batchSendNFT") {
+            for (let i = 0; i < recipients.length; i++) {
+                setTokenIds((prev) => [...prev, parseFloat(nftBalances[i]?.tokenId)])
+            }
         }
 
         let bal;
@@ -196,18 +258,30 @@ const Body = ()=> {
         if (bal < parseFloat(amount) * recipients.length) {
             setModal(true)
             setErrorMessage("Insufficient funds")
-            return
-        }
-
-        const allowed = parseInt(allowance?.data?._hex)/decimal
-        if (func !== "batchSendNativeToken" && allowed >= parseFloat(amount) * recipients.length){
             isLoading(false)
-            setState("Airdrop")
             return
         }
 
-        if (func !== "batchSendNativeToken") {
+        if (func === "batchSendERC20"){
+            const allowed = parseInt(allowance?.data?._hex)/decimal
+            if (allowed >= parseFloat(amount) * recipients.length) {
+                isLoading(false)
+                setState("Airdrop")
+                return
+            }    
+        } else if (func === "batchSendNFT") {
+            if (approval?.data) {
+                isLoading(false)
+                setState("Airdrop")
+                return
+            }
+        }
+
+        if (func === "batchSendERC20") {
             tokenContract.write()
+            return
+        } else if (func === "batchSendNFT") {
+            setApproval.write()
             return
         } else {
             isLoading(false)
@@ -242,12 +316,12 @@ const Body = ()=> {
     }
 
     const getNftBalances = async () => {
-        const nftBalances = await alchemy.nft.getNftsForOwner(address!)
-        if ((nftBalances.ownedNfts).length > 0) {
+        const _nftBalances = await alchemy.nft.getNftsForOwner(address!)
+        if ((_nftBalances.ownedNfts).length > 0) {
             setNftBalances([])
         }
 
-        for (let nft of nftBalances.ownedNfts) {
+        for (let nft of _nftBalances.ownedNfts) {
             if (nft.tokenType === "ERC721") {
                 setNftBalances((prev) => [...prev, {name: nft.rawMetadata?.name!, address: nft?.contract?.address!, tokenId: nft.tokenId!}])
             }
@@ -257,10 +331,10 @@ const Body = ()=> {
     return (
         <>
             <div className="flex text-sm my-3 mb-10">
-                <div className="lg:w-1/4 md:w-2/7"></div>
-                <div className="lg:w-1/2 sm:w-full md:2/3 flex">
+                <div className="lg:w-1/4 md:w-1/5"></div>
+                <div className="lg:w-1/2 md:w-3/5 sm:w-full flex">
                     <div className="flex w-1/3 justify-center">
-                        <div className={`mx-1 h-5 w-5 rounded-full border-1 font-bold flex items-center justify-center ${state === 'Prepare' ?
+                        <div className={`mx-1 h-5 w-5 rounded-full border-2 border-black font-bold flex items-center justify-center ${state === 'Prepare' ?
                                 'text-white bg-black' : 'text-black bg-white'}`}>
                             1
                         </div>
@@ -281,14 +355,14 @@ const Body = ()=> {
                         <div>Airdrop</div>
                     </div>
                 </div>
-                <div className="lg:w-1/4 md:w-2/7"></div>
+                <div className="lg:w-1/4 md:w-1/5"></div>
             </div>
             { state === "Prepare" && 
                 <div className="flex text-sm">
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7">
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5">
 
                     </div>
-                    <div className="lg:w-1/2 sm:w-full grow rounded-lg border-2 border-b-black-500 p-5">
+                    <div className="lg:w-1/2 md:w-3/5 sm:w-full grow rounded-lg border-2 border-b-black-500 p-5">
                         <div>
                             <div className="font-semibold my-1">
                                 Token type
@@ -331,7 +405,7 @@ const Body = ()=> {
                                         :
                                         nftBalances.map((nft) => {
                                             return <option value={nft.address}
-                                                key={nft.address}>{nft.name + " (token " + nft.tokenId + ")"}</option>
+                                                key={nft.address + nft.tokenId}>{nft.name + " (token " + nft.tokenId + ")"}</option>
                                         })
                                     }
                                 </select>
@@ -433,14 +507,14 @@ const Body = ()=> {
                             </button>
                         </div>
                     </div>
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 </div>}
                 { state === "Approve" && 
                 <div className="flex text-sm">
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7">
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5">
 
                     </div>
-                    <div className="lg:w-1/2 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
+                    <div className="lg:w-1/2 md:w-3/5 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
                         {func !== "batchSendNativeToken" && <div>
                             <div className="font-semibold my-2">
                                 Token Address
@@ -455,15 +529,40 @@ const Body = ()=> {
                                 {func === "batchSendNativeToken" ? "MATIC" : name?.data}</span></div> :
                                 <div>{recipients.length}</div>}
                         </div>
-                        <div>
-                            <div className="font-semibold my-1">
-                                Recepients
-                            </div>
-                            <div>
-                               <textarea className="h-96 w-full p-3 rounded-lg border-2 border-b-black-500" 
-                                    value={recipients} readOnly />
-                           </div>
-                        </div>
+                        {
+                            func !== "batchSendNFT" ?
+                                <div>
+                                    <div className="font-semibold my-1">
+                                        Recepients
+                                    </div>
+                                    <div>
+                                        <textarea className="h-96 w-full p-3 rounded-lg border-2 border-b-black-500" 
+                                                value={recipients} readOnly />
+                                    </div>
+                                </div>
+                                :
+                                <div className="my-3">
+                                    <table className="overflow-y-scroll flex flex-col table-auto w-full border-2 rounded-lg">
+                                        {/* <thead>
+                                        </thead> */}
+                                        <tbody className="overflow-y-scroll h-64 w-full">
+                                            <tr>
+                                                <th className="border px-4 py-2 w-1/2">Recipient</th>
+                                                <th className="border px-4 py-2 w-1/2">Token ID</th>
+                                            </tr>
+                                            {recipients.map((recipient, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td className="border px-4 py-2 w-1/2">{recipient}</td>
+                                                        <td className="border px-4 py-2 w-1/2">{nftBalances[index] ? nftBalances[index].tokenId : ""}</td>
+                                                    </tr>
+                                                )
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                        }
                         <div>
                             <PrizeDraw addresses={recipients} type="Onchain" />
                         </div>
@@ -498,14 +597,14 @@ const Body = ()=> {
                             </button>
                         </div>
                     </div>
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 </div>}
                 { state === "Airdrop" && 
                 <div className="flex text-sm">
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7">
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5">
 
                     </div>
-                    <div className="lg:w-1/2 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
+                    <div className="lg:w-1/2 md:w-3/5 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
                     {func !== "batchSendNativeToken" && <div>
                             <div className="font-semibold my-2">
                                 Token Address
@@ -531,7 +630,12 @@ const Body = ()=> {
                         </div>
                         <div>
                             <button onClick={()=>{
-                                airdropContract.write()
+                                if (func !== "batchSendNFT") {
+                                    airdropContract.write()
+                                } else {
+                                    console.log(tokenIds)
+                                    airdropNFT.write()
+                                }
                                 return
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
@@ -554,7 +658,7 @@ const Body = ()=> {
                                                         className="text-blue-600"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        href={BuildTwitterUrl(`I just airdropped ${parseFloat(amount) * recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @LensProtocol with Lensdrop`)}>
+                                                        href={BuildTwitterUrl(`I just airdropped ${func !== 'batchSendNFT' ? parseFloat(amount) * recipients.length : recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @LensProtocol with @lensdropxyz`)}>
                                                                 <button onClick={() => {
                                                                     setModal(false)
                                                                     }}>
@@ -566,7 +670,7 @@ const Body = ()=> {
                                 </Modal>
                         </div>
                     </div>
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 </div>}
         </>
     )

@@ -7,16 +7,11 @@ export const IS_MAINNET = process.env.NEXT_PUBLIC_IS_MAINNET === 'true'
 
 export const APP_NAME = 'Lensdrop'
 export const DESCRIPTION =
-  'Lensblogger is a composable, decentralized, and permissionless social media web app built with Lens Protocol 🌿'
-export const DEFAULT_OG = '/lensblogger.png'
-
-// Git
-export const GIT_COMMIT_SHA =
-  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7)
-export const GIT_COMMIT_REF = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF
+  'Lensdrop is an app that helps you gain more followers and boost engagements on Lens Protocol 🌿'
+export const DEFAULT_OG = '/lensblog.png'
 
 // Misc
-export const CONTACT_EMAIL = 'support@Lensdrop.xyz'
+export const CONTACT_EMAIL = 'support@lensdrop.xyz'
 export const PUBLIC_URL = process.env.NEXT_PUBLIC_URL
 export const RELAY_ON =
   PUBLIC_URL === 'https://Lensdrop.xyz' || PUBLIC_URL === 'http://localhost:4783'
@@ -70,4 +65,4 @@ export const ERRORS = {
 }
 
 // Addresses
-export const MULTISENDER_ADDRESS = "0x1dc04843b4B05556D8cc2587F94Ea91f016c04B6"
+export const MULTISENDER_ADDRESS = "0x36a98Bfbd74361D8062c7d4B9532bD1172942143"
