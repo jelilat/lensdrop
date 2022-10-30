@@ -5,6 +5,14 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    screens: {
+      sm: {
+        min: "300px",
+        max: "799px",
+      },
+      md: "800px",
+      lg: "1000px",
+    }
   },
   plugins: [],
   variants: {

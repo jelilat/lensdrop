@@ -19,6 +19,7 @@ import { utils } from 'ethers'
 import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
 import { Alchemy, Network } from "alchemy-sdk";
 import Connect from '@components/Home/Connect'
+import PrizeDraw from '@components/Download/PrizeDraw'
 
 const config = {
     apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
@@ -26,7 +27,6 @@ const config = {
 }
 
 const alchemy = new Alchemy(config)
-import PrizeDraw from '@components/Download/PrizeDraw'
 
 const Body = ()=> {
     type Func = 'batchSendNativeToken' | 'batchSendERC20' | 'batchSendNFT'
@@ -39,6 +39,7 @@ const Body = ()=> {
     const [func, setFunc] = useState<Func>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
     const [tokenBalances, setTokenBalances] = useState<Array<{name: string, address: string, balance: string}>>([])
+    const [nftBalances, setNftBalances] = useState<Array<{name: string, address: string, tokenId: string}>>([])
     const [amount, setAmount] = useState<string>("0")
     const [decimal, setDecimal] = useState<number>(0)
     const [modal, setModal] = useState<boolean>(false)
@@ -240,12 +241,25 @@ const Body = ()=> {
         }
     }
 
+    const getNftBalances = async () => {
+        const nftBalances = await alchemy.nft.getNftsForOwner(address!)
+        if ((nftBalances.ownedNfts).length > 0) {
+            setNftBalances([])
+        }
+
+        for (let nft of nftBalances.ownedNfts) {
+            if (nft.tokenType === "ERC721") {
+                setNftBalances((prev) => [...prev, {name: nft.rawMetadata?.name!, address: nft?.contract?.address!, tokenId: nft.tokenId!}])
+            }
+        }
+    }
+
     return (
         <>
             <div className="flex text-sm my-3 mb-10">
-                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                <div className="lg:w-1/4 md:w-2/7"></div>
                 <div className="lg:w-1/2 sm:w-full md:2/3 flex">
-                    <div className="flex w-1/3">
+                    <div className="flex w-1/3 justify-center">
                         <div className={`mx-1 h-5 w-5 rounded-full border-1 font-bold flex items-center justify-center ${state === 'Prepare' ?
                                 'text-white bg-black' : 'text-black bg-white'}`}>
                             1
@@ -267,7 +281,7 @@ const Body = ()=> {
                         <div>Airdrop</div>
                     </div>
                 </div>
-                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                <div className="lg:w-1/4 md:w-2/7"></div>
             </div>
             { state === "Prepare" && 
                 <div className="flex text-sm">
@@ -284,11 +298,15 @@ const Body = ()=> {
                                 if (e.target.value === "batchSendERC20") {
                                     getAddressTokens()
                                 }
+
+                                if (e.target.value === "batchSendNFT") {
+                                    getNftBalances()
+                                }
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value="batchSendNativeToken">NATIVE - (MATIC)</option>
                                 <option value="batchSendERC20">FT - (ERC20)</option>
-                                {/* <option value="batchSendNFT">NFT - (ERC721 and ERC1155)</option> */}
+                                <option value="batchSendNFT">NFT - (ERC721)</option>
                             </select>
                         </div>
                         {func !== "batchSendNativeToken" && <div>
@@ -305,10 +323,15 @@ const Body = ()=> {
                                     setTokenAddress(token);
                                 }}>
                                     <option value=""></option>
-                                    {
+                                    {func === "batchSendERC20" ?
                                         tokenBalances.map((token) => {
                                             return <option value={token.address}
-                                                key={token.address}>{token.name + " Balance (" + token.balance +")"}</option>
+                                                key={token.address}>{token.name + " Balance (" + token.balance + ")"}</option>
+                                        })
+                                        :
+                                        nftBalances.map((nft) => {
+                                            return <option value={nft.address}
+                                                key={nft.address}>{nft.name + " (token " + nft.tokenId + ")"}</option>
                                         })
                                     }
                                 </select>
@@ -347,7 +370,7 @@ const Body = ()=> {
                             </select>
                             <Filter />
                         </div>
-                        {func !== "batchSendNFT" ? <div>
+                        {func !== "batchSendNFT" && <div>
                             <div className="font-semibold my-1">
                                 Amount per address
                             </div>
@@ -363,16 +386,7 @@ const Body = ()=> {
                                 setAmount(e.target.value ? e.target.value : "0");
                             }}
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
-                        </div> :
-                        <div>
-                            <div className="font-semibold my-1">
-                                Token Id
-                            </div>
-                            <input type="number" onChange={(e)=> {
-                                setAmount(e.target.value ? e.target.value : "0");
-                            }}
-                                className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
-                        </div>}
+                        </div> }
                         <div>
                             <button onClick={()=>{
                                 _continue()
