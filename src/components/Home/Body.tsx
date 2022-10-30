@@ -257,10 +257,10 @@ const Body = ()=> {
     return (
         <>
             <div className="flex text-sm my-3 mb-10">
-                <div className="lg:w-1/4 md:w-2/7"></div>
-                <div className="lg:w-1/2 sm:w-full md:2/3 flex">
+                <div className="lg:w-1/4 md:w-1/5"></div>
+                <div className="lg:w-1/2 md:w-3/5 sm:w-full flex">
                     <div className="flex w-1/3 justify-center">
-                        <div className={`mx-1 h-5 w-5 rounded-full border-1 font-bold flex items-center justify-center ${state === 'Prepare' ?
+                        <div className={`mx-1 h-5 w-5 rounded-full border-2 border-black font-bold flex items-center justify-center ${state === 'Prepare' ?
                                 'text-white bg-black' : 'text-black bg-white'}`}>
                             1
                         </div>
@@ -281,14 +281,14 @@ const Body = ()=> {
                         <div>Airdrop</div>
                     </div>
                 </div>
-                <div className="lg:w-1/4 md:w-2/7"></div>
+                <div className="lg:w-1/4 md:w-1/5"></div>
             </div>
             { state === "Prepare" && 
                 <div className="flex text-sm">
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7">
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5">
 
                     </div>
-                    <div className="lg:w-1/2 sm:w-full grow rounded-lg border-2 border-b-black-500 p-5">
+                    <div className="lg:w-1/2 md:w-3/5 sm:w-full grow rounded-lg border-2 border-b-black-500 p-5">
                         <div>
                             <div className="font-semibold my-1">
                                 Token type
@@ -433,14 +433,14 @@ const Body = ()=> {
                             </button>
                         </div>
                     </div>
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 </div>}
                 { state === "Approve" && 
                 <div className="flex text-sm">
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7">
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5">
 
                     </div>
-                    <div className="lg:w-1/2 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
+                    <div className="lg:w-1/2 md:w-3/5 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
                         {func !== "batchSendNativeToken" && <div>
                             <div className="font-semibold my-2">
                                 Token Address
@@ -498,14 +498,14 @@ const Body = ()=> {
                             </button>
                         </div>
                     </div>
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 </div>}
                 { state === "Airdrop" && 
                 <div className="flex text-sm">
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7">
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5">
 
                     </div>
-                    <div className="lg:w-1/2 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
+                    <div className="lg:w-1/2 md:w-3/5 sm:w-full rounded-lg border-2 border-b-black-500 p-5">
                     {func !== "batchSendNativeToken" && <div>
                             <div className="font-semibold my-2">
                                 Token Address
@@ -566,7 +566,7 @@ const Body = ()=> {
                                 </Modal>
                         </div>
                     </div>
-                    <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                    <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 </div>}
         </>
     )

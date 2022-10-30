@@ -17,7 +17,10 @@ const Header = () => {
             <SetContext />
             <div className="flex text-sm p-3 border-b-2 border-b-black-500 sticky top-0 bg-white w-full">
                 <div className="lg:w-2/5 sm:w-1/2 float-right p-2 font-semibold">
-                    Lensdrop
+                    <Link className=""
+                            href="/" >
+                        Lensdrop
+                    </Link>
                 </div>
                 <div className="w-1/2 lg:hidden absolute right-3 flex">
                     {

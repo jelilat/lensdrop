@@ -38,7 +38,7 @@ const Followers: FC = () => {
     return (
         <>
             <div className="flex text-sm">
-                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 <div className="lg:w-1/2 sm:w-full grow sm:mx-3 md:mx-3">
                     <Filter />
                     { !showFollowers ? 
@@ -92,7 +92,7 @@ const Followers: FC = () => {
                     }
                     <PrizeDraw addresses={followers} type={'Offchain'} />
                 </div>
-                <div className="lg:w-1/4 sm:w-1/7 md:w-2/7"></div>
+                <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
             </div>
         </>
     )
