@@ -91,7 +91,7 @@ const Filter = () => {
                                         type="text" 
                                         list="publications"
                                         placeholder="0x2cb8-0x0d"
-                                        className="m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-16 rounded-lg" />
+                                        className="m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg" />
                                     <datalist id="publications">
                                         <select  onChange={async  (e) => {
                                             let newFilters = [...filters];
