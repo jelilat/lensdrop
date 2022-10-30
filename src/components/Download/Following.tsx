@@ -7,9 +7,11 @@ import { Filterer } from '@components/utils/Filterer'
 import PrizeDraw from './PrizeDraw';
 import Connect from '@components/Home/Connect'
 import { Modal } from '@components/UI/Modal';
+import { useAccount } from 'wagmi'
 
 const Followers: FC = () => {
     const { address, followings, filters } = useAppContext()
+    const { isConnected } = useAccount()
     const [showFollowing, setShowFollowing] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
@@ -53,7 +55,7 @@ const Followers: FC = () => {
                                 }}>
                             View Following
                         </button>
-                       : !address ? 
+                       : !isConnected ? 
                        <div className="text-center">
                            <button className="rounded-lg bg-black text-white p-2"
                                 onClick={() => {
