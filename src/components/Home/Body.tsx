@@ -176,12 +176,6 @@ const Body = ()=> {
           }
     }, [address, chain, switchNetwork])
 
-    useEffect(() => {
-        if (recipients.length === 0) {
-            setRecipients(followers)
-        }
-    }, [followers, setRecipients])
-
     const _continue = async () => {
         if (func !== 'batchSendNativeToken' && tokenAddress === "") {
             setModal(true)
@@ -205,6 +199,10 @@ const Body = ()=> {
             // Filter nftBalances
             const filtered = nftBalances.filter(nft => nft.address === tokenAddress)
             setNftBalances(filtered)
+        }
+
+        if (recipients.length === 0) {
+            setRecipients(followers)
         }
 
         if (filters[0].reaction !== "") {
