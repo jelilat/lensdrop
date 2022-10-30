@@ -257,9 +257,9 @@ const Body = ()=> {
     return (
         <>
             <div className="flex text-sm my-3 mb-10">
-                <div className="lg:w-1/4 sm:w-1/5 md:w-2/7"></div>
-                <div className="lg:w-1/2 sm:3/5 md:2/3 flex">
-                    <div className="flex w-1/3">
+                <div className="lg:w-1/4 md:w-2/7"></div>
+                <div className="lg:w-1/2 sm:w-full md:2/3 flex">
+                    <div className="flex w-1/3 justify-center">
                         <div className={`mx-1 h-5 w-5 rounded-full border-1 font-bold flex items-center justify-center ${state === 'Prepare' ?
                                 'text-white bg-black' : 'text-black bg-white'}`}>
                             1
@@ -281,7 +281,7 @@ const Body = ()=> {
                         <div>Airdrop</div>
                     </div>
                 </div>
-                <div className="lg:w-1/4 sm:w-1/5 md:w-2/7"></div>
+                <div className="lg:w-1/4 md:w-2/7"></div>
             </div>
             { state === "Prepare" && 
                 <div className="flex text-sm">
