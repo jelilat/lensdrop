@@ -51,7 +51,7 @@ const Filter = () => {
     
     return (
         <>
-            <div className="sm:hidden">
+            <div className="">
                 <div className="font-semibold my-1">
                     Filter by those who
                 </div>
@@ -70,14 +70,14 @@ const Filter = () => {
                                         setFilters(newFilters);
                                     }}
                                     value={filter.reaction}
-                                    className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
+                                    className="my-1 p-2 border-2 border-b-black-500 rounded-lg sm:p-1">
                                     <option value=""></option>
                                     <option value="Collect">Collected</option>
                                     <option value="Comment">Commented</option>
                                     {/* <option value="Like">Like</option> */}
                                     <option value="Mirror">Mirrored</option>
                                 </select> 
-                                <div className="m-1 p-2 px-2 rounded-lg">the post</div>
+                                <div className="m-1 p-2 sm:px-1 rounded-lg">the post</div>
                                 <div>
                                     <input onChange={async (e) => {
                                         let newFilters = [...filters];
@@ -91,7 +91,7 @@ const Filter = () => {
                                         type="text" 
                                         list="publications"
                                         placeholder="0x2cb8-0x0d"
-                                        className="m-1 p-2 border-2 border-b-black-500 px-2 rounded-lg" />
+                                        className="m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-16 rounded-lg" />
                                     <datalist id="publications">
                                         <select  onChange={async  (e) => {
                                             let newFilters = [...filters];
@@ -103,7 +103,7 @@ const Filter = () => {
                                             setFilters(newFilters);
                                         }}
                                             value={filter.publicationId}
-                                            className="m-1 p-2 border-2 border-b-black-500 px-2 rounded-lg">
+                                            className="m-1 p-2 border-2 border-b-black-500 rounded-lg">
                                                 <option value=""></option>
                                                 {address &&
                                                     publications?.map((publication, index) => {
@@ -118,10 +118,10 @@ const Filter = () => {
                                         </select>
                                     </datalist>
                                     </div>
-                                <button className="group flex">
+                                <button className="group flex sm:hidden">
                                     <div 
                                         className="flex my-1 p-2">
-                                        <EyeIcon className="w-5" />
+                                        <EyeIcon className="w-5 sm:hidden" />
                                     </div>
                                     <div className="invisible group-hover:visible inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 max-w-lg text-white bg-black">  
                                         {filter?.publicationId !== "" ?
@@ -165,8 +165,8 @@ const Filter = () => {
                                                 publication: undefined
                                             }])
                                         }}
-                                        className="flex m-1 p-2 rounded-lg border-2 border-b-black-500">
-                                        Add
+                                        className="flex m-1 p-2 sm:px-1 rounded-lg border-2 border-b-black-500">
+                                        <div className="sm:hidden">Add</div>
                                         <div>
                                             <PlusIcon className="w-6 h-5" />
                                         </div>
@@ -179,8 +179,8 @@ const Filter = () => {
                                                     return ind != index
                                                 }))
                                         }}
-                                        className="flex m-1 p-2 rounded-lg border-2 border-b-black-500">
-                                        Remove 
+                                        className="flex m-1 sm:px-1 p-2 rounded-lg border-2 border-b-black-500">
+                                        <div className="sm:hidden">Remove</div> 
                                         <div>
                                             <MinusIcon className="w-6 h-5" />
                                         </div>
