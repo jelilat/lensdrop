@@ -189,6 +189,12 @@ const Body = ()=> {
             return
         }
 
+        if (amount === "0") {
+            setModal(true)
+            setErrorMessage("Amount cannot be 0")
+            return
+        }
+
         if (!isConnected) {
             setModal(true)
             setErrorMessage("Connect your wallet")
