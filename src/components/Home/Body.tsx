@@ -189,7 +189,7 @@ const Body = ()=> {
             return
         }
 
-        if (amount === "0") {
+        if (amount === "0" && func !== 'batchSendNFT') {
             setModal(true)
             setErrorMessage("Amount cannot be 0")
             return
