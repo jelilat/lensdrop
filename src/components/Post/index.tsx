@@ -1,6 +1,3 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { PencilAltIcon } from '@heroicons/react/outline'
 import { useMutation, useLazyQuery } from '@apollo/client'
 import { useState, useEffect } from 'react'
 import { 
