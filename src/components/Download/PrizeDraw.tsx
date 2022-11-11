@@ -4,10 +4,12 @@ import { Profile } from '@generated/types'
 import { useAppContext } from '@components/utils/AppContext'
 import { Filterer } from '@components/utils/Filterer'
 import Link from 'next/link'
+import Post from '@components/Post'
 
 interface DrawProps {
     addresses: string[]
     type: 'Onchain' | 'Offchain'
+    sharePost: Boolean
 }
 
 const PrizeDraw = ({...props}: DrawProps) => {
@@ -48,6 +50,13 @@ const PrizeDraw = ({...props}: DrawProps) => {
         if (!winner) {
             setErrorMessage("No winner!")
         }
+    }
+
+    const getWinnersHandles = () => {
+        const handles = winner?.map((win) => {
+            return "@" + win?.handle
+        })
+        return handles!.join(", ")
     }
 
     useEffect(() => {
@@ -110,7 +119,14 @@ const PrizeDraw = ({...props}: DrawProps) => {
                                             )
                                         })
                                     }
-                                    
+                                    {
+                                        props.sharePost && <div className="my-5">
+                                            <Post
+                                                variant="secondary"
+                                                content={`I just created a prize draw with lensdrop.xyz. Here are the winners of the prize draw: ${getWinnersHandles()}`}
+                                             />
+                                        </div>
+                                    }
                                 </div>
                                 : <div>{error}</div>
                             }
