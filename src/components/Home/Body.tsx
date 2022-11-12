@@ -21,6 +21,8 @@ import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
 import { Alchemy, Network } from "alchemy-sdk";
 import Connect from '@components/Home/Connect'
 import PrizeDraw from '@components/Download/PrizeDraw'
+import Post from '@components/Post'
+import { Button } from '@components/UI/Button'
 
 const config = {
     apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
@@ -580,7 +582,7 @@ const Body = ()=> {
                                 </div>
                         }
                         <div>
-                            <PrizeDraw addresses={recipients} type="Onchain" />
+                            <PrizeDraw addresses={recipients} type="Onchain" sharePost={false} />
                         </div>
                         <div>
                             <button onClick={()=>{
@@ -669,18 +671,22 @@ const Body = ()=> {
                                         <div className="font-semibold dark:text-white text-center mb-10">
                                             {errorMessage}
                                             {errorMessage === "Transaction successful!" && 
-                                                <div>
+                                                <div className="my-5">
                                                     <a 
-                                                        className="text-blue-600"
+                                                        className="my-3"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         href={BuildTwitterUrl(`I just airdropped ${func !== 'batchSendNFT' ? parseFloat(amount) * recipients.length : recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @LensProtocol with @lensdropxyz`)}>
-                                                                <button onClick={() => {
+                                                                <Button className="my-3"
+                                                                    onClick={() => {
                                                                     setModal(false)
                                                                     }}>
                                                                     Share to twitter
-                                                                </button>
+                                                                </Button>
                                                     </a>
+                                                    <Post variant="primary"
+                                                        content={`I just airdropped ${func !== 'batchSendNFT' ? parseFloat(amount) * recipients.length : recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @lensprotocol with lensdrop.xyz`}
+                                                        />
                                                 </div>}
                                         </div>
                                 </Modal>

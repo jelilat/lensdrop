@@ -65,7 +65,7 @@ const All: FC = () => {
                         </div>
                        </div>
                     }
-                    <PrizeDraw addresses={data} type='Offchain' />
+                    <PrizeDraw addresses={data} type='Offchain' sharePost={true} />
                 </div>
                 <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
             </div>
