@@ -10,9 +10,9 @@ import {
     useSwitchNetwork,
     useAccount
  } from 'wagmi'
-import { MultisenderAbi } from 'src/abis/Airdrop'
+import { LensdropAbi } from 'src/abis/Airdrop'
 import { Modal } from '@components/UI/Modal'
-import { MULTISENDER_ADDRESS } from 'src/constants'
+import { LENSDROP_CONTRACT_ADDRESS } from 'src/constants'
 import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
@@ -43,7 +43,7 @@ const Body = ()=> {
     const [tokenAddress, setTokenAddress] = useState<string>("")
     const [tokenIds, setTokenIds] = useState<Array<number | BigInt>>([])
     const [tokenBalances, setTokenBalances] = useState<Array<{name: string, address: string, balance: string}>>([])
-    const [nftBalances, setNftBalances] = useState<Array<{name: string, address: string, tokenId: string}>>([])
+    const [nftBalances, setNftBalances] = useState<Array<{name: string, address: string, tokenId: string, tokenType: string}>>([])
     const [amount, setAmount] = useState<string>("0")
     const [decimal, setDecimal] = useState<number>(0)
     const [modal, setModal] = useState<boolean>(false)
@@ -55,7 +55,7 @@ const Body = ()=> {
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
         functionName: 'approve', 
-        args: [MULTISENDER_ADDRESS, BigInt(parseFloat(amount) * decimal * recipients.length)],
+        args: [LENSDROP_CONTRACT_ADDRESS, BigInt(parseFloat(amount) * decimal * recipients.length)],
         onSuccess(data){
             isLoading(false)
             setState("Airdrop")
@@ -71,7 +71,7 @@ const Body = ()=> {
         addressOrName: tokenAddress,
         contractInterface: erc721ABI,
         functionName: 'setApprovalForAll',
-        args: [MULTISENDER_ADDRESS, true],
+        args: [LENSDROP_CONTRACT_ADDRESS, true],
         onSuccess(data){
             isLoading(false)
             setState("Airdrop")
@@ -84,8 +84,8 @@ const Body = ()=> {
     })
 
     const airdropContract = useContractWrite({
-        addressOrName: MULTISENDER_ADDRESS,
-        contractInterface: MultisenderAbi,
+        addressOrName: LENSDROP_CONTRACT_ADDRESS,
+        contractInterface: LensdropAbi,
         functionName: func, 
         args: func !== "batchSendNativeToken" ? [recipients, BigInt(parseFloat(amount) * decimal), tokenAddress] : [recipients, utils.parseEther(amount)],
         overrides: {
@@ -97,7 +97,6 @@ const Body = ()=> {
             isLoading(false)
             setErrorMessage("Transaction successful!")
             setModal(true)
-            // window.location.reload
         },
         onError(err){
             isLoading(false)
@@ -107,9 +106,9 @@ const Body = ()=> {
     })
 
     const airdropNFT = useContractWrite({
-        addressOrName: MULTISENDER_ADDRESS,
-        contractInterface: MultisenderAbi,
-        functionName: func,
+        addressOrName: LENSDROP_CONTRACT_ADDRESS,
+        contractInterface: LensdropAbi,
+        functionName: nftBalances[0]?.tokenType === "ERC721" ? "batchSendERC721" : "batchSendERC1155",
         args: [tokenAddress, recipients, tokenIds],
         overrides: {
             from: address,
@@ -119,7 +118,6 @@ const Body = ()=> {
             isLoading(false)
             setErrorMessage("Transaction successful!")
             setModal(true)
-            // window.location.reload
         },
         onError(err){
             isLoading(false)
@@ -146,7 +144,7 @@ const Body = ()=> {
         addressOrName: tokenAddress,
         contractInterface: erc20ABI,
         functionName: 'allowance',
-        args: [address, MULTISENDER_ADDRESS],
+        args: [address, LENSDROP_CONTRACT_ADDRESS],
         chainId: 137
     })
 
@@ -154,7 +152,7 @@ const Body = ()=> {
         addressOrName: tokenAddress,
         contractInterface: erc721ABI,
         functionName: 'isApprovedForAll',
-        args: [address, MULTISENDER_ADDRESS],
+        args: [address, LENSDROP_CONTRACT_ADDRESS],
         chainId: 137
     })
 
@@ -242,8 +240,8 @@ const Body = ()=> {
     }
 
     const approve = () => {
-        if (recipients.length > 50) {
-            alert("Can only airdrop tokens to 50 addresses at a time")
+        if (recipients.length > 80) {
+            alert("Can only airdrop tokens to 80 addresses at a time")
             isLoading(false)
             return
         }
@@ -335,9 +333,7 @@ const Body = ()=> {
         }
 
         for (let nft of _nftBalances.ownedNfts) {
-            if (nft.tokenType === "ERC721") {
-                setNftBalances((prev) => [...prev, {name: nft.rawMetadata?.name!, address: nft?.contract?.address!, tokenId: nft.tokenId!}])
-            }
+            setNftBalances((prev) => [...prev, {name: nft.rawMetadata?.name!, address: nft?.contract?.address!, tokenId: nft.tokenId!, tokenType: nft.tokenType!}])
         }
     }
 
@@ -393,7 +389,7 @@ const Body = ()=> {
                                 className="flex my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value="batchSendNativeToken">NATIVE - (MATIC)</option>
                                 <option value="batchSendERC20">FT - (ERC20)</option>
-                                <option value="batchSendNFT">NFT - (ERC721)</option>
+                                <option value="batchSendNFT">NFT</option>
                             </select>
                             <div className={`invisible ${!isConnected && "group-hover:visible"} inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 max-w-lg text-white bg-black`}>  
                                 <div className="rounded-lg">
@@ -651,7 +647,6 @@ const Body = ()=> {
                                 if (func !== "batchSendNFT") {
                                     airdropContract.write()
                                 } else {
-                                    console.log(tokenIds)
                                     airdropNFT.write()
                                 }
                                 return
@@ -685,7 +680,7 @@ const Body = ()=> {
                                                                 </Button>
                                                     </a>
                                                     <Post variant="primary"
-                                                        content={`I just airdropped ${func !== 'batchSendNFT' ? parseFloat(amount) * recipients.length : recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @lensprotocol with lensdrop.xyz`}
+                                                        content={`I just airdropped ${func !== 'batchSendNFT' ? parseFloat(amount) * recipients.length : recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @lensprotocol with @lensdropxyz.lens`}
                                                         />
                                                 </div>}
                                         </div>
