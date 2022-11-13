@@ -55,7 +55,7 @@ const Post = ({ ...props }: Props) => {
    const [authenticate] = useMutation(AUTHENTICATION, {
         fetchPolicy:'no-cache',
         onCompleted(data){
-                console.log(data);    
+                // console.log(data);    
           }
    })
 
@@ -81,7 +81,7 @@ const Post = ({ ...props }: Props) => {
         onCompleted({
             createPostTypedData
         }) {
-            console.log(createPostTypedData)
+            // console.log(createPostTypedData)
             const { id, typedData } = createPostTypedData
                 const {
                     profileId,
@@ -139,7 +139,7 @@ const Post = ({ ...props }: Props) => {
             setIsUploading(false)
             setContentURI(path)
             setIsListing(true)
-            console.log(path)
+            // console.log(path)
             createPostTypedData({
                 variables: {
                     request: {
