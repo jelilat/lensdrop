@@ -241,6 +241,10 @@ const Body = ()=> {
     }
 
     const approve = () => {
+        if (!recipients) {
+            alert("Can't airdrop tokens to 0 addresses. Adjust your filters")
+        }
+
         if (recipients.length > 80) {
             alert("Can only airdrop tokens to 80 addresses at a time")
             isLoading(false)
