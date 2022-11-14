@@ -50,6 +50,7 @@ const Body = ()=> {
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [loading, isLoading] = useState<boolean>()
     const [connectModal, setConnectModal] = useState<boolean>(false)
+    const [any, setAny] = useState<boolean>(false)
 
     const tokenContract = useContractWrite({
         addressOrName: tokenAddress,
@@ -207,18 +208,18 @@ const Body = ()=> {
             setNftBalances(filtered)
         }
 
-        if (recipients.length === 0) {
-            setRecipients(followers)
-        }
-
         if (filters[0].reaction !== "") {
-            const filteredAddresses = await Filterer(filters);
+            const filteredAddresses = await Filterer(filters); 
             if (filteredAddresses.length > 0) {
                 let addresses: string[]
-                if (recipients[0] !== "") {
+                if (recipients[0]) {
                     addresses = filteredAddresses?.filter(address => {
                         return recipients.includes(address)
-                    })
+                    }); 
+                } else if (!recipients[0] && !any) {
+                    addresses = filteredAddresses?.filter(address => {
+                        return followers.includes(address)
+                    });
                 } else {
                     addresses = filteredAddresses
                 }
@@ -450,6 +451,9 @@ const Body = ()=> {
                             </div>
                             <select onChange={(e) => {
                                 setRecipients((e.target.value).split(","))
+                                if (e.target.value === "") {
+                                    setAny(true)
+                                }
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
                                 <option value={followers}>Followers ({profiles[0]?.stats?.totalFollowers})</option>
