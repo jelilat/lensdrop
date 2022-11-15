@@ -12,7 +12,7 @@ export const uploadToIPFS = async (data: any) => {
   const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
 
   const files = [
-    new File([blob], 'hello.json')
+    new File([blob], 'lensdrop.json')
   ]
   const client = makeStorageClient()
   const cid = await client.put(files)

@@ -112,7 +112,6 @@ const Post = ({ ...props }: Props) => {
 
                     write?.({ args: inputStruct})
                     })
-                window.location.reload()
                 }
             })
 
@@ -156,6 +155,7 @@ const Post = ({ ...props }: Props) => {
             });
 
             setIsListing(false)
+            setOpenTextArea(false)
         }
     }
 
