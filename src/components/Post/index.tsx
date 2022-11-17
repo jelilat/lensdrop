@@ -76,6 +76,8 @@ const Post = ({ ...props }: Props) => {
         },
         onSuccess(data: any) {
             console.log('Successfully posted', data)
+            setOpenTextArea(false)
+            setIsListing(false)
         }
     })
 
@@ -156,8 +158,6 @@ const Post = ({ ...props }: Props) => {
                 }
             });
 
-            setIsListing(false)
-            setOpenTextArea(false)
         }
     }
 
@@ -173,9 +173,14 @@ const Post = ({ ...props }: Props) => {
                         title="Share to Lens"
                         show={openTextArea}
                         onClose={() => setOpenTextArea(false)}
-                    >
+                    > {
+                        isListing && <div className="p-3 px-4 dark:text-gray-100">
+                            Go to your wallet to confirm the transaction
+                        </div>
+                    }
                         <textarea className="justify-center w-4/5 p-3 m-3 mx-3 rounded-lg h-32" 
                             value={post}
+                            readOnly={true}
                             onChange={(e) => {
                                 setPost(e.target.value)
                             }}
@@ -185,10 +190,15 @@ const Post = ({ ...props }: Props) => {
                                 accessToken ?
                                     <Button className="mx-3 mb-5"
                                         onClick={() => shareToLens()}>
-                                        Post
+                                        {
+                                            !isUploading ? "Post": <div>
+                                                Uploading to IPFS... 
+                                            </div>
+                                        }
                                     </Button>
                                 : <Button className="mx-3 mb-5"
                                     onClick={()=>{
+                                        setIsListing(true)
                                         getChallenge()
                                         .then(({data}) => {
                                             signMessageAsync({message: data?.challenge?.text})  
@@ -214,6 +224,7 @@ const Post = ({ ...props }: Props) => {
                                                 })
                                             })
                                         })
+                                        setIsListing(false)
                                     }}
                                 >
                                 Login 

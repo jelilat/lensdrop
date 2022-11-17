@@ -123,7 +123,7 @@ const PrizeDraw = ({...props}: DrawProps) => {
                                         props.sharePost && <div className="my-5">
                                             <Post
                                                 variant="secondary"
-                                                content={`I just created a prize draw with @lensdropxyz.lens. Here are the winners of the prize draw: ${getWinnersHandles()}`}
+                                                content={`I just created a prize draw with @lensdropxyz.lens. Excited to anounce the winners: ${getWinnersHandles()}`}
                                                 recipients={[]}
                                              />
                                         </div>

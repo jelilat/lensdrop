@@ -8,6 +8,7 @@ import {
     useContractRead, 
     useNetwork,
     useSwitchNetwork,
+    useWaitForTransaction, 
     useAccount
  } from 'wagmi'
 import { LensdropAbi } from 'src/abis/Airdrop'
@@ -51,6 +52,7 @@ const Body = ()=> {
     const [loading, isLoading] = useState<boolean>()
     const [connectModal, setConnectModal] = useState<boolean>(false)
     const [recipientType, setRecipientType] = useState<"Followers" | "Followings" | "Any">("Followers")
+    const [transactionHash, setTransactionHash] = useState<string>("")
 
     const tokenContract = useContractWrite({
         addressOrName: tokenAddress,
@@ -58,8 +60,7 @@ const Body = ()=> {
         functionName: 'approve', 
         args: [LENSDROP_CONTRACT_ADDRESS, BigInt(parseFloat(amount) * decimal * recipients.length)],
         onSuccess(data){
-            isLoading(false)
-            setState("Airdrop")
+            setTransactionHash(data?.hash)
         },
         onError(err){
             isLoading(false)
@@ -74,8 +75,7 @@ const Body = ()=> {
         functionName: 'setApprovalForAll',
         args: [LENSDROP_CONTRACT_ADDRESS, true],
         onSuccess(data){
-            isLoading(false)
-            setState("Airdrop")
+            setTransactionHash(data?.hash)
         },
         onError(err){
             isLoading(false)
@@ -95,9 +95,8 @@ const Body = ()=> {
             gasLimit: 1e6
           },
         onSuccess(data){
-            isLoading(false)
-            setErrorMessage("Transaction successful!")
-            setModal(true)
+            setTransactionHash(data?.hash)
+            setErrorMessage("")
         },
         onError(err){
             isLoading(false)
@@ -116,14 +115,32 @@ const Body = ()=> {
             gasLimit: 1e6
             },
         onSuccess(data){
-            isLoading(false)
-            setErrorMessage("Transaction successful!")
-            setModal(true)
+            setTransactionHash(data?.hash)
+            setErrorMessage("")
         },
         onError(err){
             isLoading(false)
             setErrorMessage(`Transaction failed ${err.message}`)
             setModal(true)
+        }
+    })
+
+    const verifyTransaction = useWaitForTransaction({
+        hash: transactionHash,
+        onSuccess(data){
+            if (data?.status === 1) {
+                isLoading(false)
+                setErrorMessage("Transaction successful!")
+                if (state === "Approve") {
+                    setState("Airdrop")
+                } else {
+                    setModal(true)
+                }
+            } else if (data?.status === 0) {
+                isLoading(false)
+                setErrorMessage("Transaction failed!")
+                setModal(true)
+            }
         }
     })
 
@@ -247,7 +264,7 @@ const Body = ()=> {
         setState("Approve")
     }
 
-    const approve = () => {
+    const approve = async () => {
         if (!recipients) {
             alert("Can't airdrop tokens to 0 addresses. Adjust your filters")
         }
@@ -302,9 +319,21 @@ const Body = ()=> {
 
         if (func === "batchSendERC20") {
             tokenContract.write()
+            while (loading) {
+                verifyTransaction?.data
+                // wait for 5 seconds
+                await new Promise(r => setTimeout(r, 5000));
+            }
+            
             return
         } else if (func === "batchSendNFT") {
             setApproval.write()
+            while (loading) {
+                verifyTransaction.data; 
+                // wait for 5 seconds
+                await new Promise(r => setTimeout(r, 5000));
+            }
+
             return
         } else {
             isLoading(false)
@@ -610,7 +639,7 @@ const Body = ()=> {
                         </div>
                         <div>
                             <button onClick={()=>{
-                                isLoading(true)
+                                isLoading(true); 
                                 approve()
                             }}
                                 className={`w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800`}
@@ -674,18 +703,36 @@ const Body = ()=> {
                            </div>
                         </div>
                         <div>
-                            <button onClick={()=>{
+                            <button onClick={async ()=>{
+                                setModal(false)
+                                isLoading(true);
                                 if (func !== "batchSendNFT") {
-                                    airdropContract.write()
+                                    airdropContract.write(); 
+                                    while (loading) {
+                                        verifyTransaction.data
+                                        // wait for 5 seconds
+                                        await new Promise(r => setTimeout(r, 5000));
+                                    }
+                                    
                                 } else {
-                                    airdropNFT.write()
+                                    airdropNFT.write(); 
+                                    while (loading) {
+                                        verifyTransaction.data
+                                        // wait for 5 seconds
+                                        await new Promise(r => setTimeout(r, 5000));
+                                    }
+
                                 }
                                 return
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 disabled={loading}
                                 >
-                                {loading ? "Confirming..." : "Complete"}
+                                {loading ? <div className="flex justify-center">
+                                        Airdropping...
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                </div>
+                                 : "Complete"}
                             </button>
                                 <Modal
                                     title=""
