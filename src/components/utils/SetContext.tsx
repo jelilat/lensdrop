@@ -39,13 +39,13 @@ const SetContext = () => {
           }
         },
         onCompleted(data) {
-          setPageInfoz(data?.following?.pageInfo)
+          setPageInfoz(data?.following?.pageInfo);
           let _followings: string[] = [];
           const follow = data?.following?.items; 
           follow.map((following: Following) => {
               const address = following?.profile?.ownedBy; 
               _followings.push(address);
-          })
+          }); 
           setFollowings(followings => [...followings, ..._followings]);
         }
       })

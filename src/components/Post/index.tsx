@@ -20,10 +20,12 @@ import { Button } from '@components/UI/Button'
 import Cookies, { CookieAttributes } from 'js-cookie';
 import { AUTHENTICATION } from '@graphql/Mutations/Authenticate';
 import { GET_CHALLENGE } from '@graphql/Queries/Authenticate';
+import { getHandles } from '@components/utils/winnerHandles';
 
 type Props = {
     content: string
     variant: "primary" | "secondary" | "success" | "warning" | "super" | "danger" | undefined
+    recipients: string[]
 }
 
 const Post = ({ ...props }: Props) => {
@@ -221,7 +223,13 @@ const Post = ({ ...props }: Props) => {
                     </Modal>
                     : 
                     <Button variant={props.variant}
-                        onClick={()=> {
+                        onClick={async ()=> {
+                            if (props.recipients?.length > 0) {
+                                await getHandles(props.recipients)
+                                .then((handles) => {
+                                    setPost(post + ` ${handles}`)
+                                })
+                            }
                             setOpenTextArea(true)
                         }}>
                         Share to Lens

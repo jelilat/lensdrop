@@ -124,6 +124,7 @@ const PrizeDraw = ({...props}: DrawProps) => {
                                             <Post
                                                 variant="secondary"
                                                 content={`I just created a prize draw with @lensdropxyz.lens. Here are the winners of the prize draw: ${getWinnersHandles()}`}
+                                                recipients={[]}
                                              />
                                         </div>
                                     }

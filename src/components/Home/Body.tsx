@@ -50,7 +50,7 @@ const Body = ()=> {
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [loading, isLoading] = useState<boolean>()
     const [connectModal, setConnectModal] = useState<boolean>(false)
-    const [any, setAny] = useState<boolean>(false)
+    const [recipientType, setRecipientType] = useState<"Followers" | "Followings" | "Any">("Followers")
 
     const tokenContract = useContractWrite({
         addressOrName: tokenAddress,
@@ -208,6 +208,14 @@ const Body = ()=> {
             setNftBalances(filtered)
         }
 
+        if (!recipients[0]) {
+            if (recipientType === "Followers") {
+                setRecipients(followers)
+            } else if (recipientType === "Followings") {
+                setRecipients(followings)
+            }
+        }
+
         if (filters[0].reaction !== "") {
             const filteredAddresses = await Filterer(filters); 
             if (filteredAddresses.length > 0) {
@@ -216,7 +224,7 @@ const Body = ()=> {
                     addresses = filteredAddresses?.filter(address => {
                         return recipients.includes(address)
                     }); 
-                } else if (!recipients[0] && !any) {
+                } else if (!recipients[0] && recipientType === "Any") {
                     addresses = filteredAddresses?.filter(address => {
                         return followers.includes(address)
                     });
@@ -228,12 +236,11 @@ const Body = ()=> {
             } else {
                 setRecipients([])
             }
-        }
+        } 
 
-        if (recipients[0] === "") {
-            filters[0].reaction === "" ? setModal(true): setState("Approve")
-            setErrorMessage(`${filters[0].reaction === "" &&
-            "Can't airdrop tokens to 0 addresses. Adjust your filters"}`)
+        if (!recipients[0] && filters[0].reaction !== "") {
+            setModal(true)
+            setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
             return
         }
 
@@ -451,18 +458,22 @@ const Body = ()=> {
                         </div>
                         <div>
                             <div className="font-semibold my-1">
-                                recipients
+                                Recipients
                             </div>
                             <select onChange={(e) => {
-                                setRecipients((e.target.value).split(","))
-                                if (e.target.value === "") {
-                                    setAny(true)
+                                const value = e.target.value;
+                                if (value === "Followers") {
+                                    setRecipients(followers);
+                                } else if (value === "Followings") {
+                                    setRecipients(followings);
+                                } else {
+                                    setRecipients([]);
                                 }
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
-                                <option value={followers}>Followers ({profiles[0]?.stats?.totalFollowers})</option>
-                                <option value={followings}>Following ({profiles[0]?.stats?.totalFollowing})</option>
-                                <option value={[]}>Any</option>
+                                <option value="Followers">Followers ({profiles[0]?.stats?.totalFollowers})</option>
+                                <option value="Followings">Following ({profiles[0]?.stats?.totalFollowing})</option>
+                                <option value="Any">Any</option>
                             </select>
                             <Filter />
                         </div>
@@ -489,8 +500,17 @@ const Body = ()=> {
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 data-bs-toggle="modal"
+                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length))}
                                 >
-                                Continue
+                                {
+                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) ?
+                                    "Continue"
+                                    :
+                                    <div className="flex justify-center">
+                                        Fetching data... 
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                    </div>
+                                }
                                 <Modal
                                     title=""
                                     show={modal}
@@ -596,7 +616,10 @@ const Body = ()=> {
                                 className={`w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800`}
                                 disabled={loading}
                                 >
-                                {loading ? "Approving..." : "Approve"}
+                                {loading ? <div className="flex justify-center">
+                                        Approving... 
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                    </div> : "Approve"}
                                 <Modal
                                     title=""
                                     show={modal}
@@ -688,7 +711,8 @@ const Body = ()=> {
                                                                 </Button>
                                                     </a>
                                                     <Post variant="primary"
-                                                        content={`I just airdropped ${func !== 'batchSendNFT' ? parseFloat(amount) * recipients.length : recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to ${recipients.length} friends on @lensprotocol with @lensdropxyz.lens`}
+                                                        content={`I just airdropped ${func !== 'batchSendNFT' ? parseFloat(amount) * recipients.length : recipients.length} ${func === "batchSendNativeToken" ? "MATIC" : name?.data} to`}
+                                                        recipients={recipients}
                                                         />
                                                 </div>}
                                         </div>
