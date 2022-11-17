@@ -226,11 +226,15 @@ const Body = ()=> {
         }
 
         if (!recipients[0]) {
-            if (recipientType === "Followers") {
-                setRecipients(followers)
+            if (recipientType === "Any") {
+                setRecipients([])
             } else if (recipientType === "Followings") {
                 setRecipients(followings)
+            } else {
+                setRecipients(followers)
             }
+            // wait for 1 second
+            await new Promise(r => setTimeout(r, 1000));
         }
 
         if (filters[0].reaction !== "") {
@@ -254,12 +258,12 @@ const Body = ()=> {
                 setRecipients([])
             }
         } 
-
-        if (!recipients[0] && filters[0].reaction !== "") {
-            setModal(true)
-            setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
-            return
-        }
+// console.log(recipients)
+//         if (!recipients[0] && filters[0].reaction !== "") {
+//             setModal(true)
+//             setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
+//             return
+//         }
 
         setState("Approve")
     }
@@ -492,10 +496,13 @@ const Body = ()=> {
                             <select onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "Followers") {
+                                    setRecipientType("Followers");
                                     setRecipients(followers);
                                 } else if (value === "Followings") {
+                                    setRecipientType("Followings");
                                     setRecipients(followings);
                                 } else {
+                                    setRecipientType("Any")
                                     setRecipients([]);
                                 }
                             }}
