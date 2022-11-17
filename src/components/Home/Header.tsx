@@ -63,6 +63,13 @@ const Header = () => {
                                                 All
                                             </Link>
                                         </div>
+                                    </li><li className="my-2 border-b border-gray-50">
+                                        <div className={`mx-1 p-2`}>
+                                            <Link className=""
+                                                href="/listings" >
+                                                Listings
+                                            </Link>
+                                        </div>
                                     </li>
                                     <li className="my-2">
                                     <button className="rounded-lg bg-black text-white p-2"
@@ -122,6 +129,13 @@ const Header = () => {
                         <Link className=""
                             href="/all" >
                             All
+                        </Link>
+                    </div>
+                    <div className={`mx-1 p-2 ${useRouter().pathname === "/listings" ?
+                            "bg-gray-200 rounded-lg" : null}`}>
+                        <Link className=""
+                            href="/listings" >
+                            Listings
                         </Link>
                     </div>
                 </div>
