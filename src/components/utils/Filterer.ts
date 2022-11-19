@@ -114,27 +114,37 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 
                 allAddresses = _addresses  
             }
+
+            let preliminaryAddresses: Array<string> = []
             
             allAddresses?.map((item: any) => {
                 if (filter.reaction === 'Collect') {
                     const address = item?.address
-                    addresses?.push(address)
+                    preliminaryAddresses?.push(address)
                 } else if (filter.reaction === 'Mirror') {
                     const address: string = item?.ownedBy; 
-                    addresses?.push(address); 
+                    preliminaryAddresses?.push(address); 
                 } else if (filter.reaction === 'Comment') {
                     const address: string = item?.profile?.ownedBy; 
-                    addresses?.push(address); 
+                    preliminaryAddresses?.push(address); 
                 }
             }); 
+            addresses = preliminaryAddresses
         }
         
         return addresses
     })
 
-    const arrays = await Promise.all(executeFilter)
-    const sets = new Set(arrays.flat())
-        
-    return Array.from(sets)   
+    const arrays = await Promise.all(executeFilter); 
+    let qualifiedAddresses: Array<string> = []
+    for (let i = 0; i < arrays.length; i++) {
+        if (qualifiedAddresses.length === 0) {
+            qualifiedAddresses = arrays[i]
+        } else {
+            qualifiedAddresses = qualifiedAddresses.filter((address) => arrays[i].includes(address))
+        }
+    }
+    
+    return qualifiedAddresses  
 }
 

@@ -49,7 +49,7 @@ const Body = ()=> {
     const [decimal, setDecimal] = useState<number>(0)
     const [modal, setModal] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
-    const [loading, isLoading] = useState<boolean>()
+    const [loading, isLoading] = useState<boolean>(false)
     const [connectModal, setConnectModal] = useState<boolean>(false)
     const [recipientType, setRecipientType] = useState<"Followers" | "Followings" | "Any">("Followers")
     const [transactionHash, setTransactionHash] = useState<string>("")
@@ -238,7 +238,7 @@ const Body = ()=> {
         }
 
         if (filters[0].reaction !== "") {
-            const filteredAddresses = await Filterer(filters); 
+            const filteredAddresses = await Filterer(filters);  
             if (filteredAddresses.length > 0) {
                 let addresses: string[]
                 if (recipients[0]) {
@@ -254,16 +254,20 @@ const Body = ()=> {
                 }
       
                 setRecipients(addresses)
+                if (addresses.length > 0) {
+                    setState("Approve")
+                }
+                return
             } else {
                 setRecipients([])
             }
         } 
-// console.log(recipients)
-//         if (!recipients[0] && filters[0].reaction !== "") {
-//             setModal(true)
-//             setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
-//             return
-//         }
+
+        if (!recipients[0] && (filters[0].reaction !== "" || recipientType === "Any")) {
+            setModal(true)
+            setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
+            return
+        }
 
         setState("Approve")
     }
@@ -531,15 +535,17 @@ const Body = ()=> {
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div> }
                         <div>
-                            <button onClick={()=>{
-                                _continue()
+                            <button onClick={async ()=>{
+                                isLoading(true)
+                                await _continue(); 
+                                isLoading(false)
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 data-bs-toggle="modal"
-                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length))}
+                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading)}
                                 >
                                 {
-                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) ?
+                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading?
                                     "Continue"
                                     :
                                     <div className="flex justify-center">
