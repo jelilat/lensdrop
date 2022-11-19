@@ -26,6 +26,7 @@ type Props = {
     content: string
     variant: "primary" | "secondary" | "success" | "warning" | "super" | "danger" | undefined
     recipients: string[]
+    attributes?: []
 }
 
 const Post = ({ ...props }: Props) => {
