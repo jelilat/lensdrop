@@ -542,15 +542,18 @@ const Body = ()=> {
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 data-bs-toggle="modal"
-                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading)}
+                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading && isConnected)}
                                 >
                                 {
-                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading?
+                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading ?
                                     "Continue"
                                     :
                                     <div className="flex justify-center">
-                                        Fetching data... 
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                        {
+                                            isConnected ? <div className="flex">Fetching data... <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                            </div>
+                                             : "Continue"
+                                        }
                                     </div>
                                 }
                                 <Modal

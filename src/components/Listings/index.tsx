@@ -30,7 +30,8 @@ const Listings = () => {
 
     return (
         <>
-            <div>
+            <div className="text-center">No available listings at the moment</div>
+            {/* <div>
                 <textarea
                     className="w-full m-" />
             </div>
@@ -43,7 +44,7 @@ const Listings = () => {
                     )
                 })
             }
-            <span id="lens-embed" data-post-id="0xf5-0x17" /><Script src="https://embed.withlens.app/script.js" />
+            <span id="lens-embed" data-post-id="0xf5-0x17" /><Script src="https://embed.withlens.app/script.js" /> */}
         </>
     )
 }
