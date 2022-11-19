@@ -225,30 +225,39 @@ const Body = ()=> {
             setNftBalances(filtered)
         }
 
+        let temporaryRecipients: Array<string> = []
+
         if (!recipients[0]) {
             if (recipientType === "Any") {
                 setRecipients([])
+                temporaryRecipients = []
             } else if (recipientType === "Followings") {
                 setRecipients(followings)
+                temporaryRecipients = followings
             } else {
                 setRecipients(followers)
+                temporaryRecipients = followers
             }
-            // wait for 1 second
-            await new Promise(r => setTimeout(r, 1000));
         }
 
         if (filters[0].reaction !== "") {
             const filteredAddresses = await Filterer(filters);  
             if (filteredAddresses.length > 0) {
                 let addresses: string[]
-                if (recipients[0]) {
+                if (temporaryRecipients[0]) {
                     addresses = filteredAddresses?.filter(address => {
-                        return recipients.includes(address)
+                        return temporaryRecipients.includes(address)
                     }); 
-                } else if (!recipients[0] && recipientType === "Any") {
-                    addresses = filteredAddresses?.filter(address => {
-                        return followers.includes(address)
-                    });
+                } else if (!temporaryRecipients[0] && recipientType !== "Any") {
+                    if (recipientType === "Followings") {
+                        addresses = filteredAddresses?.filter(address => {
+                            return followings.includes(address)
+                        }); 
+                    } else {
+                        addresses = filteredAddresses?.filter(address => {
+                            return followers.includes(address)
+                        });
+                    }
                 } else {
                     addresses = filteredAddresses
                 }
@@ -263,7 +272,7 @@ const Body = ()=> {
             }
         } 
 
-        if (!recipients[0] && (filters[0].reaction !== "" || recipientType === "Any")) {
+        if (!temporaryRecipients[0] && (filters[0].reaction !== "" || recipientType === "Any")) {
             setModal(true)
             setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
             return
