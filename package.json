@@ -12,6 +12,7 @@
     "@apollo/client": "^3.6.9",
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^1.0.6",
+    "@types/graphql": "^14.5.0",
     "@types/js-cookie": "^3.0.2",
     "@types/uuid": "^8.3.4",
     "alchemy-sdk": "^2.2.0",

@@ -1,8 +1,10 @@
 import apolloClient from 'src/apollo'
 import {WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION, GET_LIKES} from 'src/graphql/Queries/Publications';
-import { GET_PROFILES } from 'src/graphql/Queries/Profile';
+import { GET_PROFILES, GET_PROFILE } from 'src/graphql/Queries/Profile';
+import { GET_FOLLOWERS } from '@graphql/Queries/Follow';
 import { Filter } from './AppContext'
 import { DocumentNode } from 'graphql';
+import { Follower } from '@generated/types'
 
 type Variables = {
     [key: string]: {
@@ -31,7 +33,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             query = WHO_COLLECTED
             variables = {
                 request: {
-                    publicationId: filter.publicationId,
+                    publicationId: filter.publicationId!,
                     cursor: cursor,
                 }
             }
@@ -39,7 +41,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             query = GET_PROFILES
             variables = {
                 request: {
-                    whoMirroredPublicationId: filter.publicationId,
+                    whoMirroredPublicationId: filter.publicationId!,
                     cursor: cursor,
                 }
             }
@@ -47,10 +49,17 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             query = GET_COMMENTS
             variables = {
                 request: {
-                    commentsOf: filter.publicationId,
+                    commentsOf: filter.publicationId!,
                     cursor: cursor,
                 },
                 reactionRequest: null!
+            }
+        } else if (filter.reaction === 'Follow') {
+            query = GET_PROFILE
+            variables = {
+                request: {
+                    handle: filter.handle!,
+                }
             }
         } else if (filter.reaction === 'Like') {
             query = GET_LIKES
@@ -64,7 +73,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             query = GET_PUBLICATION
             variables = {
                 request: {
-                    publicationId: filter.publicationId,
+                    publicationId: filter.publicationId!,
                     cursor: cursor,
                 },
                 reactionRequest: {
@@ -119,8 +128,33 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 }  
-                
-                allAddresses = _addresses  
+
+                allAddresses = _addresses
+            } else if (filter.reaction === 'Follow') {
+                const response = await queryFunction(query, variables)
+                const profileId = response?.data?.profile?.id
+                const totalFollowers = response?.data?.profile?.stats?.totalFollowers
+                let count = 0
+                let _addresses: Array<any> = []
+
+                query = GET_FOLLOWERS
+                variables = {
+                    request: {
+                        profileId: profileId!,
+                        cursor: cursor,
+                    }
+                }
+
+                while (count < totalFollowers) {
+                    const response = await queryFunction(query, variables)
+                    const follow = response?.data?.followers?.items
+                    _addresses = _addresses.concat(follow)
+                    count += 25
+                    cursor = "{\"offset\":" + count + "}"
+                    variables.request.cursor = cursor
+                }
+
+                allAddresses = _addresses
             } else if (filter.reaction === 'Like') {
                 const totalCount = (await queryFunction(query, variables))?.data?.whoReactedPublication?.pageInfo?.totalCount
                 let count = 0
@@ -137,30 +171,44 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
                 allAddresses = _addresses
             }
-            
+
+            let preliminaryAddresses: Array<string> = []
+
             allAddresses?.map((item: any) => {
                 if (filter.reaction === 'Collect') {
                     const address = item?.address
-                    addresses?.push(address)
+                    preliminaryAddresses?.push(address)
                 } else if (filter.reaction === 'Mirror') {
                     const address: string = item?.ownedBy; 
-                    addresses?.push(address); 
+                    preliminaryAddresses?.push(address);
                 } else if (filter.reaction === 'Comment') {
                     const address: string = item?.profile?.ownedBy; 
-                    addresses?.push(address); 
+                    preliminaryAddresses?.push(address);
+                } else if (filter.reaction === 'Follow') {
+                    const address: string = item?.wallet?.address;
+                    preliminaryAddresses?.push(address);
+                    addresses?.push(address);
                 } else if (filter.reaction === 'Like') {
                     const address: string = item?.profile?.ownedBy;
                     addresses?.push(address);
                 }
             }); 
+            addresses = preliminaryAddresses
         }
         
         return addresses
     })
 
-    const arrays = await Promise.all(executeFilter)
-    const sets = new Set(arrays.flat())
-        
-    return Array.from(sets)   
+    const arrays = await Promise.all(executeFilter);
+    let qualifiedAddresses: Array<string> = []
+    for (let i = 0; i < arrays.length; i++) {
+        if (qualifiedAddresses.length === 0) {
+            qualifiedAddresses = arrays[i]
+        } else {
+            qualifiedAddresses = qualifiedAddresses.filter((address) => arrays[i].includes(address))
+        }
+    }
+
+    return qualifiedAddresses
 }
 
