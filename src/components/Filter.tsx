@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
-import { useLazyQuery, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { GET_PUBLICATION, GET_PUBLICATIONS } from '@graphql/Queries/Publications'
+import { GET_PROFILE } from '@graphql/Queries/Profile'
 import { Post } from '@generated/types'
-import { useAppContext } from '@components/utils/AppContext'
+import { useAppContext, Reaction } from '@components/utils/AppContext'
 import { MinusIcon, PlusIcon } from '@heroicons/react/solid'
 import { EyeIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
 import apolloClient from 'src/apollo'
 
+
 const Filter = () => {
     const { profiles, filters, address, setFilters } = useAppContext();
     const [publications, setPublications] = useState<Post[]>([])
+    const [error, isError] = useState<Array<boolean>>([])
 
     useQuery(GET_PUBLICATIONS, {
         variables: {
@@ -32,7 +35,7 @@ const Filter = () => {
         }])
     }, [])
 
-    const getPublication =  async (publicationId: string) => {
+    const getPublication = async (publicationId: string, index: number) => {
         let publication
          await apolloClient.query({
             query: GET_PUBLICATION,
@@ -44,9 +47,42 @@ const Filter = () => {
         })
         .then(response => {
             publication = response?.data?.publication
+            let newError = error
+            newError[index] = false
+            isError(newError)
+        })
+        .catch(err => {
+            let newError = error
+            newError[index] = true
+            isError(newError)
         })
 
         return publication;
+    }
+
+    const getProfile = async (handle: string, index: number) => {
+        let profile
+        await apolloClient.query({
+            query: GET_PROFILE,
+            variables: {
+                request: {
+                    handle: handle
+                }
+            },
+        })
+        .then(response => {
+            profile = response?.data?.profile
+            let newError = error
+            newError[index] = false
+            isError(newError)
+        })
+        .catch(err => {
+            let newError = error
+            newError[index] = true
+            isError(newError)
+        })
+
+        return profile;
     }
     
     return (
@@ -64,7 +100,7 @@ const Filter = () => {
                                     onChange={(e) => {
                                         const newFilters = [...filters];
                                         const tempFilter = {...newFilters[index]};
-                                        let v = e.target.value as unknown as "Comment" | "Mirror" | "Collect" | "Like" | "";
+                                        let v = e.target.value as unknown as Reaction;
                                         tempFilter.reaction = v;
                                         newFilters[index] = tempFilter;
                                         setFilters(newFilters);
@@ -76,48 +112,66 @@ const Filter = () => {
                                     <option value="Comment">Commented</option>
                                     {/* <option value="Like">Like</option> */}
                                     <option value="Mirror">Mirrored</option>
+                                    <option value="Follow">Follow</option>
                                 </select> 
-                                <div className="m-1 p-2 sm:px-1 rounded-lg">the post</div>
-                                <div>
-                                    <input onChange={async (e) => {
-                                        let newFilters = [...filters];
-                                        let tempFilter = {...newFilters[index]};
-                                        tempFilter.publicationId = e.target.value;
-                                        const pub = await getPublication(e.target.value as string)
-                                        tempFilter.publication = pub; 
-                                        newFilters[index] = tempFilter;
-                                        setFilters(newFilters);
-                                    }}
-                                        type="text" 
-                                        list="publications"
-                                        placeholder="0x2cb8-0x0d"
-                                        className="m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg" />
-                                    <datalist id="publications">
-                                        <select  onChange={async  (e) => {
+                                <div className="m-1 p-2 sm:px-1 rounded-lg">{
+                                    filters[index].reaction === "Follow" ? "the handle" : "the post"
+                                }</div>
+                                {filters[index].reaction === "Follow" ?
+                                    <div>
+                                        <input onChange={async(e) => {
+                                            await getProfile(e.target.value, index)
                                             let newFilters = [...filters];
                                             let tempFilter = {...newFilters[index]};
-                                            tempFilter.publicationId = e.target.value;
-                                            const pub = await getPublication(e.target.value as string)
-                                            tempFilter.publication = pub;
+                                            tempFilter.handle = e.target.value;
                                             newFilters[index] = tempFilter;
                                             setFilters(newFilters);
                                         }}
-                                            value={filter.publicationId}
-                                            className="m-1 p-2 border-2 border-b-black-500 rounded-lg">
-                                                <option value=""></option>
-                                                {address &&
-                                                    publications?.map((publication, index) => {
-                                                        return (
-                                                            <option key={index} value={publication?.id}
-                                                                className="group flex">
-                                                                {publication?.id}
-                                                            </option>
-                                                        )
-                                                    })
-                                                }
-                                        </select>
-                                    </datalist>
+                                            type="text"
+                                            placeholder="lensdropxyz.lens"
+                                            className={`m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg ${error[index] && "border-red-500"}`} />
+                                    </div> :
+                                    <div>
+                                        <input onChange={async (e) => {
+                                            let newFilters = [...filters];
+                                            let tempFilter = {...newFilters[index]};
+                                            tempFilter.publicationId = e.target.value;
+                                            const pub = await getPublication(e.target.value as string, index)
+                                            tempFilter.publication = pub; 
+                                            newFilters[index] = tempFilter;
+                                            setFilters(newFilters);
+                                        }}
+                                            type="text" 
+                                            list="publications"
+                                            placeholder="0x2cb8-0x0d"
+                                            className={`m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg ${error[index] && "border-red-500"}`} />
+                                        <datalist id="publications">
+                                            <select  onChange={async  (e) => {
+                                                let newFilters = [...filters];
+                                                let tempFilter = {...newFilters[index]};
+                                                tempFilter.publicationId = e.target.value;
+                                                const pub = await getPublication(e.target.value as string, index)
+                                                tempFilter.publication = pub;
+                                                newFilters[index] = tempFilter;
+                                                setFilters(newFilters);
+                                            }}
+                                                value={filter.publicationId}
+                                                className={`m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg`}>
+                                                    <option value=""></option>
+                                                    {address &&
+                                                        publications?.map((publication, index) => {
+                                                            return (
+                                                                <option key={index} value={publication?.id}
+                                                                    className="group flex">
+                                                                    {publication?.id}
+                                                                </option>
+                                                            )
+                                                        })
+                                                    }
+                                            </select>
+                                        </datalist>
                                     </div>
+                                }
                                 <button className="group flex sm:hidden">
                                     <div 
                                         className="flex my-1 p-2">
@@ -157,7 +211,7 @@ const Filter = () => {
                                 {
                                     index == filters.length - 1 ?
                                     <button 
-                                        disabled={filter.reaction == "" || filter.publicationId == ""}
+                                        disabled={filter.reaction == "" || (filter.reaction !== "Follow" && filter.publicationId == "") || (filter.reaction == "Follow" && filter.handle == "") || error[index]}
                                         onClick={() => {
                                             setFilters([...filters, {
                                                 reaction: "",
@@ -186,6 +240,10 @@ const Filter = () => {
                                         </div>
                                     </button>
                                 } 
+                                {
+                                    error[index] &&
+                                    <div className="text-red-500 text-xs justift-self-center p-1">invalid input</div>
+                                }
                             </div>
                         )
                     })
