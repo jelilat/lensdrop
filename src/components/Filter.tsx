@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client'
 import { GET_PUBLICATION, GET_PUBLICATIONS } from '@graphql/Queries/Publications'
 import { GET_PROFILE } from '@graphql/Queries/Profile'
 import { Post } from '@generated/types'
-import { useAppContext, Reaction } from '@components/utils/AppContext'
+import { useAppContext, Reaction, JoinType } from '@components/utils/AppContext'
 import { MinusIcon, PlusIcon } from '@heroicons/react/solid'
 import { EyeIcon } from '@heroicons/react/outline'
 import Image from 'next/image'
@@ -106,7 +106,7 @@ const Filter = () => {
                                         setFilters(newFilters);
                                     }}
                                     value={filter.reaction}
-                                    className="my-1 p-2 border-2 border-b-black-500 rounded-lg sm:p-1">
+                                    className="my-1 p-2 border-2 border-b-black-500 rounded-lg sm:p-1 sm:w-14">
                                     <option value=""></option>
                                     <option value="Collect">Collected</option>
                                     <option value="Comment">Commented</option>
@@ -172,6 +172,17 @@ const Filter = () => {
                                         </datalist>
                                     </div>
                                 }
+                                <select onChange={(e) => {
+                                    const newFilters = [...filters];
+                                    const tempFilter = {...newFilters[index]};
+                                    tempFilter.joinType = e.target.value as unknown as JoinType;
+                                    newFilters[index] = tempFilter;
+                                    setFilters(newFilters);
+                                }}
+                                    className="m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-10 rounded-lg">
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                </select>
                                 <button className="group flex sm:hidden">
                                     <div 
                                         className="flex my-1 p-2">

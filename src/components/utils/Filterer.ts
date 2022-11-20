@@ -178,10 +178,17 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
         if (qualifiedAddresses.length === 0) {
             qualifiedAddresses = arrays[i]
         } else {
-            qualifiedAddresses = qualifiedAddresses.filter((address) => arrays[i].includes(address))
+            if (filters[i-1].joinType === 'AND' || !filters[i-1].joinType) {
+                qualifiedAddresses = qualifiedAddresses.filter((address) => arrays[i].includes(address))
+            } else {
+                qualifiedAddresses = qualifiedAddresses.concat(arrays[i])
+            }
         }
     }
+
+    // Convert array into set of addresses to remove duplicates
+    const set = new Set(qualifiedAddresses); console.log(set)
     
-    return qualifiedAddresses  
+    return Array.from(set)  
 }
 
