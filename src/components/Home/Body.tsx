@@ -49,7 +49,7 @@ const Body = ()=> {
     const [decimal, setDecimal] = useState<number>(0)
     const [modal, setModal] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
-    const [loading, isLoading] = useState<boolean>()
+    const [loading, isLoading] = useState<boolean>(false)
     const [connectModal, setConnectModal] = useState<boolean>(false)
     const [recipientType, setRecipientType] = useState<"Followers" | "Followings" | "Any">("Followers")
     const [transactionHash, setTransactionHash] = useState<string>("")
@@ -225,45 +225,58 @@ const Body = ()=> {
             setNftBalances(filtered)
         }
 
+        let temporaryRecipients: Array<string> = []
+
         if (!recipients[0]) {
             if (recipientType === "Any") {
                 setRecipients([])
+                temporaryRecipients = []
             } else if (recipientType === "Followings") {
                 setRecipients(followings)
+                temporaryRecipients = followings
             } else {
                 setRecipients(followers)
+                temporaryRecipients = followers
             }
-            // wait for 1 second
-            await new Promise(r => setTimeout(r, 1000));
         }
 
         if (filters[0].reaction !== "") {
-            const filteredAddresses = await Filterer(filters); 
+            const filteredAddresses = await Filterer(filters);  
             if (filteredAddresses.length > 0) {
                 let addresses: string[]
-                if (recipients[0]) {
+                if (temporaryRecipients[0]) {
                     addresses = filteredAddresses?.filter(address => {
-                        return recipients.includes(address)
+                        return temporaryRecipients.includes(address)
                     }); 
-                } else if (!recipients[0] && recipientType === "Any") {
-                    addresses = filteredAddresses?.filter(address => {
-                        return followers.includes(address)
-                    });
+                } else if (!temporaryRecipients[0] && recipientType !== "Any") {
+                    if (recipientType === "Followings") {
+                        addresses = filteredAddresses?.filter(address => {
+                            return followings.includes(address)
+                        }); 
+                    } else {
+                        addresses = filteredAddresses?.filter(address => {
+                            return followers.includes(address)
+                        });
+                    }
                 } else {
                     addresses = filteredAddresses
                 }
       
                 setRecipients(addresses)
+                if (addresses.length > 0) {
+                    setState("Approve")
+                }
+                return
             } else {
                 setRecipients([])
             }
         } 
-// console.log(recipients)
-//         if (!recipients[0] && filters[0].reaction !== "") {
-//             setModal(true)
-//             setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
-//             return
-//         }
+
+        if (!temporaryRecipients[0] && (filters[0].reaction !== "" || recipientType === "Any")) {
+            setModal(true)
+            setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
+            return
+        }
 
         setState("Approve")
     }
@@ -531,20 +544,25 @@ const Body = ()=> {
                                 className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 w-full" />
                         </div> }
                         <div>
-                            <button onClick={()=>{
-                                _continue()
+                            <button onClick={async ()=>{
+                                isLoading(true)
+                                await _continue(); 
+                                isLoading(false)
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 data-bs-toggle="modal"
-                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length))}
+                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading && isConnected)}
                                 >
                                 {
-                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) ?
+                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading ?
                                     "Continue"
                                     :
                                     <div className="flex justify-center">
-                                        Fetching data... 
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                        {
+                                            isConnected ? <div className="flex">Fetching data... <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                            </div>
+                                             : "Continue"
+                                        }
                                     </div>
                                 }
                                 <Modal

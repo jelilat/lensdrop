@@ -8,10 +8,13 @@ import {
 } from 'react';
 import { Profile, Post} from '@generated/types'
 
+export type Reaction = "Comment" | "Mirror" | "Collect" | "Like" | "Follow" | ""
+
 export type Filter = {
-  reaction: "Comment" | "Mirror" | "Collect" | "Like" | ""
-  publicationId: string
-  publication: Post | undefined
+  reaction: Reaction
+  publicationId?: string
+  publication?: Post | undefined
+  handle?: string
 }
 
 export interface ContextType {
