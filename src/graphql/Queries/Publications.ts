@@ -1072,3 +1072,21 @@ fragment StatsFields on PublicationStats {
   __typename
 }
 `
+export const GET_LIKES = gql `
+  query Likes($request: WhoReactedPublicationRequest!) {
+    whoReactedPublication(request: $request) {
+      items {
+        profile {
+            ownedBy
+            __typename
+        }
+      }
+      pageInfo {
+        totalCount
+        next
+        __typename
+      }
+      __typename
+    }
+  }
+`

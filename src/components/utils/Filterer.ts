@@ -1,5 +1,5 @@
 import apolloClient from 'src/apollo'
-import { WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION } from 'src/graphql/Queries/Publications';
+import {WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION, GET_LIKES} from 'src/graphql/Queries/Publications';
 import { GET_PROFILES } from 'src/graphql/Queries/Profile';
 import { Filter } from './AppContext'
 import { DocumentNode } from 'graphql';
@@ -51,6 +51,14 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     cursor: cursor,
                 },
                 reactionRequest: null!
+            }
+        } else if (filter.reaction === 'Like') {
+            query = GET_LIKES
+            variables = {
+                request: {
+                    publicationId: filter.publicationId,
+                    cursor: cursor,
+                }
             }
         } else {
             query = GET_PUBLICATION
@@ -113,6 +121,21 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 }  
                 
                 allAddresses = _addresses  
+            } else if (filter.reaction === 'Like') {
+                const totalCount = (await queryFunction(query, variables))?.data?.whoReactedPublication?.pageInfo?.totalCount
+                let count = 0
+
+                let _addresses: Array<any> = []
+
+                while (count < totalCount) {
+                    const response = await queryFunction(query, variables)
+                    _addresses = _addresses.concat(response?.data?.whoReactedPublication?.items)
+                    count += 25
+                    cursor = "{\"offset\":" + count + "}"
+                    variables.request.cursor = cursor
+                }
+
+                allAddresses = _addresses
             }
             
             allAddresses?.map((item: any) => {
@@ -125,6 +148,9 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 } else if (filter.reaction === 'Comment') {
                     const address: string = item?.profile?.ownedBy; 
                     addresses?.push(address); 
+                } else if (filter.reaction === 'Like') {
+                    const address: string = item?.profile?.ownedBy;
+                    addresses?.push(address);
                 }
             }); 
         }

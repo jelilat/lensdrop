@@ -74,7 +74,7 @@ const Filter = () => {
                                     <option value=""></option>
                                     <option value="Collect">Collected</option>
                                     <option value="Comment">Commented</option>
-                                    {/* <option value="Like">Like</option> */}
+                                    <option value="Like">Like</option>
                                     <option value="Mirror">Mirrored</option>
                                 </select> 
                                 <div className="m-1 p-2 sm:px-1 rounded-lg">the post</div>

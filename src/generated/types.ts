@@ -1697,6 +1697,12 @@ export type PaginatedWhoCollectedResult = {
   pageInfo: PaginatedResultInfo
 }
 
+export type PaginatedWhoReactedResult = {
+  __typename?: 'PaginatedWhoReactedResult'
+  items: Array<Wallet>
+  pageInfo: PaginatedResultInfo
+}
+
 export type PendingApprovalFollowsRequest = {
   cursor?: InputMaybe<Scalars['Cursor']>
   limit?: InputMaybe<Scalars['LimitScalar']>
@@ -2007,6 +2013,7 @@ export type Query = {
   userSigNonces: UserSigNonces
   verify: Scalars['Boolean']
   whoCollectedPublication: PaginatedWhoCollectedResult
+  whoReactedPublication: PaginatedWhoReactedResult
 }
 
 export type QueryApprovedModuleAllowanceAmountArgs = {
@@ -2115,6 +2122,10 @@ export type QueryVerifyArgs = {
 
 export type QueryWhoCollectedPublicationArgs = {
   request: WhoCollectedPublicationRequest
+}
+
+export type QueryWhoReactedPublicationArgs = {
+  request: WhoReactedPublicationRequest
 }
 
 export type ReferenceModule = FollowOnlyReferenceModuleSettings
@@ -2389,7 +2400,12 @@ export type WhoCollectedPublicationRequest = {
   /** Internal publication id */
   publicationId: Scalars['InternalPublicationId']
 }
-
+export type WhoReactedPublicationRequest = {
+  cursor?: InputMaybe<Scalars['Cursor']>;
+  limit?: InputMaybe<Scalars['LimitScalar']>;
+  /** Internal publication id */
+  publicationId: Scalars['InternalPublicationId'];
+}
 export interface PossibleTypesResultData {
   possibleTypes: {
     [key: string]: string[]
