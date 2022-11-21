@@ -148,7 +148,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 
                 allAddresses = _addresses
             }
-
+            
             let preliminaryAddresses: Array<string> = []
             
             allAddresses?.map((item: any) => {
@@ -187,7 +187,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
     }
 
     // Convert array into set of addresses to remove duplicates
-    const set = new Set(qualifiedAddresses); console.log(set)
+    const set = new Set(qualifiedAddresses); 
     
     return Array.from(set)  
 }
