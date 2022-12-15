@@ -195,6 +195,7 @@ const Body = ()=> {
     }, [address, chain, switchNetwork])
 
     const _continue = async () => {
+        
         if (func !== 'batchSendNativeToken' && tokenAddress === "") {
             setModal(true)
             setErrorMessage("Enter a token address")

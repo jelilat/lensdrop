@@ -159,7 +159,7 @@ const Filter = () => {
                                                 className={`m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg ${error[index] && "border-red-500"}`} />
                                         </div> :
                                         <div>
-                                            <input onChange={async (e) => {console.log(e.target.value)
+                                            <input onChange={async (e) => {
                                                 let newFilters = [...filters];
                                                 let tempFilter = {...newFilters[index]};
                                                 tempFilter.publicationId = e.target.value;
@@ -178,7 +178,7 @@ const Filter = () => {
                                                 placeholder="0x2cb8-0x0d"
                                                 className={`m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg ${error[index] && "border-red-500"}`} />
                                             <datalist id="publications">
-                                                <select  onChange={async (e) => {console.log("change")
+                                                <select  onChange={async (e) => {
                                                     let newFilters = [...filters];
                                                     let tempFilter = {...newFilters[index]};
                                                     tempFilter.publicationId = e.target.value;
@@ -296,7 +296,7 @@ const Filter = () => {
                                                 {
                                                     showModal[index] &&
                                                         <div className="my-3 block">
-                                                            <div className="my-3 float-left">Select eligible recipients {index}</div><br />
+                                                            <div className="my-3 float-left">Select eligible recipients</div><br />
                                                             <div className="flex float-left">
                                                                 <select onChange={(e) => {
                                                                     const totalPossible = getMaxRecipients(filter.publication?.stats!, filter.reaction)

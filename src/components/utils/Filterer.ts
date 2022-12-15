@@ -129,7 +129,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
                 while (count < totalCount) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.whoCollectedPublication?.items)
+                    _addresses = _addresses.concat(response?.data?.profiles?.items)
                     if ((totalCount - count) > 50) {
                         count += 50
                     } else {
@@ -160,7 +160,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
                 while (count < totalCount) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.whoCollectedPublication?.items)
+                    _addresses = _addresses.concat(response?.data?.publications?.items)
                     if ((totalCount - count) > 50) {
                         count += 50
                     } else {
