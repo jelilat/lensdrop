@@ -35,6 +35,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 request: {
                     publicationId: filter.publicationId!,
                     cursor: cursor,
+                    limit: '50',
                 }
             }
         } else if (filter.reaction === 'Mirror') {
@@ -43,6 +44,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 request: {
                     whoMirroredPublicationId: filter.publicationId!,
                     cursor: cursor,
+                    limit: '50'
                 }
             }
         } else if (filter.reaction === 'Comment') {
@@ -51,6 +53,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 request: {
                     commentsOf: filter.publicationId!,
                     cursor: cursor,
+                    limit: '50',
                 },
                 reactionRequest: null!
             }
@@ -59,6 +62,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             variables = {
                 request: {
                     handle: filter.handle!,
+                    limit: '50',
                 }
             }
         } else{
@@ -67,6 +71,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 request: {
                     publicationId: filter.publicationId!,
                     cursor: cursor,
+                    limit: '50',
                 },
                 reactionRequest: {
                     reaction: 'UPVOTE'
@@ -79,47 +84,95 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             
             if (filter.reaction === 'Collect') {
                 const totalCount = (await queryFunction(query, variables))?.data?.whoCollectedPublication?.pageInfo?.totalCount
-                let count = 0
+                let count: number
+
+                if (filter.limit) {
+                    count = filter.limit
+                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    variables.request.cursor = cursor
+                } else {
+                    count = 0
+                }
 
                 let _addresses: Array<any> = []
 
                 while (count < totalCount) {
                     const response = await queryFunction(query, variables)
                     _addresses = _addresses.concat(response?.data?.whoCollectedPublication?.items)
-                    count += 25
+                    if ((totalCount - count) > 50) {
+                        count += 50
+                    } else {
+                        count = totalCount
+                    }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 }  
+
+                if (filter.limit && (_addresses.length > filter?.limit)) {
+                    _addresses = _addresses.slice(-filter.limit)
+                }
 
                 allAddresses = _addresses  
             } else if (filter.reaction === 'Mirror') {
                 const totalCount = (await queryFunction(query, variables))?.data?.profiles?.pageInfo?.totalCount
-                let count = 0
+                let count: number
+
+                if (filter.limit) {
+                    count = filter.limit
+                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    variables.request.cursor = cursor
+                } else {
+                    count = 0
+                }
 
                 let _addresses: Array<any> = []
 
                 while (count < totalCount) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.profiles?.items)
-                    count += 25
+                    _addresses = _addresses.concat(response?.data?.whoCollectedPublication?.items)
+                    if ((totalCount - count) > 50) {
+                        count += 50
+                    } else {
+                        count = totalCount
+                    }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 }  
                 
+                if (filter.limit && (_addresses.length > filter?.limit)) {
+                    _addresses = _addresses.slice(-filter.limit)
+                }
+                
                 allAddresses = _addresses  
             } else if (filter.reaction === 'Comment') {
                 const totalCount = (await queryFunction(query, variables))?.data?.publications?.pageInfo?.totalCount
-                let count = 0
+                let count: number
+
+                if (filter.limit) {
+                    count = filter.limit
+                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    variables.request.cursor = cursor
+                } else {
+                    count = 0
+                }
 
                 let _addresses: Array<any> = []
 
                 while (count < totalCount) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.publications?.items)
-                    count += 25
+                    _addresses = _addresses.concat(response?.data?.whoCollectedPublication?.items)
+                    if ((totalCount - count) > 50) {
+                        count += 50
+                    } else {
+                        count = totalCount
+                    }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 }  
+                
+                if (filter.limit && (_addresses.length > filter?.limit)) {
+                    _addresses = _addresses.slice(-filter.limit)
+                }
                 
                 allAddresses = _addresses  
             } else if (filter.reaction === 'Follow') {
@@ -141,7 +194,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     const response = await queryFunction(query, variables)
                     const follow = response?.data?.followers?.items
                     _addresses = _addresses.concat(follow)
-                    count += 25
+                    count += 50
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 }
