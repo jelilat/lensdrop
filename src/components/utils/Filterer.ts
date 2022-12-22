@@ -193,7 +193,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     const response = await queryFunction(query, variables)
                     const follow = response?.data?.followers?.items
                     _addresses = _addresses.concat(follow)
-                    count += 50
+                    count += 25
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 }
