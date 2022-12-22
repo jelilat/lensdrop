@@ -61,8 +61,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             query = GET_PROFILE
             variables = {
                 request: {
-                    handle: filter.handle!,
-                    limit: '50',
+                    handle: filter.handle!
                 }
             }
         } else{
