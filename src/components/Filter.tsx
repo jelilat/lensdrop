@@ -133,7 +133,7 @@ const Filter = () => {
                                         <option value=""></option>
                                         <option value="Collect">Collected</option>
                                         <option value="Comment">Commented</option>
-                                        {/* <option value="Like">Like</option> */}
+                                        <option value="Like">Like</option>
                                         <option value="Mirror">Mirrored</option>
                                         <option value="Follow">Follow</option>
                                     </select> 

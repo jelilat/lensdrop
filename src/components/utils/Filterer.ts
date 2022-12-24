@@ -1,5 +1,5 @@
 import apolloClient from 'src/apollo'
-import { WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION } from 'src/graphql/Queries/Publications';
+import { WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION, GET_LIKES } from 'src/graphql/Queries/Publications';
 import { GET_PROFILES, GET_PROFILE } from 'src/graphql/Queries/Profile';
 import { GET_FOLLOWERS } from '@graphql/Queries/Follow';
 import { Filter } from './AppContext'
@@ -64,7 +64,16 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     handle: filter.handle!
                 }
             }
-        } else{
+        } else if (filter.reaction === 'Like') {
+            query = GET_LIKES
+            variables = {
+                request: {
+                    publicationId: filter.publicationId!,
+                    cursor: cursor,
+                    limit: '50',
+                }
+            }
+        } else {
             query = GET_PUBLICATION
             variables = {
                 request: {
@@ -111,7 +120,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     _addresses = _addresses.slice(-filter.limit)
                 }
 
-                allAddresses = _addresses  
+                allAddresses = _addresses
             } else if (filter.reaction === 'Mirror') {
                 const totalCount = (await queryFunction(query, variables))?.data?.profiles?.pageInfo?.totalCount
                 let count: number
@@ -141,8 +150,8 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 if (filter.limit && (_addresses.length > filter?.limit)) {
                     _addresses = _addresses.slice(-filter.limit)
                 }
-                
-                allAddresses = _addresses  
+
+                allAddresses = _addresses
             } else if (filter.reaction === 'Comment') {
                 const totalCount = (await queryFunction(query, variables))?.data?.publications?.pageInfo?.totalCount
                 let count: number
@@ -172,8 +181,8 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 if (filter.limit && (_addresses.length > filter?.limit)) {
                     _addresses = _addresses.slice(-filter.limit)
                 }
-                
-                allAddresses = _addresses  
+
+                allAddresses = _addresses
             } else if (filter.reaction === 'Follow') {
                 const response = await queryFunction(query, variables)
                 const profileId = response?.data?.profile?.id
@@ -188,7 +197,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                         cursor: cursor,
                     }
                 }
-                
+
                 while (count < totalFollowers) {
                     const response = await queryFunction(query, variables)
                     const follow = response?.data?.followers?.items
@@ -197,34 +206,69 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 }
-                
+
+                allAddresses = _addresses
+            } else if (filter.reaction === 'Like') {
+                const totalCount = (await queryFunction(query, variables))?.data?.whoReactedPublication?.pageInfo?.totalCount
+                let count: number
+
+                if (filter.limit) {
+                    count = filter.limit
+                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    variables.request.cursor = cursor
+                } else {
+                    count = 0
+                }
+                let _addresses: Array<any> = []
+
+                while (count < totalCount) {
+                    const response = await queryFunction(query, variables)
+                    _addresses = _addresses.concat(response?.data?.whoReactedPublication?.items)
+                    if ((totalCount - count) > 50) {
+                        count += 50
+                    } else {
+                        count = totalCount
+                    }
+                    cursor = "{\"offset\":" + count + "}"
+                    variables.request.cursor = cursor
+                }
+
+                if (filter.limit && (_addresses.length > filter?.limit)) {
+                    _addresses = _addresses.slice(-filter.limit)
+                }
+
                 allAddresses = _addresses
             }
-            
+
             let preliminaryAddresses: Array<string> = []
-            
+
             allAddresses?.map((item: any) => {
                 if (filter.reaction === 'Collect') {
                     const address = item?.address
                     preliminaryAddresses?.push(address)
                 } else if (filter.reaction === 'Mirror') {
                     const address: string = item?.ownedBy; 
-                    preliminaryAddresses?.push(address); 
+                    preliminaryAddresses?.push(address);
                 } else if (filter.reaction === 'Comment') {
                     const address: string = item?.profile?.ownedBy; 
-                    preliminaryAddresses?.push(address); 
+                    preliminaryAddresses?.push(address);
                 } else if (filter.reaction === 'Follow') {
                     const address: string = item?.wallet?.address;
-                    preliminaryAddresses?.push(address); 
+                    preliminaryAddresses?.push(address);
+                    addresses?.push(address);
+                } else if (filter.reaction === 'Like') {
+                    const address: string = item?.profile?.ownedBy;
+                    preliminaryAddresses?.push(address);
+                    addresses?.push(address);
                 }
             }); 
             addresses = preliminaryAddresses
         }
-        
+
         return addresses
     })
 
-    const arrays = await Promise.all(executeFilter); 
+    const arrays = await Promise.all(executeFilter);
     let qualifiedAddresses: Array<string> = []
     for (let i = 0; i < arrays.length; i++) {
         if (qualifiedAddresses.length === 0) {
@@ -239,8 +283,8 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
     }
 
     // Convert array into set of addresses to remove duplicates
-    const set = new Set(qualifiedAddresses); 
-    
-    return Array.from(set)  
+    const set = new Set(qualifiedAddresses);
+
+    return Array.from(set)
 }
 
