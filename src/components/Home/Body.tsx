@@ -42,7 +42,7 @@ const Body = ()=> {
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
     const [func, setFunc] = useState<Func>("batchSendNativeToken")
     const [tokenAddress, setTokenAddress] = useState<string>("")
-    const [tokenIds, setTokenIds] = useState<Array<number | BigInt>>([])
+    const [tokenIds, setTokenIds] = useState<Array<string>>([])
     const [tokenBalances, setTokenBalances] = useState<Array<{name: string, address: string, balance: string}>>([])
     const [nftBalances, setNftBalances] = useState<Array<{name: string, address: string, tokenId: string, tokenType: string}>>([])
     const [amount, setAmount] = useState<string>("0")
@@ -300,7 +300,8 @@ const Body = ()=> {
                 return
             }
             for (let i = 0; i < recipients.length; i++) {
-                setTokenIds((prev) => [...prev, parseFloat(nftBalances[i]?.tokenId)])
+                let tokenId: string = (nftBalances[i].tokenId).toString()
+                setTokenIds((prev) => [...prev, tokenId])
             }
         }
 
