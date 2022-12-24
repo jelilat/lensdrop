@@ -68,8 +68,9 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             query = GET_LIKES
             variables = {
                 request: {
-                    publicationId: filter.publicationId,
+                    publicationId: filter.publicationId!,
                     cursor: cursor,
+                    limit: '50',
                 }
             }
         } else {
@@ -209,16 +210,31 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 allAddresses = _addresses
             } else if (filter.reaction === 'Like') {
                 const totalCount = (await queryFunction(query, variables))?.data?.whoReactedPublication?.pageInfo?.totalCount
-                let count = 0
+                let count: number
 
+                if (filter.limit) {
+                    count = filter.limit
+                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    variables.request.cursor = cursor
+                } else {
+                    count = 0
+                }
                 let _addresses: Array<any> = []
 
                 while (count < totalCount) {
                     const response = await queryFunction(query, variables)
                     _addresses = _addresses.concat(response?.data?.whoReactedPublication?.items)
-                    count += 25
+                    if ((totalCount - count) > 50) {
+                        count += 50
+                    } else {
+                        count = totalCount
+                    }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
+                }
+
+                if (filter.limit && (_addresses.length > filter?.limit)) {
+                    _addresses = _addresses.slice(-filter.limit)
                 }
 
                 allAddresses = _addresses
@@ -242,12 +258,13 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                     addresses?.push(address);
                 } else if (filter.reaction === 'Like') {
                     const address: string = item?.profile?.ownedBy;
+                    preliminaryAddresses?.push(address);
                     addresses?.push(address);
                 }
             }); 
             addresses = preliminaryAddresses
         }
-        
+
         return addresses
     })
 
