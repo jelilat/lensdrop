@@ -6,15 +6,19 @@ import {
   useContext,
   useState 
 } from 'react';
-import { Profile, Post} from '@generated/types'
+import { Profile, Post, PublicationStats } from '@generated/types'
 
 export type Reaction = "Comment" | "Mirror" | "Collect" | "Like" | "Follow" | ""
+export type JoinType = "AND" | "OR"
 
 export type Filter = {
   reaction: Reaction
   publicationId?: string
   publication?: Post | undefined
   handle?: string
+  joinType?: JoinType
+  limit?: number
+  stats?: PublicationStats
 }
 
 export interface ContextType {

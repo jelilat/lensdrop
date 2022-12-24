@@ -10,12 +10,13 @@ import { Modal } from '@components/UI/Modal';
 import { useAccount } from 'wagmi'
 
 const Followers: FC = () => {
-    const { address, followings, filters } = useAppContext()
+    const { profiles, followings, filters } = useAppContext()
     const { isConnected } = useAccount()
     const [showFollowing, setShowFollowing] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
     const [connectModal, setConnectModal] = useState<boolean>(false)
+    const [loading, isLoading] = useState<boolean>(false)
 
     const addressFilterer = async () => {
         if (filters[0].reaction !== "") {
@@ -32,14 +33,9 @@ const Followers: FC = () => {
             }
         } else {
             setData(followings)
-        }
-    }
-
-    useEffect(() => {
-        if (followings.length > 0) { 
             setdatas(followings.map(following => ({address: following})))
         }
-    }, [followings])
+    }
 
     return (
         <>
@@ -49,11 +45,24 @@ const Followers: FC = () => {
                     <Filter />
                     { !showFollowing ? 
                         <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                        disabled={!((profiles[0]?.stats?.totalFollowing <= followings.length) && isConnected) || loading}
                                 onClick={async () => {
-                                    addressFilterer()
+                                    isLoading(true)
+                                    await addressFilterer()
                                     setShowFollowing(true)
+                                    isLoading(false)
                                 }}>
-                            View Following
+                            {
+                                loading || ((profiles[0]?.stats?.totalFollowing > followings.length) && isConnected) ? 
+                                <div className="flex justify-center items-center">
+                                    <span>Fetching data. This may take a while...</span>
+                                    <svg className="animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                    </svg>
+                                </div>
+                                : "View Following" 
+                            }
                         </button>
                        : !isConnected ? 
                        <div className="text-center">
@@ -96,7 +105,10 @@ const Followers: FC = () => {
                         </div>
                        </div>
                     }
-                    <PrizeDraw addresses={followings} type={'Offchain'} sharePost={true} />
+                    {
+                        (showFollowing && data.length > 0) &&
+                            <PrizeDraw addresses={data} type={'Offchain'} sharePost={true} />
+                    }
                 </div>
                 <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
             </div>
