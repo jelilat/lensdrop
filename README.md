@@ -15,7 +15,14 @@ git clone https://github.com/jelilat/lensdrop.git
 
 2. Copy/Paste the .env.dist file and complete it with your own values.
 
-3. Run the development server:
+3. Run the following commands:
+```bash
+npm run install
+# or
+yarn install
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
