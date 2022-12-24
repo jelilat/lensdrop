@@ -1,5 +1,5 @@
 import apolloClient from 'src/apollo'
-import {WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION, GET_LIKES} from 'src/graphql/Queries/Publications';
+import { WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION, GET_LIKES } from 'src/graphql/Queries/Publications';
 import { GET_PROFILES, GET_PROFILE } from 'src/graphql/Queries/Profile';
 import { GET_FOLLOWERS } from '@graphql/Queries/Follow';
 import { Filter } from './AppContext'

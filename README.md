@@ -6,7 +6,7 @@
 - **Prize Draw**: Create a prize draw and reward the winners with airdrops or offline prizes.
 - **Data**: Download a CSV file containing the wallet addresses of your followers, followings, and/or anyone who engages with your post.
 
-## Install
+## Running Locally
 
 1. Copy/Paste the .env.dist file and complete with your own values.
 
@@ -17,9 +17,7 @@ npm install
 yarn install
 ```
 
-## Running Locally
-
-First, run the development server:
+4. Run the development server:
 
 ```bash
 npm run dev
