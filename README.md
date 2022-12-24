@@ -2,7 +2,7 @@
 
 ## Features
 
-- **Airdrops**: Airdrop MATIC and ERC20 tokens to your followers and/or those who engage with your posts.
+- **Airdrops**: Airdrop MATIC, NFTs, and ERC20 tokens to your followers and/or those who engage with your posts.
 - **Prize Draw**: Create a prize draw and reward the winners with airdrops or offline prizes.
 - **Data**: Download a CSV file containing the wallet addresses of your followers, followings, and/or anyone who engages with your post.
 
@@ -11,6 +11,11 @@
 1. Clone the repo:
 ```bash
 git clone https://github.com/jelilat/lensdrop.git
+```
+
+2. Copy/Paste the .env.dist file and complete it with your own values.
+
+3. Run the development server:
 
 ```bash
 npm run dev
