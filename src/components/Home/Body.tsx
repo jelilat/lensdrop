@@ -92,7 +92,6 @@ const Body = ()=> {
         overrides: {
             from: address,
             value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(BigInt(recipients.length)) : 0,
-            gasLimit: 1e6
           },
         onSuccess(data){
             setTransactionHash(data?.hash)
@@ -111,8 +110,7 @@ const Body = ()=> {
         functionName: nftBalances[0]?.tokenType === "ERC721" ? "batchSendERC721" : "batchSendERC1155",
         args: [tokenAddress, recipients, tokenIds],
         overrides: {
-            from: address,
-            gasLimit: 1e6
+            from: address
             },
         onSuccess(data){
             setTransactionHash(data?.hash)
