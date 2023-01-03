@@ -287,12 +287,6 @@ const Body = ()=> {
             alert("Can't airdrop tokens to 0 addresses. Adjust your filters")
         }
 
-        if (recipients.length > 80) {
-            alert("Can only airdrop tokens to 80 addresses at a time")
-            isLoading(false)
-            return
-        }
-
         if (func === "batchSendNFT") {
             if (recipients.length > nftBalances.length) {
                 alert("Insufficient token balance. Can't airdrop more NFTs than you have")
