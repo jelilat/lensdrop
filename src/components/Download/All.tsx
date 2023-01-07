@@ -6,7 +6,7 @@ import { Filterer } from '@components/utils/Filterer'
 import PrizeDraw from './PrizeDraw';
 
 const All: FC = () => {
-    const { filters } = useAppContext()
+    const { filters, minimumFollowers, setMinimumFollowers } = useAppContext()
     const [showFollowers, setShowFollowers] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
     const [data, setData] = useState<string[]>([])
@@ -15,7 +15,7 @@ const All: FC = () => {
     const addressFilterer = async () => {
         if (filters[0].reaction !== "") {
             setFetching(true)
-            const filteredAddresses = await Filterer(filters);
+            const filteredAddresses = await Filterer(filters, minimumFollowers);
             setFetching(false)
  
             if (filteredAddresses.length > 0) {
@@ -34,6 +34,19 @@ const All: FC = () => {
                 <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 <div className="lg:w-1/2 sm:w-full grow sm:mx-3 md:mx-">
                     <Filter />
+                    <div className="font-semibold my-1">
+                        Recipients should have atleast 
+                    </div>
+                    <input defaultValue={minimumFollowers} type="number" min="0" placeholder="30" 
+                    onKeyDown={(e)=> {
+                        if (e.key === ".") {
+                            e.preventDefault();
+                        }
+                    }}
+                        onChange={(e)=> {
+                        setMinimumFollowers(parseInt(e.target.value));
+                    }}
+                        className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 sm:w-20 mr-1" /> followers
                     { !showFollowers ? 
                         <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 onClick={async () => {

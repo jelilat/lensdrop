@@ -34,7 +34,7 @@ const alchemy = new Alchemy(config)
 
 const Body = ()=> {
     type Func = 'batchSendNativeToken' | 'batchSendERC20' | 'batchSendNFT'
-    const { profiles, followers, followings, filters, recipients, setRecipients } = useAppContext();
+    const { profiles, followers, followings, filters, recipients, minimumFollowers, setRecipients, setMinimumFollowers } = useAppContext();
     const { chain } = useNetwork(); 
     const { isConnected, address } = useAccount();
     const { switchNetwork } = useSwitchNetwork();
@@ -240,7 +240,7 @@ const Body = ()=> {
         }
 
         if (filters[0].reaction !== "") {
-            const filteredAddresses = await Filterer(filters);  
+            const filteredAddresses = await Filterer(filters, minimumFollowers);  
             if (filteredAddresses.length > 0) {
                 let addresses: string[]
                 if (temporaryRecipients[0]) {
@@ -518,6 +518,19 @@ const Body = ()=> {
                                 <option value="Followings">Following ({profiles[0]?.stats?.totalFollowing})</option>
                                 <option value="Any">Any</option>
                             </select>
+                            <div className="font-semibold my-1">
+                                Has a minimum of 
+                            </div>
+                            <input defaultValue={minimumFollowers} type="number" min="0" placeholder="30" 
+                            onKeyDown={(e)=> {
+                                if (e.key === ".") {
+                                    e.preventDefault();
+                                }
+                            }}
+                                onChange={(e)=> {
+                                setMinimumFollowers(parseInt(e.target.value));
+                            }}
+                                className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 sm:w-20 mr-1" /> followers
                             <Filter />
                         </div>
                         {func !== "batchSendNFT" && <div>

@@ -10,7 +10,7 @@ import { Modal } from '@components/UI/Modal';
 import { useAccount } from 'wagmi'
 
 const Followers: FC = () => {
-    const { profiles, followings, filters } = useAppContext()
+    const { profiles, followings, filters, minimumFollowers, setMinimumFollowers } = useAppContext()
     const { isConnected } = useAccount()
     const [showFollowing, setShowFollowing] = useState<boolean>(false)
     const [datas, setdatas] = useState<{address: string}[]>([])
@@ -20,7 +20,7 @@ const Followers: FC = () => {
 
     const addressFilterer = async () => {
         if (filters[0].reaction !== "") {
-            const filteredAddresses = await Filterer(filters);
+            const filteredAddresses = await Filterer(filters, minimumFollowers);
             if (filteredAddresses.length > 0) {
                 const addresses = filteredAddresses?.filter(address => {
                     return followings.includes(address)
@@ -43,6 +43,19 @@ const Followers: FC = () => {
                 <div className="lg:w-1/4 sm:w-3 md:w-1/5"></div>
                 <div className="lg:w-1/2 sm:w-full grow sm:mx-3 md:mx-">
                     <Filter />
+                    <div className="font-semibold my-1">
+                        Recipients should have atleast 
+                    </div>
+                    <input defaultValue={minimumFollowers} type="number" min="0" placeholder="30" 
+                    onKeyDown={(e)=> {
+                        if (e.key === ".") {
+                            e.preventDefault();
+                        }
+                    }}
+                        onChange={(e)=> {
+                        setMinimumFollowers(parseInt(e.target.value));
+                    }}
+                        className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 sm:w-20 mr-1" /> followers
                     { !showFollowing ? 
                         <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                         disabled={!((profiles[0]?.stats?.totalFollowing <= followings.length) && isConnected) || loading}

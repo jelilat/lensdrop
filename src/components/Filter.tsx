@@ -329,6 +329,11 @@ const Filter = () => {
                                                                             return temp;
                                                                         })
                                                                     }}
+                                                                    onKeyDown={(e)=> {
+                                                                        if (e.key === ".") {
+                                                                            e.preventDefault();
+                                                                        }
+                                                                    }}
                                                                         defaultValue={maxRecipients[index]}
                                                                         placeholder={maxRecipients[index] ? maxRecipients[index].toString() : "0"}
                                                                         className="m-1 p-2 border-2 border-b-black-500 sm:px-1 sm:w-20 rounded-lg"

@@ -20,7 +20,7 @@ const queryFunction = async (query: DocumentNode, variables: Variables) => {
     })
 }
 
-export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
+export const Filterer = async(filters: Filter[], minimumFollowers: number): Promise<Array<string>> => {
     let addresses: Array<string> = [];
 
     const executeFilter = filters.map(async (filter) => {
@@ -91,26 +91,50 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
             let allAddresses: any
             
             if (filter.reaction === 'Collect') {
-                const totalCount = (await queryFunction(query, variables))?.data?.whoCollectedPublication?.pageInfo?.totalCount
+                let totalCount = (await queryFunction(query, variables))?.data?.whoCollectedPublication?.pageInfo?.totalCount
                 let count: number
 
                 if (filter.limit) {
-                    count = filter.limit
-                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    count = totalCount - filter.limit
+                    cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 } else {
                     count = 0
                 }
 
-                let _addresses: Array<any> = []
+                let limit = filter.limit ? filter.limit : totalCount
 
-                while (count < totalCount) {
+                let _addresses: Array<any> = []
+                let balance = count
+
+                while ((count < totalCount) && (_addresses.length < limit)) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.whoCollectedPublication?.items)
+                    let items = response?.data?.whoCollectedPublication?.items
+                    for (let i = 0; i < items.length; i++) {
+                        let item = items[i]
+                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                            _addresses.push(item?.address)
+                        }
+                        if (_addresses.length >= limit) {
+                            break
+                        }
+                    }
                     if ((totalCount - count) > 50) {
                         count += 50
                     } else {
                         count = totalCount
+                    }
+                    if ((filter.limit) && (count == totalCount) && (_addresses.length < filter.limit)) {
+                        if (balance == 0) {
+                            break
+                        }
+                        totalCount = totalCount - filter.limit
+                        let remainder = limit - _addresses.length
+                        count = totalCount - remainder
+                        if (count < 0) {
+                            count = 0
+                        }
+                        balance = count
                     }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
@@ -122,26 +146,50 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
                 allAddresses = _addresses
             } else if (filter.reaction === 'Mirror') {
-                const totalCount = (await queryFunction(query, variables))?.data?.profiles?.pageInfo?.totalCount
+                let totalCount = (await queryFunction(query, variables))?.data?.profiles?.pageInfo?.totalCount
                 let count: number
 
                 if (filter.limit) {
-                    count = filter.limit
-                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    count = totalCount - filter.limit
+                    cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 } else {
                     count = 0
                 }
 
-                let _addresses: Array<any> = []
+                let limit = filter.limit ? filter.limit : totalCount
 
-                while (count < totalCount) {
+                let _addresses: Array<any> = []
+                let balance = count
+
+                while ((count < totalCount) && (_addresses.length < limit)) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.profiles?.items)
+                    let items = response?.data?.profiles?.items
+                    for (let i = 0; i < items.length; i++) {
+                        let item = items[i]
+                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                            _addresses.push(item?.ownedBy)
+                        }
+                        if (_addresses.length >= limit) {
+                            break
+                        }
+                    }
                     if ((totalCount - count) > 50) {
                         count += 50
                     } else {
                         count = totalCount
+                    }
+                    if ((filter.limit) && (count == totalCount) && (_addresses.length < filter.limit)) {
+                        if (balance == 0) {
+                            break
+                        }
+                        totalCount = totalCount - filter.limit
+                        let remainder = limit - _addresses.length
+                        count = totalCount - remainder
+                        if (count < 0) {
+                            count = 0
+                        }
+                        balance = count
                     }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
@@ -153,26 +201,50 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
                 allAddresses = _addresses
             } else if (filter.reaction === 'Comment') {
-                const totalCount = (await queryFunction(query, variables))?.data?.publications?.pageInfo?.totalCount
+                let totalCount = (await queryFunction(query, variables))?.data?.publications?.pageInfo?.totalCount
                 let count: number
 
                 if (filter.limit) {
-                    count = filter.limit
-                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    count = totalCount - filter.limit
+                    cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 } else {
                     count = 0
                 }
 
-                let _addresses: Array<any> = []
+                let limit = filter.limit ? filter.limit : totalCount
 
-                while (count < totalCount) {
+                let _addresses: Array<any> = []
+                let balance = count
+
+                while ((count < totalCount) && (_addresses.length < limit)) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.publications?.items)
+                    let items = response?.data?.publications?.items
+                    for (let i = 0; i < items.length; i++) {
+                        let item = items[i]
+                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                            _addresses.push(item?.profile?.ownedBy)
+                        }
+                        if (_addresses.length >= limit) {
+                            break
+                        }
+                    }
                     if ((totalCount - count) > 50) {
                         count += 50
                     } else {
                         count = totalCount
+                    }
+                    if ((filter.limit) && (count == totalCount) && (_addresses.length < filter.limit)) {
+                        if (balance == 0) {
+                            break
+                        }
+                        totalCount = totalCount - filter.limit
+                        let remainder = limit - _addresses.length
+                        count = totalCount - remainder
+                        if (count < 0) {
+                            count = 0
+                        }
+                        balance = count
                     }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
@@ -200,8 +272,13 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
                 while (count < totalFollowers) {
                     const response = await queryFunction(query, variables)
-                    const follow = response?.data?.followers?.items
-                    _addresses = _addresses.concat(follow)
+                    let items = response?.data?.followers?.items
+                    for (let i = 0; i < items.length; i++) {
+                        let item = items[i]
+                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                            _addresses.push(item?.wallet?.address)
+                        }
+                    }
                     count += 25
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
@@ -209,25 +286,50 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
                 allAddresses = _addresses
             } else if (filter.reaction === 'Like') {
-                const totalCount = (await queryFunction(query, variables))?.data?.whoReactedPublication?.pageInfo?.totalCount
+                let totalCount = (await queryFunction(query, variables))?.data?.whoReactedPublication?.pageInfo?.totalCount
                 let count: number
 
                 if (filter.limit) {
-                    count = filter.limit
-                    cursor = "{\"offset\":" + (totalCount - count) + "}"
+                    count = totalCount - filter.limit
+                    cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
                 } else {
                     count = 0
                 }
-                let _addresses: Array<any> = []
 
-                while (count < totalCount) {
+                let limit = filter.limit ? filter.limit : totalCount
+
+                let _addresses: Array<any> = []
+                let balance = count
+
+                while ((count < totalCount) && (_addresses.length < limit)) {
                     const response = await queryFunction(query, variables)
-                    _addresses = _addresses.concat(response?.data?.whoReactedPublication?.items)
+                    let items = response?.data?.whoReactedPublication?.items
+                    for (let i = 0; i < items.length; i++) {
+                        let item = items[i]
+                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                            _addresses.push(item?.profile?.ownedBy)
+                        }
+                        if (_addresses.length >= limit) {
+                            break
+                        }
+                    }
                     if ((totalCount - count) > 50) {
                         count += 50
                     } else {
                         count = totalCount
+                    }
+                    if ((filter.limit) && (count == totalCount) && (_addresses.length < filter.limit)) {
+                        if (balance == 0) {
+                            break
+                        }
+                        totalCount = totalCount - filter.limit
+                        let remainder = limit - _addresses.length
+                        count = totalCount - remainder
+                        if (count < 0) {
+                            count = 0
+                        }
+                        balance = count
                     }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
@@ -240,29 +342,7 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
                 allAddresses = _addresses
             }
 
-            let preliminaryAddresses: Array<string> = []
-
-            allAddresses?.map((item: any) => {
-                if (filter.reaction === 'Collect') {
-                    const address = item?.address
-                    preliminaryAddresses?.push(address)
-                } else if (filter.reaction === 'Mirror') {
-                    const address: string = item?.ownedBy; 
-                    preliminaryAddresses?.push(address);
-                } else if (filter.reaction === 'Comment') {
-                    const address: string = item?.profile?.ownedBy; 
-                    preliminaryAddresses?.push(address);
-                } else if (filter.reaction === 'Follow') {
-                    const address: string = item?.wallet?.address;
-                    preliminaryAddresses?.push(address);
-                    addresses?.push(address);
-                } else if (filter.reaction === 'Like') {
-                    const address: string = item?.profile?.ownedBy;
-                    preliminaryAddresses?.push(address);
-                    addresses?.push(address);
-                }
-            }); 
-            addresses = preliminaryAddresses
+            addresses = allAddresses
         }
 
         return addresses
@@ -287,4 +367,3 @@ export const Filterer = async(filters: Filter[]): Promise<Array<string>> => {
 
     return Array.from(set)
 }
-

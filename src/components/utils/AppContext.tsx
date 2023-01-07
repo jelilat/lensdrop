@@ -28,12 +28,14 @@ export interface ContextType {
     followings: string[];
     filters: Filter[];
     recipients: string[];
+    minimumFollowers: number;
     setUserAddress: Dispatch<SetStateAction<string>>;
     setProfiles: Dispatch<SetStateAction<Profile[]>>;
     setFollowers: Dispatch<SetStateAction<string[]>>;
     setFollowings: Dispatch<SetStateAction<string[]>>;
     setFilters: Dispatch<SetStateAction<Filter[]>>;
     setRecipients: Dispatch<SetStateAction<string[]>>;
+    setMinimumFollowers: Dispatch<SetStateAction<number>>;
   }
 
 type Props = {
@@ -47,12 +49,14 @@ const AppContext = createContext<ContextType>({
   followings: [],
   filters: [],
   recipients: [],
+  minimumFollowers: 0,
   setUserAddress: () => {},
   setProfiles: () => {},
   setFollowers: () => {},
   setFollowings: () => {},
   setFilters: () => {},
   setRecipients: () => {},
+  setMinimumFollowers: () => {}
 })
 
 export function AppWrapper({ children }: Props) {
@@ -62,6 +66,7 @@ export function AppWrapper({ children }: Props) {
   const [followings, setFollowings] = useState<string[]>([])
   const [filters, setFilters] = useState<Filter[]>([]);
   const [recipients, setRecipients] = useState<string[]>([]);
+  const [minimumFollowers, setMinimumFollowers] = useState<number>(0);
 
   const value = {
     address,
@@ -70,12 +75,14 @@ export function AppWrapper({ children }: Props) {
     followings,
     filters,
     recipients,
+    minimumFollowers,
     setUserAddress,
     setProfiles,
     setFollowers,
     setFollowings,
     setFilters,
-    setRecipients
+    setRecipients,
+    setMinimumFollowers
   }
 
   return (

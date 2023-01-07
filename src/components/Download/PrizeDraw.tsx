@@ -13,30 +13,14 @@ interface DrawProps {
 }
 
 const PrizeDraw = ({...props}: DrawProps) => {
-    const { filters, setRecipients } = useAppContext()
+    const { filters, minimumFollowers, setRecipients } = useAppContext()
     const [winner, setWinner] = useState<Profile[]>()
     const [numberOfWinners, setNumberOfWinners] = useState<number>(0)
     const [showPrizeDraw, setShowPrizeDraw] = useState<boolean>(false)
-    const [data, setData] = useState<string[]>([])
     const [error, setErrorMessage] = useState<string>("")
     const [disableButton, setDisableButton] = useState<boolean>(false)
 
-    const addressFilterer = async () => {
-        if (filters[0].reaction !== "") {
-            const filteredAddresses = await Filterer(filters);
-            if (filteredAddresses.length > 0) {
-                const addresses = filteredAddresses?.filter(address => {
-                    return props.addresses.includes(address)
-                }); 
-                setData(addresses)
-            }
-        } else {
-            setData(props.addresses)
-        }
-    }
-
     const createDraw = async (type: string) => {
-        await addressFilterer()
         const winner = await Draw(props.addresses, numberOfWinners)
         setWinner(winner!)
 
@@ -71,9 +55,6 @@ const PrizeDraw = ({...props}: DrawProps) => {
                 <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                         onClick={async () => {
                             setShowPrizeDraw(true)
-                            // if (winner) {
-                            //     window.location.reload()
-                            // }
                         }}
                         disabled={disableButton}
                     >
