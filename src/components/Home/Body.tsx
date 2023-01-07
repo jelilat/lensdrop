@@ -17,7 +17,7 @@ import { LENSDROP_CONTRACT_ADDRESS } from 'src/constants'
 import { useAppContext } from '@components/utils/AppContext'
 import Filter from '@components/Filter'
 import { Filterer } from '@components/utils/Filterer'
-import { utils } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { BuildTwitterUrl } from '@components/utils/TwitterURLBuilter'
 import { Alchemy, Network } from "alchemy-sdk";
 import Connect from '@components/Home/Connect'
@@ -53,6 +53,7 @@ const Body = ()=> {
     const [connectModal, setConnectModal] = useState<boolean>(false)
     const [recipientType, setRecipientType] = useState<"Followers" | "Followings" | "Any">("Followers")
     const [transactionHash, setTransactionHash] = useState<string>("")
+    const [fee, setFee] = useState<BigNumber>(utils.parseEther("1").div(100))
 
     const tokenContract = useContractWrite({
         addressOrName: tokenAddress,
@@ -91,7 +92,7 @@ const Body = ()=> {
         args: func !== "batchSendNativeToken" ? [recipients, BigInt(parseFloat(amount) * decimal), tokenAddress] : [recipients, utils.parseEther(amount)],
         overrides: {
             from: address,
-            value: func === "batchSendNativeToken" ? utils.parseEther(amount).mul(BigInt(recipients.length)) : 0,
+            value: func === "batchSendNativeToken" ? (utils.parseEther(amount).mul(BigInt(recipients.length))).add(fee) : fee,
           },
         onSuccess(data){
             setTransactionHash(data?.hash)
@@ -110,7 +111,8 @@ const Body = ()=> {
         functionName: nftBalances[0]?.tokenType === "ERC721" ? "batchSendERC721" : "batchSendERC1155",
         args: [tokenAddress, recipients, tokenIds],
         overrides: {
-            from: address
+            from: address,
+            value: fee,
             },
         onSuccess(data){
             setTransactionHash(data?.hash)
@@ -736,6 +738,11 @@ const Body = ()=> {
                         </div>
                         <div>
                             <button onClick={async ()=>{
+                                let fee = recipients.length
+                                if (fee > 100) {
+                                    fee = 100
+                                }
+                                setFee(utils.parseEther(fee.toString()).div(100))
                                 setModal(false)
                                 isLoading(true);
                                 if (func !== "batchSendNFT") {
