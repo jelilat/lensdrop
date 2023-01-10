@@ -5,7 +5,7 @@ const Header = dynamic(
     { ssr: false }
 )
 
-import Listings from '@components/Listings'
+import Listings from '@components/Sponsor'
 
 const ContestListings = () => {
     return (

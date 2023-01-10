@@ -6,11 +6,13 @@ import Connect from './Connect'
 import { useAccount } from 'wagmi'
 import SetContext from '@components/utils/SetContext'
 import { XIcon } from '@heroicons/react/solid'
+import { ArrowRight } from 'tabler-icons-react'
 
 const Header = () => {
     const { address, isConnected } = useAccount()
     const [connectModal, setConnectModal] = useState<boolean>(false)
     const [navOpen, setNavOpen] = useState<boolean>(false)
+    const [offchainOpen, setOffchainOpen] = useState<boolean>(false)
 
     return (
         <>
@@ -40,36 +42,53 @@ const Header = () => {
                                             </Link>
                                         </div>
                                     </li>
-                                    <li className="my-2 border-b border-gray-50">
+                                    <li className="my-2 border-b border-gray-50 cursor-pointer">
                                         <div className={`mx-1 p-2`}>
                                             <Link className=""
-                                                href="/followers" >
-                                                Followers
+                                                href="/sponsor" >
+                                                Sponsor
                                             </Link>
                                         </div>
                                     </li>
-                                    <li className="my-2 border-b border-gray-50">
-                                    <div className={`mx-1 p-2`}>
-                                            <Link className=""
-                                                href="/following" >
-                                                Following
-                                            </Link>
+                                    <li className="group">
+                                        <div className="mx-1 p-2 cursor-pointer">
+                                            Offchain Airdrop
                                         </div>
-                                    </li>
-                                    <li className="my-2 border-b border-gray-50">
-                                        <div className={`mx-1 p-2`}>
-                                            <Link className=""
-                                                href="/all" >
-                                                All
-                                            </Link>
-                                        </div>
-                                    </li><li className="my-2 border-b border-gray-50">
-                                        <div className={`mx-1 p-2`}>
-                                            <Link className=""
-                                                href="/listings" >
-                                                Listings
-                                            </Link>
-                                        </div>
+                                        <ul className="absolute invisible group-hover:visible bg-white border-2 rounded-lg p-2 z-10">
+                                            <li className="my-2 border-b border-gray-50">
+                                                <div className={`mx-1 p-2`}>
+                                                    <Link className=""
+                                                        href="/app/followers" >
+                                                        <div className="text-gray-900">
+                                                            Followers
+                                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                                        </div>
+                                                    </Link>
+                                                </div>
+                                            </li>
+                                            <li className="my-2 border-b border-gray-50 cursor-pointer">
+                                                <div className={`mx-1 p-2`}>
+                                                    <Link className=""
+                                                        href="/app/following" >
+                                                        <div className="text-gray-900">
+                                                            Following
+                                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                                        </div>
+                                                    </Link>
+                                                </div>
+                                            </li>
+                                            <li className="my-2 border-b border-gray-50">
+                                                <div className={`mx-1 p-2`}>
+                                                    <Link className=""
+                                                        href="/any" >
+                                                        <div className="text-gray-900">
+                                                            Any
+                                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                                        </div>
+                                                    </Link>
+                                                </div>
+                                            </li>
+                                        </ul>
                                     </li>
                                     <li className="my-2">
                                     <button className="rounded-lg bg-black text-white p-2"
@@ -110,33 +129,55 @@ const Header = () => {
                             Home
                         </Link>
                     </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/followers" ?
+                    <div className={`mx-1 p-2 ${useRouter().pathname === "/sponsor" ?
                             "bg-gray-200 rounded-lg" : null}`}>
                         <Link className=""
-                            href="/followers" >
-                            Followers
+                            href="/sponsor" >
+                            Sponsored Posts
                         </Link>
                     </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/following" ?
-                            "bg-gray-200 rounded-lg" : null}`}>
-                        <Link className=""
-                            href="/following" >
-                            Following
-                        </Link>
-                    </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/all" ?
-                            "bg-gray-200 rounded-lg" : null}`}>
-                        <Link className=""
-                            href="/all" >
-                            All
-                        </Link>
-                    </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/listings" ?
-                            "bg-gray-200 rounded-lg" : null}`}>
-                        <Link className=""
-                            href="/listings" >
-                            Listings
-                        </Link>
+                    <div className='group'>
+                        <div className="mx-1 p-2 cursor-pointer">
+                            Offchain Airdrop
+                        </div>
+                        <ul className="absolute invisible group-hover:visible bg-white border-2 rounded-lg p-2 z-10">
+                            <li className="cursor-pointer">
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/app/followers" ?
+                                    "bg-gray-200 rounded-lg" : null}`}>
+                                    <Link className=""
+                                        href="/app/followers" >
+                                        <div className="text-gray-900">
+                                            Followers
+                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                        </div>
+                                    </Link>
+                                </div>
+                            </li>
+                            <li className="cursor-pointer">
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/app/following" ?
+                                    "bg-gray-200 rounded-lg" : null}`}>
+                                    <Link className=""
+                                        href="/app/following" >
+                                        <div className="text-gray-900">
+                                            Following
+                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                        </div>
+                                    </Link>
+                                </div>
+                            </li>
+                            <li className="cursor-pointer">
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/any" ?
+                                        "bg-gray-200 rounded-lg" : null}`}>
+                                    <Link className=""
+                                        href="/any" >
+                                        <div className="text-gray-900">
+                                            Any
+                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                        </div>
+                                    </Link>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 <div className="w-1/5 hidden lg:flex">

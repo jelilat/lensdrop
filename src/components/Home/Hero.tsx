@@ -7,7 +7,7 @@ const Hero = ()=> {
         <>
             <div className="flex w-full">
                 <div className="lg:w-1/4 md:w-1/5 sm:w-3">
-
+                
                 </div>
                 <div className="lg:w-1/2 md:w-3/5 sm:w-full rounded-lg border-0 my-5 content-center place-items-center">
                     <div className="py-6 mb-4 px-5 rounded-lg border-b bg-hero dark:border-b-gray-700/80 bg-gradient-to-r from-cyan-200 to-blue-300">

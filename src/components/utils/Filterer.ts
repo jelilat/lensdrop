@@ -1,6 +1,6 @@
 import apolloClient from 'src/apollo'
 import { WHO_COLLECTED, GET_COMMENTS, GET_PUBLICATION, GET_LIKES } from 'src/graphql/Queries/Publications';
-import { GET_PROFILES, GET_PROFILE } from 'src/graphql/Queries/Profile';
+import { GET_PROFILES, GET_PROFILE, GET_DEFAULT_PROFILE } from 'src/graphql/Queries/Profile';
 import { GET_FOLLOWERS } from '@graphql/Queries/Follow';
 import { Filter } from './AppContext'
 import { DocumentNode } from 'graphql';
@@ -61,7 +61,7 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
             query = GET_PROFILE
             variables = {
                 request: {
-                    handle: filter.handle!
+                    handle: filter.handle!,
                 }
             }
         } else if (filter.reaction === 'Like') {
@@ -106,13 +106,13 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
 
                 let _addresses: Array<any> = []
                 let balance = count
-
+                
                 while ((count < totalCount) && (_addresses.length < limit)) {
-                    const response = await queryFunction(query, variables)
+                    const response = await queryFunction(query, variables); 
                     let items = response?.data?.whoCollectedPublication?.items
                     for (let i = 0; i < items.length; i++) {
-                        let item = items[i]
-                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                        let item = items[i]; 
+                        if (item?.defaultProfile?.stats?.totalFollowers >= minimumFollowers) {
                             _addresses.push(item?.address)
                         }
                         if (_addresses.length >= limit) {
@@ -166,7 +166,7 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
                     const response = await queryFunction(query, variables)
                     let items = response?.data?.profiles?.items
                     for (let i = 0; i < items.length; i++) {
-                        let item = items[i]
+                        let item = items[i]; 
                         if (item?.stats?.totalFollowers >= minimumFollowers) {
                             _addresses.push(item?.ownedBy)
                         }
@@ -218,11 +218,12 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
                 let balance = count
 
                 while ((count < totalCount) && (_addresses.length < limit)) {
-                    const response = await queryFunction(query, variables)
+                    const response = await queryFunction(query, variables);
                     let items = response?.data?.publications?.items
                     for (let i = 0; i < items.length; i++) {
-                        let item = items[i]
-                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                        let item = items[i];
+                        let followers = await getTotalFollowers(item?.profile?.ownedBy)
+                        if (followers >= minimumFollowers) {
                             _addresses.push(item?.profile?.ownedBy)
                         }
                         if (_addresses.length >= limit) {
@@ -248,7 +249,7 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
                     }
                     cursor = "{\"offset\":" + count + "}"
                     variables.request.cursor = cursor
-                }  
+                } 
                 
                 if (filter.limit && (_addresses.length > filter?.limit)) {
                     _addresses = _addresses.slice(-filter.limit)
@@ -261,12 +262,13 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
                 const totalFollowers = response?.data?.profile?.stats?.totalFollowers
                 let count = 0
                 let _addresses: Array<any> = []
-
+                    
                 query = GET_FOLLOWERS
                 variables = {
                     request: {
                         profileId: profileId!,
                         cursor: cursor,
+                        limit: '50'
                     }
                 }
 
@@ -274,8 +276,8 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
                     const response = await queryFunction(query, variables)
                     let items = response?.data?.followers?.items
                     for (let i = 0; i < items.length; i++) {
-                        let item = items[i]
-                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                        let item = items[i];
+                        if (item?.wallet?.defaultProfile?.stats?.totalFollowers >= minimumFollowers) {
                             _addresses.push(item?.wallet?.address)
                         }
                     }
@@ -306,8 +308,9 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
                     const response = await queryFunction(query, variables)
                     let items = response?.data?.whoReactedPublication?.items
                     for (let i = 0; i < items.length; i++) {
-                        let item = items[i]
-                        if (item?.stats?.totalFollowers >= minimumFollowers) {
+                        let item = items[i]; 
+                        let followers = await getTotalFollowers(item?.profile?.ownedBy)
+                        if (followers >= minimumFollowers) {
                             _addresses.push(item?.profile?.ownedBy)
                         }
                         if (_addresses.length >= limit) {
@@ -366,4 +369,17 @@ export const Filterer = async(filters: Filter[], minimumFollowers: number): Prom
     const set = new Set(qualifiedAddresses);
 
     return Array.from(set)
+}
+
+const getTotalFollowers = (address: string) => {
+    const query = GET_DEFAULT_PROFILE
+    const variables = {
+        request: {
+            ethereumAddress: address
+        }
+    }
+
+    return queryFunction(query, variables).then((response) => {
+        return response?.data?.defaultProfile?.stats?.totalFollowers
+    })
 }

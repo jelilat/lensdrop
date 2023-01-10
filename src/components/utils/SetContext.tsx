@@ -35,18 +35,21 @@ const SetContext = () => {
         variables: {
           request: {
             address: address,
-            cursor: pageInfoz.next
+            cursor: pageInfoz.next,
+            limit: 50
           }
         },
         onCompleted(data) {
           setPageInfoz(data?.following?.pageInfo);
           let _followings: string[] = [];
           const follow = data?.following?.items; 
-          follow.map((following: Following) => {
+          if (followings.length < profiles[0]?.stats?.totalFollowing) {
+            follow.map((following: Following) => {
               const address = following?.profile?.ownedBy; 
               _followings.push(address);
           }); 
           setFollowings(followings => [...followings, ..._followings]);
+          }
         }
       })
     
@@ -54,18 +57,21 @@ const SetContext = () => {
         variables: {
           request: {
             profileId: profiles[0]?.id,
-            cursor: pageInfo.next
+            cursor: pageInfo.next,
+            limit: 50
           }
         },
         onCompleted(data) {
           setPageInfo(data?.followers?.pageInfo);
           let _followers: string[] = [];
           const follow = data?.followers?.items; 
-          follow.map((follower: Follower) => {
-              const address = follower?.wallet?.address; 
-              _followers.push(address);
-          }); 
-          setFollowers(followers => [...followers, ..._followers]);
+          if (followers.length < profiles[0]?.stats?.totalFollowers) {
+            follow.map((follower: Follower) => {
+                const address = follower?.wallet?.address; 
+                _followers.push(address);
+            }); 
+            setFollowers(followers => [...followers, ..._followers]);
+          }
         }
       })
     

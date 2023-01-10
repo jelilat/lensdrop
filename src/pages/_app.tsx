@@ -17,6 +17,7 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
 import client from 'src/apollo'
+import Moralis  from 'moralis';
 
 import Head from 'next/head'
 import Footer from '@components/Footer/Footer'
@@ -28,6 +29,10 @@ const { chains, provider, webSocketProvider } = configureChains([chain.polygon],
   alchemyProvider({ alchemyId }),
   publicProvider(),
 ]);
+
+Moralis.start({
+  apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY
+});
 
 const wagmiClient = createClient({
   autoConnect: true,
@@ -78,7 +83,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
               </Head>
                 <Component {...pageProps} />
-              <Footer />
+              {/* <Footer /> */}
           </div>
         </ApolloProvider>
       </WagmiConfig>
