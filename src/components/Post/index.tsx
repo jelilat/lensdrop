@@ -45,7 +45,7 @@ const Post = ({ ...props }: Props) => {
         expires: 360
       }
 
-    const accessToken = Cookies.get('accessToken')
+    const accessToken = Cookies.get(`accessToken-${address}`)
 
     const [getChallenge] = useLazyQuery(GET_CHALLENGE, {
        variables: { request: {
@@ -211,12 +211,12 @@ const Post = ({ ...props }: Props) => {
                                                 })
                                                 .then((res) => {
                                                     Cookies.set(
-                                                        'accessToken',
+                                                        `accessToken-${address}`,
                                                         res.data.authenticate.accessToken,
                                                         COOKIE_CONFIG
                                                     )
                                                     Cookies.set(
-                                                        'refreshToken',
+                                                        `refreshToken-${address}`,
                                                         res.data.authenticate.refreshToken,
                                                         COOKIE_CONFIG
                                                     )

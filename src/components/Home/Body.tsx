@@ -193,7 +193,6 @@ const Body = ()=> {
     useEffect(() => {
         if (chain?.name !== "Polygon" && address) {
             switchNetwork?.(137)
-            window.location.reload()
           }
     }, [address, chain, switchNetwork])
 

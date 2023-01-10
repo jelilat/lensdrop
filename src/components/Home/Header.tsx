@@ -1,23 +1,18 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from "next/router";
-import { Modal } from '@components/UI/Modal';
-import Connect from './Connect'
-import { useAccount } from 'wagmi'
 import SetContext from '@components/utils/SetContext'
 import { XIcon } from '@heroicons/react/solid'
 import Profile from './Profile';
 
 const Header = () => {
-    const { address, isConnected } = useAccount()
-    const [connectModal, setConnectModal] = useState<boolean>(false)
     const [navOpen, setNavOpen] = useState<boolean>(false)
 
     return (
         <>
             <SetContext />
             <div className="flex text-sm p-3 border-b-2 border-b-black-500 sticky top-0 bg-white w-full">
-                <div className="lg:w-2/5 sm:w-1/2 float-right p-2 font-semibold">
+                <div className="lg:w-1/3 sm:w-1/2 float-right p-2 font-semibold">
                     <Link className=""
                             href="/" >
                         Lensdrop
@@ -32,48 +27,48 @@ const Header = () => {
                                 >
                                     <XIcon className="w-5" />
                                 </div>
-                                <ul className="NAVIGATION-MOBILE-OPEN flex flex-col items-center justify-between min-h-[250px] p-3 text-gray-50 bg-gray-800">
-                                    <li className="my-2 border-b border-gray-50">
-                                        <div className={`mx-1 p-2`}>
+                                <ul className="NAVIGATION-MOBILE-OPEN grid grid-cols-1 divide-y items-center justify-between min-h-[250px] bg-gray-50 border-2 rounded-xl">
+                                    <li className="">
+                                        <div className={`p-3 text-center`}>
                                             <Link className=""
                                                 href="/" >
                                                 Home
                                             </Link>
                                         </div>
                                     </li>
-                                    <li className="my-2 border-b border-gray-50">
-                                        <div className={`mx-1 p-2`}>
+                                    <li className="">
+                                        <div className={`p-3 text-center`}>
                                             <Link className=""
                                                 href="/followers" >
                                                 Followers
                                             </Link>
                                         </div>
                                     </li>
-                                    <li className="my-2 border-b border-gray-50">
-                                    <div className={`mx-1 p-2`}>
+                                    <li className="">
+                                    <div className={`p-3 text-center`}>
                                             <Link className=""
                                                 href="/following" >
                                                 Following
                                             </Link>
                                         </div>
                                     </li>
-                                    <li className="my-2 border-b border-gray-50">
-                                        <div className={`mx-1 p-2`}>
+                                    <li className="">
+                                        <div className={`p-3 text-center`}>
                                             <Link className=""
                                                 href="/all" >
                                                 All
                                             </Link>
                                         </div>
-                                    </li><li className="my-2 border-b border-gray-50">
-                                        <div className={`mx-1 p-2`}>
+                                    </li><li className="">
+                                        <div className={`p-3 text-center`}>
                                             <Link className=""
                                                 href="/listings" >
                                                 Listings
                                             </Link>
                                         </div>
                                     </li>
-                                    <li className="my-2">
-                                    <Profile />
+                                    <li className="p-3">
+                                        <Profile />
                                     </li>
                                 </ul>
                             </div>
@@ -86,8 +81,8 @@ const Header = () => {
                         </div>
                     }
                 </div>
-                <div className="lg:w-2/5 hidden lg:flex content-center">
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/" ?
+                <div className="lg:w-1/3 hidden lg:flex content-center">
+                    <div className={`mx-1 p-2 justify-center text-center ${useRouter().pathname === "/" ?
                             "bg-gray-200 rounded-lg" : null}`}>
                         <Link className=""
                             href="/" >
@@ -123,7 +118,7 @@ const Header = () => {
                         </Link>
                     </div>
                 </div>
-            <div className="w-1/5 hidden lg:flex">
+            <div className="w-1/3 hidden lg:flex justify-center">
                 <Profile />
             </div>
             </div>
