@@ -6,6 +6,7 @@ import Connect from './Connect'
 import { useAccount } from 'wagmi'
 import SetContext from '@components/utils/SetContext'
 import { XIcon } from '@heroicons/react/solid'
+import Profile from './Profile';
 
 const Header = () => {
     const { address, isConnected } = useAccount()
@@ -72,24 +73,7 @@ const Header = () => {
                                         </div>
                                     </li>
                                     <li className="my-2">
-                                    <button className="rounded-lg bg-black text-white p-2"
-                                        onClick={() => {
-                                            setConnectModal(true)
-                                        }}
-                                        data-bs-toggle="modal">
-                                        {!isConnected || address == undefined ? 
-                                            "Connect wallet"
-                                            : (address)?.slice(0, 6) + "..." + (address)?.slice(-4)
-                                            }
-                                        <Modal
-                                            title="Connect Wallet"
-                                            show={connectModal}
-                                            onClose={()=>{
-                                                setConnectModal(false)
-                                            }}>
-                                                <Connect />
-                                            </Modal>
-                                    </button>
+                                    <Profile />
                                     </li>
                                 </ul>
                             </div>
@@ -139,26 +123,9 @@ const Header = () => {
                         </Link>
                     </div>
                 </div>
-                <div className="w-1/5 hidden lg:flex">
-                    <button className="rounded-lg bg-black text-white p-2"
-                        onClick={() => {
-                            setConnectModal(true)
-                        }}
-                        data-bs-toggle="modal">
-                        {!isConnected || address == undefined ? 
-                            "Connect wallet"
-                            : (address)?.slice(0, 6) + "..." + (address)?.slice(-4)
-                            }
-                        <Modal
-                            title="Connect Wallet"
-                            show={connectModal}
-                            onClose={()=>{
-                                setConnectModal(false)
-                            }}>
-                                <Connect />
-                            </Modal>
-                    </button>
-                </div>
+            <div className="w-1/5 hidden lg:flex">
+                <Profile />
+            </div>
             </div>
         </>
     )

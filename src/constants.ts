@@ -1,5 +1,3 @@
-import { chain } from 'wagmi'
-
 // Environments
 export const IS_PRODUCTION = process.env.NODE_ENV === 'production'
 export const IS_DEVELOPMENT = process.env.NODE_ENV === 'development'
@@ -47,17 +45,6 @@ export const ALCHEMY_KEY = process.env.NEXT_PUBLIC_ALCHEMY_KEY
 export const ALCHEMY_RPC = IS_MAINNET
   ? `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
   : `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY}`
-export const POLYGON_MAINNET = {
-  ...chain.polygon,
-  name: 'Polygon Mainnet',
-  rpcUrls: { default: 'https://polygon-rpc.com' }
-}
-export const POLYGON_MUMBAI = {
-  ...chain.polygonMumbai,
-  name: 'Polygon Mumbai',
-  rpcUrls: { default: 'https://rpc-mumbai.maticvigil.com' }
-}
-export const CHAIN_ID = IS_MAINNET ? POLYGON_MAINNET.id : POLYGON_MUMBAI.id
 
 export const ERRORS = {
   notMined:

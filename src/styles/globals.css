@@ -18,3 +18,9 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.connectButton {  
+  background-color: black !important;  
+  padding: 0.5rem !important;
+  border-color: white !important; 
+}
