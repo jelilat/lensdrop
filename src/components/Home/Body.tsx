@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { 
-    chain as chains,
     useContractWrite, 
     erc20ABI, 
     erc721ABI,
@@ -41,7 +40,7 @@ const Body = ()=> {
     const [state, setState] = useState<"Prepare" | "Approve" | "Airdrop">("Prepare")
     const [defaultProfile, setDefaultProfile] = useState(profiles[0]?.id)
     const [func, setFunc] = useState<Func>("batchSendNativeToken")
-    const [tokenAddress, setTokenAddress] = useState<string>("")
+    const [tokenAddress, setTokenAddress] = useState<`0x${string}`>()
     const [tokenIds, setTokenIds] = useState<Array<string>>([])
     const [tokenBalances, setTokenBalances] = useState<Array<{name: string, address: string, balance: string}>>([])
     const [nftBalances, setNftBalances] = useState<Array<{name: string, address: string, tokenId: string, tokenType: string}>>([])
@@ -56,10 +55,11 @@ const Body = ()=> {
     const [fee, setFee] = useState<BigNumber>(utils.parseEther("1").div(100))
 
     const tokenContract = useContractWrite({
-        addressOrName: tokenAddress,
-        contractInterface: erc20ABI,
+        address: tokenAddress,
+        abi: erc20ABI,
         functionName: 'approve', 
-        args: [LENSDROP_CONTRACT_ADDRESS, BigInt(parseFloat(amount) * decimal * recipients.length)],
+        args: [LENSDROP_CONTRACT_ADDRESS, BigNumber.from(BigInt(parseFloat(amount) * decimal * recipients.length))],
+        mode: 'recklesslyUnprepared',
         onSuccess(data){
             setTransactionHash(data?.hash)
         },
@@ -71,10 +71,11 @@ const Body = ()=> {
     })
 
     const setApproval = useContractWrite({
-        addressOrName: tokenAddress,
-        contractInterface: erc721ABI,
+        address: tokenAddress,
+        abi: erc721ABI,
         functionName: 'setApprovalForAll',
         args: [LENSDROP_CONTRACT_ADDRESS, true],
+        mode: 'recklesslyUnprepared',
         onSuccess(data){
             setTransactionHash(data?.hash)
         },
@@ -86,14 +87,15 @@ const Body = ()=> {
     })
 
     const airdropContract = useContractWrite({
-        addressOrName: LENSDROP_CONTRACT_ADDRESS,
-        contractInterface: LensdropAbi,
+        address: LENSDROP_CONTRACT_ADDRESS,
+        abi: LensdropAbi,
         functionName: func, 
         args: func !== "batchSendNativeToken" ? [recipients, BigInt(parseFloat(amount) * decimal), tokenAddress] : [recipients, utils.parseEther(amount)],
         overrides: {
             from: address,
             value: func === "batchSendNativeToken" ? (utils.parseEther(amount).mul(BigInt(recipients.length))).add(fee) : fee,
           },
+        mode: 'recklesslyUnprepared',
         onSuccess(data){
             setTransactionHash(data?.hash)
             setErrorMessage("")
@@ -106,14 +108,15 @@ const Body = ()=> {
     })
 
     const airdropNFT = useContractWrite({
-        addressOrName: LENSDROP_CONTRACT_ADDRESS,
-        contractInterface: LensdropAbi,
+        address: LENSDROP_CONTRACT_ADDRESS,
+        abi: LensdropAbi,
         functionName: nftBalances[0]?.tokenType === "ERC721" ? "batchSendERC721" : "batchSendERC1155",
         args: [tokenAddress, recipients, tokenIds],
         overrides: {
             from: address,
             value: fee,
             },
+        mode: 'recklesslyUnprepared',
         onSuccess(data){
             setTransactionHash(data?.hash)
             setErrorMessage("")
@@ -126,7 +129,7 @@ const Body = ()=> {
     })
 
     const verifyTransaction = useWaitForTransaction({
-        hash: transactionHash,
+        hash: transactionHash as `0x${string}`,
         onSuccess(data){
             if (data?.status === 1) {
                 isLoading(false)
@@ -145,58 +148,57 @@ const Body = ()=> {
     })
 
     const decimals = useContractRead({
-        addressOrName: tokenAddress,
-        contractInterface: erc20ABI,
+        address: tokenAddress,
+        abi: erc20ABI,
         functionName: 'decimals', 
         chainId: 137
     })
 
     const name = useContractRead({
-        addressOrName: tokenAddress,
-        contractInterface: erc20ABI,
+        address: tokenAddress,
+        abi: erc20ABI,
         functionName: 'name', 
         chainId: 137
     })
 
     const allowance = useContractRead({
-        addressOrName: tokenAddress,
-        contractInterface: erc20ABI,
+        address: tokenAddress,
+        abi: erc20ABI,
         functionName: 'allowance',
-        args: [address, LENSDROP_CONTRACT_ADDRESS],
+        args: [address!, LENSDROP_CONTRACT_ADDRESS],
         chainId: 137
     })
 
     const approval = useContractRead({
-        addressOrName: tokenAddress,
-        contractInterface: erc721ABI,
+        address: tokenAddress,
+        abi: erc721ABI,
         functionName: 'isApprovedForAll',
-        args: [address, LENSDROP_CONTRACT_ADDRESS],
+        args: [address!, LENSDROP_CONTRACT_ADDRESS],
         chainId: 137
     })
 
     const balanceOf = useContractRead({
-        addressOrName: tokenAddress,
-        contractInterface: erc20ABI,
+        address: tokenAddress,
+        abi: erc20ABI,
         functionName: 'balanceOf', 
-        args: [address],
+        args: [address!],
         chainId: 137
     })
 
     const balance = useBalance({
-        addressOrName: address!,
+        address: address!,
         chainId: 137
     })
 
     useEffect(() => {
         if (chain?.name !== "Polygon" && address) {
-            switchNetwork?.(chains.polygon.id)
-            window.location.reload()
+            switchNetwork?.(137)
           }
     }, [address, chain, switchNetwork])
 
     const _continue = async () => {
         
-        if (func !== 'batchSendNativeToken' && tokenAddress === "") {
+        if (func !== 'batchSendNativeToken' && tokenAddress === "" as `0x${string}`) {
             setModal(true)
             setErrorMessage("Enter a token address")
             return
@@ -305,7 +307,7 @@ const Body = ()=> {
             bal = parseFloat(formattedBalance)
         } else {
             const formattedBalance = balanceOf?.data?._hex
-            bal = parseInt(formattedBalance)/decimal
+            bal = parseInt(formattedBalance!)/decimal
         }
 
         if (bal < parseFloat(amount) * recipients.length) {
@@ -316,7 +318,7 @@ const Body = ()=> {
         }
 
         if (func === "batchSendERC20"){
-            const allowed = parseInt(allowance?.data?._hex)/decimal
+            const allowed = parseInt(allowance?.data?._hex!)/decimal
             if (allowed >= parseFloat(amount) * recipients.length) {
                 isLoading(false)
                 setState("Airdrop")
@@ -331,7 +333,8 @@ const Body = ()=> {
         }
 
         if (func === "batchSendERC20") {
-            tokenContract.write()
+            const send = tokenContract as any
+            send?.write()
             while (loading) {
                 verifyTransaction?.data
                 // wait for 5 seconds
@@ -340,7 +343,8 @@ const Body = ()=> {
             
             return
         } else if (func === "batchSendNFT") {
-            setApproval.write()
+            const approve = setApproval as any
+            approve?.write()
             while (loading) {
                 verifyTransaction.data; 
                 // wait for 5 seconds
@@ -456,12 +460,12 @@ const Body = ()=> {
                                 Token address
                             </div>
                             <input type="text" list="tokenAddresses" onChange={(e)=> {
-                                    setTokenAddress(e.target.value);
+                                    setTokenAddress(e.target.value as `0x${string}`);
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full" />
                             <datalist id="tokenAddresses">
                                 <select onChange={(e)=> {
-                                    const token = e.target.value
+                                    const token = e.target.value as `0x${string}`;
                                     setTokenAddress(token);
                                 }}>
                                     <option value=""></option>
@@ -560,7 +564,7 @@ const Body = ()=> {
                             }}
                                 className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
                                 data-bs-toggle="modal"
-                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading && isConnected)}
+                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading && isConnected) || (!profiles[0])}
                                 >
                                 {
                                     (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading ?
@@ -568,7 +572,7 @@ const Body = ()=> {
                                     :
                                     <div className="flex justify-center">
                                         {
-                                            isConnected ? <div className="flex">Fetching data... <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                            isConnected && profiles[0] != null ? <div className="flex">Fetching data... <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
                                             </div>
                                              : "Continue"
                                         }
@@ -746,7 +750,8 @@ const Body = ()=> {
                                 setModal(false)
                                 isLoading(true);
                                 if (func !== "batchSendNFT") {
-                                    airdropContract.write(); 
+                                    const airdrop = airdropContract as any
+                                    airdrop?.write(); 
                                     while (loading) {
                                         verifyTransaction.data
                                         // wait for 5 seconds
@@ -754,7 +759,8 @@ const Body = ()=> {
                                     }
                                     
                                 } else {
-                                    airdropNFT.write(); 
+                                    const airdrop = airdropNFT as any
+                                    airdrop?.write(); 
                                     while (loading) {
                                         verifyTransaction.data
                                         // wait for 5 seconds

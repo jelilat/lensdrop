@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
+    "@dynamic-labs/sdk-react": "^0.14.22",
+    "@dynamic-labs/wagmi-connector": "^0.14.22",
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^1.0.6",
     "@moralisweb3/evm-utils": "^2.11.0",
@@ -32,7 +34,7 @@
     "react-dom": "18.2.0",
     "tabler-icons-react": "^1.56.0",
     "uuid": "^9.0.0",
-    "wagmi": "^0.5.6",
+    "wagmi": "^0.10.3",
     "web3.storage": "^4.4.0"
   },
   "devDependencies": {

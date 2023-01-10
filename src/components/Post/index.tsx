@@ -2,7 +2,6 @@ import { useMutation, useLazyQuery } from '@apollo/client'
 import { useState, useEffect } from 'react'
 import { 
     useAccount,
-    chain as chains,
     useSignTypedData,
     useContractWrite,
     useNetwork,
@@ -46,7 +45,7 @@ const Post = ({ ...props }: Props) => {
         expires: 360
       }
 
-    const accessToken = Cookies.get('accessToken')
+    const accessToken = Cookies.get(`accessToken-${address}`)
 
     const [getChallenge] = useLazyQuery(GET_CHALLENGE, {
        variables: { request: {
@@ -69,9 +68,10 @@ const Post = ({ ...props }: Props) => {
       })
 
     const { write } = useContractWrite({
-        addressOrName: '0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d',
-        contractInterface: LensHubProxy,
+        address: '0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d',
+        abi: LensHubProxy,
         functionName: 'postWithSig',
+        mode: 'recklesslyUnprepared',
         onError(error) {
             console.log(error?.message)
         },
@@ -115,7 +115,7 @@ const Post = ({ ...props }: Props) => {
                       sig
                     }
 
-                    write?.({ args: inputStruct})
+                    write?.({ recklesslySetUnpreparedArgs: [inputStruct]})
                     })
                 }
             })
@@ -123,8 +123,6 @@ const Post = ({ ...props }: Props) => {
     const shareToLens = async () => {
         if (!isConnected) {
             alert("Connect your wallet")
-        } else if (chain?.id !== chains.polygon.id ) {
-            alert("Connect your wallet to Polygon")
         } else if (profiles.length === 0) {
             alert("You don't have a lens profile")
         } else {
@@ -213,12 +211,12 @@ const Post = ({ ...props }: Props) => {
                                                 })
                                                 .then((res) => {
                                                     Cookies.set(
-                                                        'accessToken',
+                                                        `accessToken-${address}`,
                                                         res.data.authenticate.accessToken,
                                                         COOKIE_CONFIG
                                                     )
                                                     Cookies.set(
-                                                        'refreshToken',
+                                                        `refreshToken-${address}`,
                                                         res.data.authenticate.refreshToken,
                                                         COOKIE_CONFIG
                                                     )
