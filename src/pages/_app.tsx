@@ -37,6 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   <meta property="twitter:image" content="/air-hot-balloon.png" />
                   <meta property="twitter:card" content="summary" />
                   <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
+                  <script defer data-domain="lensdrop.xyz,lensverse.web" src="https://plausible.io/js/script.js"></script>
                 </Head>
                   <Component {...pageProps} />
                 <Footer />
