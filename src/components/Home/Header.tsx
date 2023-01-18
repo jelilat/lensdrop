@@ -58,7 +58,7 @@ const Header = () => {
                                         <div className={`p-3 text-center`}>
                                             <Link className=""
                                                 href="/all" >
-                                                All
+                                                Any
                                             </Link>
                                         </div>
                                     </li><li className="">
@@ -72,7 +72,7 @@ const Header = () => {
                                             <li className="my-2 border-b border-gray-50">
                                                 <div className={`mx-1 p-2`}>
                                                     <Link className=""
-                                                        href="/app/followers" >
+                                                        href="/followers" >
                                                         <div className="text-gray-900">
                                                             Followers
                                                             <ArrowRight className="w-5 mx-1 inline-block" />
@@ -83,7 +83,7 @@ const Header = () => {
                                             <li className="my-2 border-b border-gray-50 cursor-pointer">
                                                 <div className={`mx-1 p-2`}>
                                                     <Link className=""
-                                                        href="/app/following" >
+                                                        href="/following" >
                                                         <div className="text-gray-900">
                                                             Following
                                                             <ArrowRight className="w-5 mx-1 inline-block" />
@@ -118,7 +118,7 @@ const Header = () => {
                         </div>
                     }
                 </div>
-                <div className="lg:w-1/3 hidden lg:flex content-center">
+                <div className="lg:w-1/3 hidden lg:flex justify-center">
                     <div className={`mx-1 p-2 justify-center text-center ${useRouter().pathname === "/" ?
                             "bg-gray-200 rounded-lg" : null}`}>
                         <Link className=""
@@ -139,10 +139,10 @@ const Header = () => {
                         </div>
                         <ul className="absolute invisible group-hover:visible bg-white border-2 rounded-lg p-2 z-10">
                             <li className="cursor-pointer">
-                                <div className={`mx-1 p-2 ${useRouter().pathname === "/app/followers" ?
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/followers" ?
                                     "bg-gray-200 rounded-lg" : null}`}>
                                     <Link className=""
-                                        href="/app/followers" >
+                                        href="/followers" >
                                         <div className="text-gray-900">
                                             Followers
                                             <ArrowRight className="w-5 mx-1 inline-block" />
@@ -151,10 +151,10 @@ const Header = () => {
                                 </div>
                             </li>
                             <li className="cursor-pointer">
-                                <div className={`mx-1 p-2 ${useRouter().pathname === "/app/following" ?
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/following" ?
                                     "bg-gray-200 rounded-lg" : null}`}>
                                     <Link className=""
-                                        href="/app/following" >
+                                        href="/following" >
                                         <div className="text-gray-900">
                                             Following
                                             <ArrowRight className="w-5 mx-1 inline-block" />

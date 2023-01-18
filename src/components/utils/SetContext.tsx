@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi'
 import { useAppContext } from '@components/utils/AppContext'
 import { useLazyQuery } from '@apollo/client'
-import { GET_PROFILES } from '@graphql/Queries/Profile'
+import { GET_DEFAULT_PROFILE } from '@graphql/Queries/Profile'
 import { GET_FOLLOWING, GET_FOLLOWERS } from '@graphql/Queries/Follow'
 import { Follower, Following } from '@generated/types'
 
@@ -20,14 +20,14 @@ const SetContext = () => {
         setFollowings 
       } = useAppContext();
     
-     const [getProfiles] = useLazyQuery(GET_PROFILES, {
+     const [getProfile] = useLazyQuery(GET_DEFAULT_PROFILE, {
         variables: {
           request: {
-            ownedBy: address
+            ethereumAddress: address
           }
         },
         onCompleted(data) {
-          setProfiles(data?.profiles?.items);
+          setProfiles([data?.defaultProfile]);
         },
       })
     
@@ -82,7 +82,7 @@ const SetContext = () => {
           }
           
           if (profiles.length === 0) {
-            getProfiles();
+            getProfile();
           }
 
           const totalFollowers = profiles[0]?.stats?.totalFollowers  
@@ -95,7 +95,7 @@ const SetContext = () => {
             getFollowing();
           }
         }
-      }, [isConnected, address, profiles, followers, followings, setUserAddress, getProfiles, getFollowers, getFollowing]);
+      }, [isConnected, address, profiles, followers, followings, setUserAddress, getProfile, getFollowers, getFollowing]);
     
       return (
         <></>

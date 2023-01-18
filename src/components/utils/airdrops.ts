@@ -1,9 +1,12 @@
 import { Alchemy, Network, AssetTransfersCategory, AssetTransfersResponse, AssetTransfersResult } from "alchemy-sdk";
 import Moralis  from 'moralis';
-import { EvmChain, GetDateToBlockResponseAdapter } from '@moralisweb3/evm-utils';
+import { EvmChain, RunContractFunctionResponseAdapter } from '@moralisweb3/evm-utils';
 import { LensHubProxy } from "@abis/LensHubProxy";
 import { LensdropAbi } from "@abis/Airdrop";
-import ethers from "ethers";
+import Web3 from "web3";
+import { AbiItem } from "web3-utils";
+
+const web3 = new Web3(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
 
 const config = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
@@ -12,6 +15,17 @@ const config = {
 const alchemy = new Alchemy(config);
 const chain = EvmChain.POLYGON;
 
+export const startMoralis = async () => {
+    await Moralis.start({
+        apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+      }).then(() => {
+        console.log("Moralis started");
+      })
+      .catch((error) => {
+        console.log("Moralis failed to start");
+      });
+}
+
 export const getAirdrops = async (address: string): Promise<AssetTransfersResponse> => {
     const res = await alchemy.core.getAssetTransfers({
         fromBlock: "0x0",
@@ -19,9 +33,14 @@ export const getAirdrops = async (address: string): Promise<AssetTransfersRespon
         toAddress: "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184",
         excludeZeroValue: false,
         category: ["external" as AssetTransfersCategory],
-      });
- 
+      });console.log(res);
       return res;
+}
+
+export const getRecipients = async (txHash: string) => {
+    const receipt = await web3.eth.getTransactionReceipt(txHash);
+    const contract = new web3.eth.Contract(LensdropAbi as AbiItem[], "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184");
+    const logs = contract?.events?.allEvents()
 }
 
 export const totalMaticAirdrops = async (transfers: AssetTransfersResult[]): Promise<number> => {
@@ -50,26 +69,50 @@ export const get7daysBlockNumber = async (): Promise<number> => {
     return blockNumber;
 }
 
-export const newFollows = async(profileId: string, blockNumber: number): Promise<AssetTransfersResult[]> => {
-    const followNFT = await Moralis.EvmApi.utils.runContractFunction({
-        abi: LensHubProxy,
-        functionName: "getFollowNFT",
-        address: "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d",
-        chain,
-        params: {
-            profileId,
-        }
-       });
+export const newFollows = async(blockNumber: number, followNFT: string): Promise<AssetTransfersResult[]> => {
     const transfers = await alchemy.core.getAssetTransfers({
         fromBlock: "0x" +blockNumber.toString(16),
-        contractAddresses: [followNFT?.result],
+        contractAddresses: [followNFT],
         category: ["erc721" as AssetTransfersCategory],
-    })
-    console.log("follow", transfers);
-    return transfers?.transfers!;
+    });
+    let newFollows = transfers?.transfers;
+    // remove duplicates
+    newFollows = newFollows?.filter((v, i, a) => a.findIndex(t => (t.to === v.to && confirmFollow(t.hash, followNFT))) === i);
+    return newFollows;
 }
 
-export const getSponsoredPosts = async(address: string): Promise<number> => {
+const confirmFollow = async(hash: string, followNFT: string): Promise<boolean> => {
+    const transaction = await web3.eth.getTransaction(hash);
+    return transaction?.to == followNFT;
+}
+
+export const getDateByBlockNum = async (blockNum: string): Promise<string> => {
+    const time = (await web3.eth.getBlock(parseInt(blockNum))).timestamp as number;
+    const date = new Date(time * 1000);
+    return dayOfWeek(date);
+}
+
+export const dayOfWeek = (date: Date): string => {
+    let day = date.getUTCDay();
+    switch (day) {
+        case 1:
+            return "Mon";
+        case 2:
+            return "Tue";
+        case 3:
+            return "Wed";
+        case 4:
+            return "Thur";
+        case 5:
+            return "Fri";
+        case 6:
+            return "Sat";
+        default:
+            return "Sun";
+    }
+}
+
+export const getSponsoredPosts = async(address: string): Promise<RunContractFunctionResponseAdapter> => {
     const sponsoredPosts = await Moralis.EvmApi.utils.runContractFunction({
         abi: LensdropAbi,
         functionName: "getUserEscrows",
@@ -79,19 +122,23 @@ export const getSponsoredPosts = async(address: string): Promise<number> => {
             user: address
         }
     });
-    return sponsoredPosts?.result?.length!;
+    return sponsoredPosts;
 }
 
-export const erc721Transactions = async (transfers: AssetTransfersResult[]): Promise<number> => {
+export const getEarnings = async(address: string): Promise<number> => {
+    const res = await alchemy.core.getAssetTransfers({
+        fromAddress: "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184",
+        toAddress: address,
+        excludeZeroValue: true,
+        category: ["external" as AssetTransfersCategory],
+    });
+    const transfers = res.transfers;
+    let totalValue = 0;
     for (let i = 0; i < transfers.length; i++) {
-        let transaction = await alchemy.core.getTransactionReceipt(
-            transfers[i]?.hash!,
-        )
-        let a = await alchemy.core.getLogs({
-            address: "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184"
-        })
-        console.log("transaction", transaction);
+        const transfer = transfers[i];
+        if (transfer.asset === "MATIC") {
+            totalValue += transfer?.value!;
+        }
     }
-
-    return 0;
+    return totalValue;
 }

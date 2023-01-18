@@ -2,12 +2,10 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ApolloProvider } from '@apollo/client'
 
-
 import { DynamicContextProvider, EvmNetwork } from '@dynamic-labs/sdk-react';
 import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
 
 import client from 'src/apollo'
-import Moralis  from 'moralis';
 
 import Head from 'next/head'
 import Footer from '@components/Footer/Footer'
@@ -27,15 +25,15 @@ function MyApp({ Component, pageProps }: AppProps) {
             <div>
                 <Head>
                   <title>Lensdrop</title>
-                  <link rel="shortcut icon" href="/air-hot-balloon.png" />
+                  <link rel="shortcut icon" href="/lensdrop.png" />
                   <meta property="og:title" content="Lensdrop" />
-                  <meta property="og:image" content="/air-hot-balloon.png" />
+                  <meta property="og:image" content="/lensdrop.png" />
                   <meta property="og:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
                   <meta property="og:url" content="https://lensdrop.xyz" />
 
                   <meta property="twitter:title" content="Lensdrop" />
                   <meta property="twitter:site" content="@lensdropxyz" />
-                  <meta property="twitter:image" content="/air-hot-balloon.png" />
+                  <meta property="twitter:image" content="/lensdrop.png" />
                   <meta property="twitter:card" content="summary" />
                   <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
                 </Head>

@@ -182,19 +182,22 @@ export const GET_DEFAULT_PROFILE = gql`
       id
       name
       bio
+      isDefault
       attributes {
         displayType
         traitType
         key
         value
       }
+      followNftAddress
       metadata
-      isDefault
+      handle
       picture {
         ... on NftImage {
           contractAddress
           tokenId
           uri
+          chainId
           verified
         }
         ... on MediaSet {
@@ -203,14 +206,13 @@ export const GET_DEFAULT_PROFILE = gql`
             mimeType
           }
         }
-        __typename
       }
-      handle
       coverPicture {
         ... on NftImage {
           contractAddress
           tokenId
           uri
+          chainId
           verified
         }
         ... on MediaSet {
@@ -219,7 +221,6 @@ export const GET_DEFAULT_PROFILE = gql`
             mimeType
           }
         }
-        __typename
       }
       ownedBy
       dispatcher {
@@ -238,10 +239,11 @@ export const GET_DEFAULT_PROFILE = gql`
       followModule {
         ... on FeeFollowModuleSettings {
           type
+          contractAddress
           amount {
             asset {
-              symbol
               name
+              symbol
               decimals
               address
             }
@@ -250,10 +252,10 @@ export const GET_DEFAULT_PROFILE = gql`
           recipient
         }
         ... on ProfileFollowModuleSettings {
-         type
+        type
         }
         ... on RevertFollowModuleSettings {
-         type
+        type
         }
       }
     }
