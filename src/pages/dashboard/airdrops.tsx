@@ -10,14 +10,18 @@ import {
 } from '@components/utils/airdrops';
 import { useAccount } from 'wagmi';
 import Link from 'next/link';
+import { accessList } from '@components/Dashboard/access'
+import Connect from '@components/Home/Connect';
 
 const Airdrops = () => {
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const [airdrops, setAirdrops] = useState<AssetTransfersResult[]>();
     const [totalRecipients, setTotalRecipients] = useState<number[]>([]);
     const [tokenNames, setTokenNames] = useState<string[]>([]);
     const [tokenType, setTokenType] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [hasAccess, setHasAccess] = useState<boolean>(false);
+    const [checkedAccess, setCheckedAccess] = useState<boolean>(false);
 
     const copyToClipboard = (text: string | number) => {
         navigator.clipboard.writeText(text.toString());
@@ -46,9 +50,38 @@ const Airdrops = () => {
             setLoading(false);
         }
         if (address) {
-            airdrops();
-        }
+            if (accessList.includes(address)) {
+                setHasAccess(true);
+                airdrops();
+            }
+            setCheckedAccess(true);
+        } 
     }, [address]);
+
+    if (!isConnected) {
+        return (
+            <>
+                <Header />
+                <div className="flex items-center justify-center h-screen">
+                    <Connect />
+                </div>
+            </>
+        )
+    }
+
+    if (!hasAccess && checkedAccess) {
+        return (
+            <>
+                <Header />
+                <div className="flex flex-col items-center justify-center h-screen">
+                    <div className="text-2xl font-bold">You do not have access to this page</div>
+                    <Link href="/">
+                        <a className="text-blue-500">Go back to home</a>
+                    </Link>
+                </div>
+            </>
+        )
+    }
 
     return(
         <>

@@ -17,11 +17,12 @@ import {
  import { useAppContext } from '@components/utils/AppContext';
 import { useAccount } from 'wagmi';
 import Link from 'next/link';
-import { Home2 } from 'tabler-icons-react';
+import { accessList } from './access'
+import Connect from '@components/Home/Connect';
 
 const Dashboard = () => {
     const { profiles } = useAppContext();
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const [airdrops, setAirdrops] = useState<AssetTransfersResult[]>();
     const [totalMatic, setTotalMatic] = useState<number>(0);
     const [percentageIncrease, setPercentageIncrease] = useState<number>(0);
@@ -40,6 +41,8 @@ const Dashboard = () => {
         {label: "Sat", value: "0"},
     ]);
     const [ready, setReady] = useState<boolean>(false);
+    const [hasAccess, setHasAccess] = useState<boolean>(false);
+    const [checkedAccess, setCheckedAccess] = useState<boolean>(false);
 
     useEffect(() => {
         // rearrange followData so today is first
@@ -98,12 +101,44 @@ const Dashboard = () => {
             }
             setReady(true)   
         }
-        airdrops();
+        if (address) {
+            if (accessList.includes(address)) {
+                setHasAccess(true);
+                airdrops();
+            }
+            setCheckedAccess(true);
+        } 
     }, [profiles])
+
+    if (!isConnected) {
+        return (
+            <>
+                <Header />
+                <div className="flex items-center justify-center h-screen">
+                    <Connect />
+                </div>
+            </>
+        )
+    }
+
+    if (!hasAccess && checkedAccess) {
+        return (
+            <>
+                <Header />
+                <div className="flex flex-col items-center justify-center h-screen">
+                    <div className="text-2xl font-bold">You do not have access to this page</div>
+                    <Link href="/">
+                        <a className="text-blue-500">Go back to home</a>
+                    </Link>
+                </div>
+            </>
+        )
+    }
+
     return (
         <div> 
             <Header />
-           {
+            {
                 ready ?
                     <div className='flex max-h-screen'>
                         <div className='hidden lg:flex'>
@@ -142,9 +177,9 @@ const Dashboard = () => {
                             Processing...
                         </button>
                     </div>
-           }
+            }
         </div>
-    );
+    )
 }
 
 export default Dashboard;
