@@ -55,10 +55,7 @@ const Post = ({ ...props }: Props) => {
     })
 
    const [authenticate] = useMutation(AUTHENTICATION, {
-        fetchPolicy:'no-cache',
-        onCompleted(data){
-                // console.log(data);    
-          }
+        fetchPolicy:'no-cache'
    })
 
     const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({

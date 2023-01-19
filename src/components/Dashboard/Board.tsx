@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { AssetTransfersResult } from 'alchemy-sdk';
-import { useAccount } from 'wagmi';
-import { AirBalloon, Cash, Ticket, Copy } from 'tabler-icons-react'
+import { AirBalloon, Cash, Ticket } from 'tabler-icons-react'
 import { UserGroupIcon, UserIcon } from '@heroicons/react/outline'
 import { useAppContext } from '@components/utils/AppContext';
 import dynamic from 'next/dynamic';
@@ -16,12 +14,11 @@ interface props {
         label: string,
         value: string
     }[]
+    totalRecipients: number
 }
 
-const Board = ({ airdrops, totalMatic, percentageIncrease, sponsoredPosts, followData}: props) => {
-    const { address } = useAccount();
+const Board = ({ airdrops, totalMatic, percentageIncrease, sponsoredPosts, followData, totalRecipients }: props) => {
     const { profiles } = useAppContext();
-    const [loading, setLoading] = useState<boolean>(true);
 
     const lineChartConfigs = {
         type: "spline", 
@@ -88,7 +85,7 @@ const Board = ({ airdrops, totalMatic, percentageIncrease, sponsoredPosts, follo
                         color="#61acf9"
                         />
                     <div className="font-bold text-3xl my-3">
-                        1000
+                        {totalRecipients || 0}
                     </div>
                     <div className="font-medium text-xl">
                         Recipients
@@ -120,7 +117,7 @@ const Board = ({ airdrops, totalMatic, percentageIncrease, sponsoredPosts, follo
                             color="#61acf9"
                             />
                         <div className="font-bold text-3xl my-3">
-                            {sponsoredPosts} 
+                            {sponsoredPosts || 0} 
                         </div>
                         <div className="font-medium text-xl">
                             Sponsored Posts 

@@ -19,10 +19,7 @@ export default function Followers({ airdrops, sponsoredPosts }: Props) {
           profileId: profiles[0]?.id,
           limit: 5
         }
-      },
-      onCompleted(data) {
-          console.log(data)
-      },
+      }
     })
     const [earnings, setEarnings] = useState(0)
     const defaultSrc = "https://cdn.stamp.fyi/avatar/eth:0x7a07fd44df4b26842dd9d07094a24248e62378e2?s=200"
@@ -34,33 +31,6 @@ export default function Followers({ airdrops, sponsoredPosts }: Props) {
       }
       getTotalEarnings()
     }, [profiles])
-
-    const pieChartConfigs = {
-        type: "pie2d", 
-        width: "100%", 
-        height: "400", 
-        dataFormat: "json", 
-        dataSource: {
-          chart: {
-            "caption": "Campaign Distribution",
-            "subCaption": "",
-            "xAxisName": "Campaign Type",
-            "yAxisName": "Distribution",
-            "numberPrefix": "",
-            "theme": "fusion",
-          },
-          data: [
-            {
-                label: "Airdrops",
-                value: airdrops?.length.toString()
-            },
-            {
-                label: "Sponsored Posts",
-                value: "1"
-            }
-          ]
-        }
-      };
     
     if (loading) return <div>Loading...</div>
     

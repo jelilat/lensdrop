@@ -5,9 +5,11 @@ import { LensHubProxy } from "@abis/LensHubProxy";
 import { LensdropAbi } from "@abis/Airdrop";
 import Web3 from "web3";
 import { AbiItem } from "web3-utils";
+import InputDataDecoder from 'ethereum-input-data-decoder';
+import { erc20ABI, erc721ABI } from 'wagmi'
 
 const web3 = new Web3(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`)
-
+const decoder = new InputDataDecoder(LensdropAbi);
 const config = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
   network: Network.MATIC_MAINNET,
@@ -33,21 +35,45 @@ export const getAirdrops = async (address: string): Promise<AssetTransfersRespon
         toAddress: "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184",
         excludeZeroValue: false,
         category: ["external" as AssetTransfersCategory],
-      });console.log(res);
+      });
       return res;
 }
 
-export const getRecipients = async (txHash: string) => {
-    const receipt = await web3.eth.getTransactionReceipt(txHash);
-    const contract = new web3.eth.Contract(LensdropAbi as AbiItem[], "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184");
-    const logs = contract?.events?.allEvents()
+export const getRecipients = async (txHash: string): Promise<[number, string, string]> => {
+    const transaction = await alchemy.core.getTransaction(txHash);
+    const data = transaction?.data;
+    const decoded = decoder.decodeData(data!);
+    // get index of recipients
+    const recipientsIndex = decoded.names.findIndex((name) => name == "recipients");
+    const noOfRecipients = decoded.inputs[recipientsIndex]?.length;
+    const tokenType = await getTokenType(decoded!);
+    return [noOfRecipients, tokenType[0], tokenType[1]];
+}
+
+const getTokenType = async (decoded: any): Promise<string[]> => {
+    switch(decoded.method!) {
+        case "batchSendNativeToken":
+            return ["MATIC", "NATIVE"];
+        case "batchSendERC20":
+            let erc20contract = new web3.eth.Contract(erc20ABI as unknown as AbiItem[], "0x"+decoded.inputs[2]);
+            let erc20name = await erc20contract.methods.name().call();
+            return [erc20name, "ERC20"];
+        case "batchSendERC721":
+            const erc721contract = new web3.eth.Contract(erc721ABI as unknown as AbiItem[], "0x"+decoded.inputs[0]);
+            const erc721name = await erc721contract.methods.name().call();
+            return [erc721name, "NFT"];
+        case "batchSendERC1155":
+            return ["ERC1155", "NFT"];
+        default:
+            return [];
+    }
 }
 
 export const totalMaticAirdrops = async (transfers: AssetTransfersResult[]): Promise<number> => {
     let totalValue = 0;
-    for (let i = 0; i < transfers.length; i++) {
+    for (let i = 0; i < 10; i++) {
         const transfer = transfers[i];
-        if (transfer.asset === "MATIC") {
+        if (transfer?.asset! === "MATIC") {
             totalValue += transfer?.value!;
         }
     }
