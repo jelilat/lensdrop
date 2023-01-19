@@ -31,6 +31,14 @@ export default function Followers({ airdrops, sponsoredPosts }: Props) {
       }
       getTotalEarnings()
     }, [profiles])
+
+    const getUrl = (url: string) => {
+      if (!url) return defaultSrc
+      if (url.startsWith('ipfs://')) {
+        return `https://lensdrop.infura-ipfs.io/ipfs/${url.replace('ipfs://', '')}`
+      }
+      return url
+    }
     
     if (loading) return <div>Loading...</div>
     
@@ -55,10 +63,10 @@ export default function Followers({ airdrops, sponsoredPosts }: Props) {
               <div className='rounded-2xl shadow-xl border-gray-400 p-3'>
                   {data?.followers?.items?.map((follower: any, index: number) => (
                       <div key={index} className="flex p-3 pr-10">
-                        <Image className='rounded-lg'
+                        <img className='rounded-lg'
                           src={
-                            follower?.wallet?.defaultProfile?.picture?.original?.url! || defaultSrc
-                            } alt="profile-image" width={50} height={50} />
+                            getUrl(follower?.wallet?.defaultProfile?.picture?.original?.url!)
+                            } alt='profile-image' width={50} height={50} />
                           <h1 className='px-5 text-sm'>@{follower?.wallet?.defaultProfile?.handle}</h1>
                       </div>
                   ))}

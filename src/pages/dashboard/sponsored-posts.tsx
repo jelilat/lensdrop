@@ -5,7 +5,6 @@ import Menu from '@components/Dashboard/Menu';
 import Header from '@components/Home/Header';
 import Image from 'next/image';
 import Link from 'next/link';
-import advert from '../../../public/advert.jpg'
 
 const SponsoredPosts = () => {
     const { profiles } = useAppContext();
@@ -15,11 +14,10 @@ const SponsoredPosts = () => {
         const sponsoredPosts = async () => {
             startMoralis();
             const sponsoredPosts = (await getSponsoredPosts(profiles[0]?.ownedBy!))?.result?.toString();
-            console.log(sponsoredPosts);
             setSponsoredPosts(sponsoredPosts!);
         }
         if (profiles[0]) {
-            sponsoredPosts();
+            // sponsoredPosts();
         }
     }, [profiles]);
 
@@ -33,7 +31,7 @@ const SponsoredPosts = () => {
                 <div className='flex items-center justify-center w-full'>
                     <div className=''>
                         <div className='text-center'>
-                            <Image src={advert} alt="analytics" width={200} height={200} />
+                            <Image src="/advert.png" alt="analytics" width={200} height={200} />
                         </div>
                         <div className='text-center font-bold text-lg my-1'>
                             Sponsored Posts Coming Soon!

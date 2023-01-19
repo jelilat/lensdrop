@@ -10,6 +10,7 @@ const nextConfig = {
       'lens.infura-ipfs.io',
       'ipfs.io',
       'cdn.stamp.fyi',
+      'lensdrop.infura-ipfs.io',
     ]
   }
 }

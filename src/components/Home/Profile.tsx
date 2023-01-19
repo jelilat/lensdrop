@@ -33,6 +33,14 @@ const Profile = () => {
         fetchPolicy:'no-cache'
    })
 
+   const getUrl = (url: string) => {
+    if (!url) return '/lensdrop.png'
+    if (url.startsWith('ipfs://')) {
+      return `https://lensdrop.infura-ipfs.io/ipfs/${url.replace('ipfs://', '')}`
+    }
+    return url
+  }
+
    return (
     <>
     {
@@ -72,7 +80,7 @@ const Profile = () => {
                                         })
                                     })
                                 }}>
-                                <Image src="https://lenster.xyz/lens.png" 
+                                <Image src="/lens.png" 
                                     alt="lens"
                                     className='mr-3 w-4 h-4'
                                 width={15} height={15} /> <div className="ml-1">Login</div>
@@ -90,7 +98,7 @@ const Profile = () => {
                             profiles[0]?.picture == undefined ?
                                 <UserCircle size={35} className='ml-2' /> :
                                 <Image src={
-                                    profiles[0]?.picture?.__typename == "MediaSet" ? profiles[0]?.picture?.original?.url : "/lensdrop.png"
+                                    profiles[0]?.picture?.__typename == "MediaSet" ? getUrl(profiles[0]?.picture?.original?.url) : "/lensdrop.png"
                                 }
                                     alt="profile"
                                     width={30} height={30}
