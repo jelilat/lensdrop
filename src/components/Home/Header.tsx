@@ -29,7 +29,7 @@ const Header = () => {
                                 >
                                     <XIcon className="w-5" />
                                 </div>
-                                <ul className="NAVIGATION-MOBILE-OPEN grid grid-cols-1 divide-y items-center justify-between min-h-[250px] bg-gray-50 border-2 rounded-xl">
+                                <ul className="grid grid-cols-1 divide-y items-center justify-between min-h-[250px] bg-gray-50 border-2 rounded-xl">
                                     <li className="">
                                         <div className={`p-3 text-center`}>
                                             <Link className=""
@@ -57,54 +57,20 @@ const Header = () => {
                                     <li className="">
                                         <div className={`p-3 text-center`}>
                                             <Link className=""
-                                                href="/all" >
+                                                href="/any" >
                                                 Any
                                             </Link>
                                         </div>
-                                    </li><li className="">
+                                    </li>
+                                    <li className="">
                                         <div className={`p-3 text-center`}>
                                             <Link className=""
-                                                href="/listings" >
-                                                Listings
+                                                href="/sponsor" >
+                                                Sponsored Posts
                                             </Link>
                                         </div>
-                                        <ul className="absolute invisible group-hover:visible bg-white border-2 rounded-lg p-2 z-10">
-                                            <li className="my-2 border-b border-gray-50">
-                                                <div className={`mx-1 p-2`}>
-                                                    <Link className=""
-                                                        href="/followers" >
-                                                        <div className="text-gray-900">
-                                                            Followers
-                                                            <ArrowRight className="w-5 mx-1 inline-block" />
-                                                        </div>
-                                                    </Link>
-                                                </div>
-                                            </li>
-                                            <li className="my-2 border-b border-gray-50 cursor-pointer">
-                                                <div className={`mx-1 p-2`}>
-                                                    <Link className=""
-                                                        href="/following" >
-                                                        <div className="text-gray-900">
-                                                            Following
-                                                            <ArrowRight className="w-5 mx-1 inline-block" />
-                                                        </div>
-                                                    </Link>
-                                                </div>
-                                            </li>
-                                            <li className="my-2 border-b border-gray-50">
-                                                <div className={`mx-1 p-2`}>
-                                                    <Link className=""
-                                                        href="/any" >
-                                                        <div className="text-gray-900">
-                                                            Any
-                                                            <ArrowRight className="w-5 mx-1 inline-block" />
-                                                        </div>
-                                                    </Link>
-                                                </div>
-                                            </li>
-                                        </ul>
                                     </li>
-                                    <li className="p-3">
+                                    <li className="flex p-3 justify-center">
                                         <Profile />
                                     </li>
                                 </ul>

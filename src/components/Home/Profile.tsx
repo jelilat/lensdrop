@@ -105,7 +105,7 @@ const Profile = () => {
                                     className="rounded-full"
                                 />
                         }
-                        <ul className="invisible group-hover:visible absolute rounded-xl bg-gray-50 border-black mt-8 p-1 grid grid-cols-1 divide-y divide-white">
+                        <ul className="invisible group-hover:visible absolute rounded-xl bg-gray-50 border-black mt-6 p-1 grid grid-cols-1 divide-y divide-white z-10">
                             <li className='p-3'>
                                 Connected as <p className="text-blue-400">@{profiles[0]?.handle}</p>
                             </li>

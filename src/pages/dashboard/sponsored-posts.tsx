@@ -31,7 +31,7 @@ const SponsoredPosts = () => {
                 <div className='flex items-center justify-center w-full'>
                     <div className=''>
                         <div className='text-center'>
-                            <Image src="/../public/advert.png" alt="analytics" width={200} height={200} />
+                            <Image src="/advert.png" alt="analytics" width={200} height={200} />
                         </div>
                         <div className='text-center font-bold text-lg my-1'>
                             Sponsored Posts Coming Soon!
