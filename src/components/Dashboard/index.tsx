@@ -108,7 +108,7 @@ const Dashboard = () => {
             }
             setCheckedAccess(true);
         } 
-    }, [profiles, address, followData])
+    }, [profiles])
 
     if (!isConnected) {
         return (
