@@ -128,7 +128,7 @@ const Dashboard = () => {
                 <div className="flex flex-col items-center justify-center h-screen">
                     <div className="text-2xl font-bold">You do not have access to this page</div>
                     <Link href="/">
-                        <a className="text-blue-500">Go back to home</a>
+                        <span className="text-blue-500">Go back to home</span>
                     </Link>
                 </div>
             </>

@@ -20,7 +20,7 @@ const SponsoredPosts = () => {
         if (profiles[0]) {
             sponsoredPosts();
         }
-    }, []);
+    }, [profiles]);
 
     return (
         <>
