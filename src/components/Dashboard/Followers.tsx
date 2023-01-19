@@ -58,7 +58,7 @@ export default function Followers({ airdrops, sponsoredPosts }: Props) {
                         <Image className='rounded-lg'
                           src={
                             follower?.wallet?.defaultProfile?.picture?.original?.url! || defaultSrc
-                            } width={50} height={50} />
+                            } alt="profile-image" width={50} height={50} />
                           <h1 className='px-5 text-sm'>@{follower?.wallet?.defaultProfile?.handle}</h1>
                       </div>
                   ))}

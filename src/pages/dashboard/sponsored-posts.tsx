@@ -38,7 +38,7 @@ const SponsoredPosts = () => {
                             Sponsored Posts Coming Soon!
                         </div>
                         <div className='text-center my-1 w-96'>
-                            If you want to know when this feature becomes available, follow us on Lens <a href="https://lenster.xyz/u/lensdropxyz" target="_blank" rel="noopener"
+                            If you want to know when this feature becomes available, follow us on Lens <a href="https://lenster.xyz/u/lensdropxyz" target="_blank" rel="noreferrer"
                                     className="text-blue-500 hover:text-blue-700">@lensdropxyz</a>.
                         </div>
                         <div className='text-center my-1 p-2'>
