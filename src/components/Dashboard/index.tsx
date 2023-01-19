@@ -16,6 +16,8 @@ import {
  import { AssetTransfersResult } from 'alchemy-sdk';
  import { useAppContext } from '@components/utils/AppContext';
 import { useAccount } from 'wagmi';
+import Link from 'next/link';
+import { Home2 } from 'tabler-icons-react';
 
 const Dashboard = () => {
     const { profiles } = useAppContext();
@@ -93,7 +95,6 @@ const Dashboard = () => {
                         }
                     }
                 })
-                console.log("followData", followData)
             }
             setReady(true)   
         }
@@ -105,19 +106,32 @@ const Dashboard = () => {
            {
                 ready ?
                     <div className='flex max-h-screen'>
-                        <Menu />   
-                        <Board 
-                            airdrops={airdrops!}
-                            totalMatic={totalMatic}
-                            percentageIncrease={percentageIncrease}
-                            sponsoredPosts={sponsoredPosts}
-                            followData={followData}
-                            totalRecipients={totalRecipients}
-                        /> 
-                        <Followers
-                            airdrops={airdrops!}
-                            sponsoredPosts={sponsoredPosts}
-                        />
+                        <div className='hidden lg:flex'>
+                            <Menu />   
+                            <Board 
+                                airdrops={airdrops!}
+                                totalMatic={totalMatic}
+                                percentageIncrease={percentageIncrease}
+                                sponsoredPosts={sponsoredPosts}
+                                followData={followData}
+                                totalRecipients={totalRecipients}
+                            /> 
+                            <Followers
+                                airdrops={airdrops!}
+                                sponsoredPosts={sponsoredPosts}
+                            />
+                        </div>
+                        <div className="p-4 max-w-sm flex justify-center items-center h-screen lg:hidden"> 
+                            <div>
+                                <div className='text-center font-bold my-1 mx-auto p-2 w-3/4 text-lg'>
+                                    Oops! Dashboard is not available on mobile yet.
+                                </div>
+                                <div className='text-center my-1 p-2'>
+                                    Please view this page on a desktop device. <span className="text-blue-500 hover:text-blue-700 hover:underline hover:underline-offset-2"><Link href="/"
+                                           >Go back</Link></span> to the Homepage.
+                                </div>
+                            </div>
+                        </div>
                     </div> :
                     <div className="p-4 max-w-sm w-full mx-auto flex justify-center items-center h-screen">
                         <button disabled type="button" className="text-white bg-blue-500 hover:bg-blue-400 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center">
