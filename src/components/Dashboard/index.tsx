@@ -12,7 +12,6 @@ import {
     getDateByBlockNum,
     startMoralis,
     getRecipients,
-    dayOfWeek
  } from '@components/utils/airdrops';
  import { AssetTransfersResult } from 'alchemy-sdk';
  import { useAppContext } from '@components/utils/AppContext';
@@ -48,18 +47,12 @@ const Dashboard = () => {
     useEffect(() => {
         // rearrange followData so today is first
         let today = new Date();
-        let weekday = dayOfWeek(today);
         let day = today.getUTCDay();
-        if (followData[6].label !== weekday && followData[0].label == "Sun") {
-            let newFollowData = followData;
-            let top = newFollowData.slice(day+1);
-            let bottom = newFollowData.slice(0, day+1);
-            newFollowData = top.concat(bottom);
-            setFollowData(newFollowData);
-        }
-        if (followData[6].label !== weekday && followData[0].label != "Sun") {
-            window.location.reload();
-        }
+        let newFollowData = followData;
+        let top = newFollowData.slice(day+1);
+        let bottom = newFollowData.slice(0, day+1);
+        newFollowData = top.concat(bottom);
+        setFollowData(newFollowData);
 
         const airdrops = async () => {
             await startMoralis();
