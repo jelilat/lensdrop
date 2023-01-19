@@ -71,7 +71,7 @@ const getTokenType = async (decoded: any): Promise<string[]> => {
 
 export const totalMaticAirdrops = async (transfers: AssetTransfersResult[]): Promise<number> => {
     let totalValue = 0;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < transfers.length; i++) {
         const transfer = transfers[i];
         if (transfer?.asset! === "MATIC") {
             totalValue += transfer?.value!;
