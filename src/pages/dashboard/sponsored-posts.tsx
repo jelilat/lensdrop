@@ -5,6 +5,7 @@ import Menu from '@components/Dashboard/Menu';
 import Header from '@components/Home/Header';
 import Image from 'next/image';
 import Link from 'next/link';
+import advert from '../../../public/advert.jpg'
 
 const SponsoredPosts = () => {
     const { profiles } = useAppContext();
@@ -32,7 +33,7 @@ const SponsoredPosts = () => {
                 <div className='flex items-center justify-center w-full'>
                     <div className=''>
                         <div className='text-center'>
-                            <Image src="/advert.jpg" alt="analytics" width={200} height={200} />
+                            <Image src={advert} alt="analytics" width={200} height={200} />
                         </div>
                         <div className='text-center font-bold text-lg my-1'>
                             Sponsored Posts Coming Soon!

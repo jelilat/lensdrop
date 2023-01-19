@@ -2,6 +2,7 @@ import Menu from '@components/Dashboard/Menu';
 import Header from '@components/Home/Header';
 import Image from 'next/image';
 import Link from 'next/link';
+import analytics from '../../../public/analytics.jpg'
 
 const Analytics = () => {
     return(
@@ -14,7 +15,7 @@ const Analytics = () => {
                 <div className='flex items-center justify-center w-full'>
                     <div className=''>
                         <div className='text-center'>
-                            <Image src="/analytics.jpg" alt="analytics" width={200} height={200} />
+                            <Image src={analytics} alt="analytics" width={200} height={200} />
                         </div>
                         <div className='text-center font-bold text-lg my-1'>
                             Analytics Feature Coming Soon!
