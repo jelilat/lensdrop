@@ -1,12 +1,10 @@
 import Menu from '@components/Dashboard/Menu';
-import Header from '@components/Home/Header';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const Analytics = () => {
     return(
         <>
-            <Header />
             <div className="flex justify-start h-screen">
                 <div className="hidden lg:flex">
                     <Menu />

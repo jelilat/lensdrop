@@ -1,5 +1,4 @@
 import Menu from '@components/Dashboard/Menu';
-import Header from '@components/Home/Header';
 import { Copy } from 'tabler-icons-react';
 import { useState, useEffect } from 'react';
 import { AssetTransfersResult } from 'alchemy-sdk';
@@ -61,7 +60,6 @@ const Airdrops = () => {
     if (!isConnected) {
         return (
             <>
-                <Header />
                 <div className="flex items-center justify-center h-screen">
                     <Connect />
                 </div>
@@ -72,7 +70,6 @@ const Airdrops = () => {
     if (!hasAccess && checkedAccess) {
         return (
             <>
-                <Header />
                 <div className="flex flex-col items-center justify-center h-screen">
                     <div className="text-2xl font-bold">You do not have access to this page</div>
                     <Link href="/">
@@ -85,7 +82,6 @@ const Airdrops = () => {
 
     return(
         <>
-            <Header />
             {
                 loading ? 
                     <div className="p-4 max-w-sm w-full mx-auto flex justify-center items-center h-screen">

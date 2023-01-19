@@ -120,7 +120,6 @@ const Dashboard = () => {
     if (!isConnected) {
         return (
             <>
-                <Header />
                 <div className="flex items-center justify-center h-screen">
                     <Connect />
                 </div>
@@ -131,7 +130,6 @@ const Dashboard = () => {
     if (!hasAccess && checkedAccess) {
         return (
             <>
-                <Header />
                 <div className="flex flex-col items-center justify-center h-screen">
                     <div className="text-2xl font-bold">You do not have access to this page</div>
                     <Link href="/">
@@ -144,7 +142,6 @@ const Dashboard = () => {
 
     return (
         <div> 
-            <Header />
             {
                 ready ?
                     <div className='flex max-h-screen'>

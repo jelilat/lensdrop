@@ -5,7 +5,6 @@ import Hero from './Hero'
 const Homepage = () => {
     return(
         <>
-            <Header />
             <Hero />
             <Body />
         </>

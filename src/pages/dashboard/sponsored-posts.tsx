@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { getSponsoredPosts, startMoralis } from '@components/utils/airdrops';
 import { useAppContext } from '@components/utils/AppContext';
 import Menu from '@components/Dashboard/Menu';
-import Header from '@components/Home/Header';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -23,7 +22,6 @@ const SponsoredPosts = () => {
 
     return (
         <>
-            <Header />
             <div className="flex justify-start h-screen">
                 <div className="hidden lg:flex">
                     <Menu />

@@ -10,6 +10,7 @@ import client from 'src/apollo'
 import Head from 'next/head'
 import Footer from '@components/Footer/Footer'
 import { AppWrapper } from '@components/utils/AppContext'
+import Header from '@components/Home/Header';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -38,6 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   <meta property="twitter:description" content="Airdrop tokens to your Lens protocol followers with Lensdrop" />
                   <script defer data-domain="lensdrop.xyz,lensverse.web" src="https://plausible.io/js/script.js"></script>
                 </Head>
+                <Header />
                   <Component {...pageProps} />
                 {/* <Footer /> */}
             </div>
