@@ -6,6 +6,8 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { AUTHENTICATION } from '@graphql/Mutations/Authenticate';
 import Connect from './Connect'
 import { useAppContext } from '@components/utils/AppContext';
+import Link from 'next/link'
+import { Dashboard, UserCircle } from 'tabler-icons-react';
 
 const Profile = () => {
     const { address, isConnected } = useAccount()
@@ -30,6 +32,14 @@ const Profile = () => {
     const [authenticate] = useMutation(AUTHENTICATION, {
         fetchPolicy:'no-cache'
    })
+
+   const getUrl = (url: string) => {
+    if (!url) return '/lensdrop.png'
+    if (url.startsWith('ipfs://')) {
+      return `https://lensdrop.infura-ipfs.io/ipfs/${url.replace('ipfs://', '')}`
+    }
+    return url
+  }
 
    return (
     <>
@@ -70,7 +80,7 @@ const Profile = () => {
                                         })
                                     })
                                 }}>
-                                <Image src="https://lenster.xyz/lens.png" 
+                                <Image src="/lens.png" 
                                     alt="lens"
                                     className='mr-3 w-4 h-4'
                                 width={15} height={15} /> <div className="ml-1">Login</div>
@@ -84,16 +94,28 @@ const Profile = () => {
                 chain?.name !== "Polygon" ?
                     <Connect />
                     : <div className='flex group cursor-pointer'>
-                        <Image src={profiles[0]?.picture?.original?.url!}
-                            alt="profile"
-                            width={30} height={30}
-                            className="rounded-full"
-                        />
-                        <ul className="invisible group-hover:visible absolute rounded-xl boreder-2 bg-gray-50 border-black mt-8 p-1">
-                            <li className='p-2'>
-                                Connected as <span className="text-blue-400">@{profiles[0]?.handle}</span>
+                        {
+                            profiles[0]?.picture == undefined ?
+                                <UserCircle size={35} className='ml-2' /> :
+                                <Image src={
+                                    profiles[0]?.picture?.__typename == "MediaSet" ? getUrl(profiles[0]?.picture?.original?.url) : "/lensdrop.png"
+                                }
+                                    alt="profile"
+                                    width={30} height={30}
+                                    className="rounded-full"
+                                />
+                        }
+                        <ul className="invisible group-hover:visible absolute rounded-xl bg-gray-50 border-black mt-6 p-1 grid grid-cols-1 divide-y divide-white z-10">
+                            <li className='p-3'>
+                                Connected as <p className="text-blue-400">@{profiles[0]?.handle}</p>
                             </li>
-                            <li className='m-2'>
+                            <li className='p-3 flex'>
+                                <Dashboard size={20} className='mr-2' />
+                                <Link href="/dashboard">
+                                    Dashboard
+                                </Link>
+                            </li>
+                            <li className='p-2'>
                                 <Connect />
                             </li>
                         </ul>

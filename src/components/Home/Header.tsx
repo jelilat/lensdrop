@@ -3,10 +3,12 @@ import Link from 'next/link'
 import { useRouter } from "next/router";
 import SetContext from '@components/utils/SetContext'
 import { XIcon } from '@heroicons/react/solid'
+import { ArrowRight } from 'tabler-icons-react'
 import Profile from './Profile';
 
 const Header = () => {
     const [navOpen, setNavOpen] = useState<boolean>(false)
+    const [offchainOpen, setOffchainOpen] = useState<boolean>(false)
 
     return (
         <>
@@ -27,7 +29,7 @@ const Header = () => {
                                 >
                                     <XIcon className="w-5" />
                                 </div>
-                                <ul className="NAVIGATION-MOBILE-OPEN grid grid-cols-1 divide-y items-center justify-between min-h-[250px] bg-gray-50 border-2 rounded-xl">
+                                <ul className="grid grid-cols-1 divide-y items-center justify-between min-h-[250px] bg-gray-50 border-2 rounded-xl">
                                     <li className="">
                                         <div className={`p-3 text-center`}>
                                             <Link className=""
@@ -55,19 +57,20 @@ const Header = () => {
                                     <li className="">
                                         <div className={`p-3 text-center`}>
                                             <Link className=""
-                                                href="/all" >
-                                                All
-                                            </Link>
-                                        </div>
-                                    </li><li className="">
-                                        <div className={`p-3 text-center`}>
-                                            <Link className=""
-                                                href="/listings" >
-                                                Listings
+                                                href="/any" >
+                                                Any
                                             </Link>
                                         </div>
                                     </li>
-                                    <li className="p-3">
+                                    <li className="">
+                                        <div className={`p-3 text-center`}>
+                                            <Link className=""
+                                                href="/sponsor" >
+                                                Sponsored Posts
+                                            </Link>
+                                        </div>
+                                    </li>
+                                    <li className="flex p-3 justify-center">
                                         <Profile />
                                     </li>
                                 </ul>
@@ -81,7 +84,7 @@ const Header = () => {
                         </div>
                     }
                 </div>
-                <div className="lg:w-1/3 hidden lg:flex content-center">
+                <div className="lg:w-1/3 hidden lg:flex justify-center">
                     <div className={`mx-1 p-2 justify-center text-center ${useRouter().pathname === "/" ?
                             "bg-gray-200 rounded-lg" : null}`}>
                         <Link className=""
@@ -89,33 +92,55 @@ const Header = () => {
                             Home
                         </Link>
                     </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/followers" ?
+                    <div className={`mx-1 p-2 ${useRouter().pathname === "/sponsor" ?
                             "bg-gray-200 rounded-lg" : null}`}>
                         <Link className=""
-                            href="/followers" >
-                            Followers
+                            href="/sponsor" >
+                            Sponsored Posts
                         </Link>
                     </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/following" ?
-                            "bg-gray-200 rounded-lg" : null}`}>
-                        <Link className=""
-                            href="/following" >
-                            Following
-                        </Link>
-                    </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/all" ?
-                            "bg-gray-200 rounded-lg" : null}`}>
-                        <Link className=""
-                            href="/all" >
-                            All
-                        </Link>
-                    </div>
-                    <div className={`mx-1 p-2 ${useRouter().pathname === "/listings" ?
-                            "bg-gray-200 rounded-lg" : null}`}>
-                        <Link className=""
-                            href="/listings" >
-                            Listings
-                        </Link>
+                    <div className='group'>
+                        <div className="mx-1 p-2 cursor-pointer">
+                            Offchain Airdrop
+                        </div>
+                        <ul className="absolute invisible group-hover:visible bg-white border-2 rounded-lg p-2 z-10">
+                            <li className="cursor-pointer">
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/followers" ?
+                                    "bg-gray-200 rounded-lg" : null}`}>
+                                    <Link className=""
+                                        href="/followers" >
+                                        <div className="text-gray-900">
+                                            Followers
+                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                        </div>
+                                    </Link>
+                                </div>
+                            </li>
+                            <li className="cursor-pointer">
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/following" ?
+                                    "bg-gray-200 rounded-lg" : null}`}>
+                                    <Link className=""
+                                        href="/following" >
+                                        <div className="text-gray-900">
+                                            Following
+                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                        </div>
+                                    </Link>
+                                </div>
+                            </li>
+                            <li className="cursor-pointer">
+                                <div className={`mx-1 p-2 ${useRouter().pathname === "/any" ?
+                                        "bg-gray-200 rounded-lg" : null}`}>
+                                    <Link className=""
+                                        href="/any" >
+                                        <div className="text-gray-900">
+                                            Any
+                                            <ArrowRight className="w-5 mx-1 inline-block" />
+                                        </div>
+                                    </Link>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             <div className="w-1/3 hidden lg:flex justify-center">
