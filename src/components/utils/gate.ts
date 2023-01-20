@@ -22,16 +22,22 @@ const whoCollected = async (publicationId: string, limit: string, cursor: string
 }
 
 export const collectedPost = async (publicationId: string, address: string): Promise<boolean> => {
-    let next = 0
-    while (next) {
-        let collects = await whoCollected(publicationId, "50", `{\"offset\":${next}}`)
+    let offset = `{\"offset\":0}`
+    let collected = false
+    while (offset != null) {
+        let collects = await whoCollected(publicationId, "50", offset)
+        console.log(collects)
         collects?.items?.forEach((item: any) => {
             if (item?.address === address) {
-                return true
+                collected = true
+                return
             }
         })
-        next = collects?.pageInfo?.next
+        if (collected) {
+            break
+        }
+        offset = collects?.pageInfo?.next
     }
 
-    return false
+    return collected
 }
