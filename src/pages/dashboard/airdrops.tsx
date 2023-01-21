@@ -113,32 +113,32 @@ const Airdrops = () => {
                     </div>
                 :
                     <div className="flex justify-start">
-                        <div className='hidden lg:flex'>
+                        <div className='lg:flex'>
                             <Menu />
                             <div className='m-10'>
-                                <div className='font-bold text-2xl mb-5'>
+                                <div className='font-bold text-2xl sm:text-lg mb-5 sm:mb-3'>
                                     Recent Airdrops
                                 </div>
                                 <div className='relative overflow-x-auto shadow-lg rounded-lg'>
-                                <table className='w-full text-sm text-left text-gray-500 mt-5'>
+                                <table className='w-full text-sm sm:text-xs text-left text-gray-500 mt-5'>
                                     <thead>
                                         <tr>
-                                            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 sm:px-2 py-3 sm:py-2 border-b-2 border-gray-300 text-left text-sm lg:leading-4 font-medium text-gray-500 lg:uppercase tracking-wider">
                                             
                                             </th>
-                                            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 sm:px-2 py-3 sm:py-2 border-b-2 border-gray-300 text-left text-sm lg:leading-4 font-medium text-gray-500 lg:uppercase tracking-wider">
                                                 Transaction Hash
                                             </th>
-                                            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 sm:px-2 py-3 sm:py-2 border-b-2 border-gray-300 text-left text-sm lg:leading-4 font-medium text-gray-500 lg:uppercase tracking-wider">
                                                 Token Name
                                             </th>
-                                            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 sm:px-2 py-3 sm:py-2 border-b-2 border-gray-300 text-left text-sm lg:leading-4 font-medium text-gray-500 lg:uppercase tracking-wider">
                                                 Amount
                                             </th>
-                                            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 sm:px-2 py-3 sm:py-2 border-b-2 border-gray-300 text-left text-sm lg:leading-4 font-medium text-gray-500 lg:uppercase tracking-wider">
                                                 No of Recipients
                                             </th>
-                                            <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 sm:px-2 py-3 sm:py-2 border-b-2 border-gray-300 text-left text-sm lg:leading-4 font-medium text-gray-500 lg:uppercase tracking-wider">
                                                 Token Type
                                             </th>
                                         </tr>
@@ -146,49 +146,38 @@ const Airdrops = () => {
                                     <tbody>
                                         {airdrops?.slice(0,10)?.map((airdrop, index) => (
                                             <tr key={index}>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                                                <td className="px-6 sm:px-2 py-4 sm:py-2 sm:text-xs whitespace-no-wrap border-b border-gray-500">
                                                     {index+1}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                                                <td className="px-6 sm:px-2 py-4 sm:py-2 whitespace-no-wrap border-b border-gray-500">
                                                     <div className="flex items-center">
-                                                        <div className="flex text-sm leading-5 font-medium">
+                                                        <div className="flex text-sm sm:text-xs leading-5 sm:leading-3 font-medium">
                                                             <a href={`https://polygonscan.com/tx/${airdrop?.hash!}`} className="hover:underline hover:underline-offset-2 text-blue-500" target="_blank" rel="noreferrer">
                                                                 {airdrop?.hash?.slice(0, 10)}...{airdrop?.hash?.slice(airdrop?.hash?.length - 10, airdrop?.hash?.length)}
                                                             </a>
-                                                            <Copy className="w-5 h-5 ml-2 cursor-pointer" onClick={() => copyToClipboard(airdrop?.hash!)} />
+                                                            <Copy className="w-3 h-3 ml-2 cursor-pointer" onClick={() => copyToClipboard(airdrop?.hash!)} />
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                                                    <div className="text-sm leading-5 text-gray-900">{tokenNames[index]}</div>
+                                                <td className="px-6 sm:px-2 py-4 sm:py-2 whitespace-no-wrap border-b border-gray-500">
+                                                    <div className="text-sm leading-5 sm:leading-3 sm:text-xs text-gray-900">{tokenNames[index]}</div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                                                    <div className="text-sm leading-5 text-gray-900">{
+                                                <td className="px-6 sm:px-2 py-4 whitespace-no-wrap border-b border-gray-500">
+                                                    <div className="text-sm leading-5 sm:leading-3 sm:text-xs text-gray-900">{
                                                         tokenNames[index] == "MATIC" ? Math.round(airdrop?.value! * 100) / 100 :
                                                             totalRecipients[index] 
                                                     }</div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                                                    <div className="text-sm leading-5 text-gray-900">{totalRecipients[index]}</div>
+                                                <td className="px-6 sm:px-2 py-4 whitespace-no-wrap border-b border-gray-500">
+                                                    <div className="text-sm leading-5 sm:leading-3 sm:text-xs text-gray-900">{totalRecipients[index]}</div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                                                    <div className="text-sm leading-5 text-gray-900">{tokenType[index]}</div>
+                                                <td className="px-6 sm:px-2 py-4 whitespace-no-wrap border-b border-gray-500">
+                                                    <div className="text-sm leading-5 sm:leading-3 sm:text-xs text-gray-900">{tokenType[index]}</div>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="p-4 max-w-sm flex justify-center items-center h-screen lg:hidden"> 
-                            <div>
-                                <div className='text-center font-bold my-1 mx-auto p-2 w-3/4 text-lg'>
-                                    Oops! Dashboard is not available on mobile yet.
-                                </div>
-                                <div className='text-center my-1 p-2'>
-                                    Please view this page on a desktop device. <span className="text-blue-500 hover:text-blue-700 hover:underline hover:underline-offset-2"><Link href="/"
-                                           >Go back</Link></span> to the Homepage.
                                 </div>
                             </div>
                         </div>
