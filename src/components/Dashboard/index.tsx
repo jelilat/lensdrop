@@ -183,10 +183,12 @@ const Dashboard = () => {
                             followData={followData}
                             totalRecipients={totalRecipients}
                         /> 
-                        <Followers
-                            airdrops={airdrops!}
-                            sponsoredPosts={sponsoredPosts}
-                        />
+                        <div className='hidden lg:flex'>
+                            <Followers
+                                airdrops={airdrops!}
+                                sponsoredPosts={sponsoredPosts}
+                            />
+                        </div>
                     </div>
                      :
                     <div className="p-4 max-w-sm w-full mx-auto flex justify-center items-center h-screen">

@@ -13,7 +13,7 @@ const Header = () => {
     return (
         <>
             <SetContext />
-            <div className="flex text-sm p-3 border-b-2 border-b-black-500 sticky top-0 bg-white w-full">
+            <div className="flex text-sm p-3 border-b-2 border-b-black-500 sticky top-0 bg-white w-full z-10">
                 <div className="lg:w-1/3 sm:w-1/2 float-right p-2 font-semibold">
                     <Link className=""
                             href="/" >

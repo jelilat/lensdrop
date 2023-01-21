@@ -112,15 +112,15 @@ const Airdrops = () => {
                         </button>
                     </div>
                 :
-                    <div className="flex justify-start">
+                    <div className="flex justify-start w-screen">
                         <div className='lg:flex'>
                             <Menu />
-                            <div className='m-10'>
+                            <div className='m-10 sm:m-5'>
                                 <div className='font-bold text-2xl sm:text-lg mb-5 sm:mb-3'>
                                     Recent Airdrops
                                 </div>
-                                <div className='relative overflow-x-auto shadow-lg rounded-lg'>
-                                <table className='w-full text-sm sm:text-xs text-left text-gray-500 mt-5'>
+                                <div className='shadow-lg rounded-lg'>
+                                <table className='w-screen table-auto overflow-x-auto text-sm sm:text-xs text-left text-gray-500 mt-5'>
                                     <thead>
                                         <tr>
                                             <th className="px-6 sm:px-2 py-3 sm:py-2 border-b-2 border-gray-300 text-left text-sm lg:leading-4 font-medium text-gray-500 lg:uppercase tracking-wider">
