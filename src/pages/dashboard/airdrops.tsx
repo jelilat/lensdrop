@@ -184,7 +184,7 @@ const Airdrops = () => {
                         <div className="p-4 max-w-sm flex justify-center items-center h-screen lg:hidden"> 
                             <div>
                                 <div className='text-center font-bold my-1 mx-auto p-2 w-3/4 text-lg'>
-                                    Oops! Dashboard is not available on mobile yet.
+                                    Oops! This feature is not available on mobile yet.
                                 </div>
                                 <div className='text-center my-1 p-2'>
                                     Please view this page on a desktop device. <span className="text-blue-500 hover:text-blue-700 hover:underline hover:underline-offset-2"><Link href="/"

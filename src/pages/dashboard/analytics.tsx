@@ -5,10 +5,8 @@ import Link from 'next/link';
 const Analytics = () => {
     return(
         <>
-            <div className="flex justify-start h-screen">
-                <div className="hidden lg:flex">
-                    <Menu />
-                </div>
+            <div className="lg:flex sm:block justify-start h-screen">
+                <Menu />
                 <div className='flex items-center justify-center w-full'>
                     <div className=''>
                         <div className='text-center'>
