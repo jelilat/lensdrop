@@ -105,7 +105,7 @@ const Board = ({ airdrops, totalMatic, percentageIncrease, sponsoredPosts, follo
                         <div className="font-medium text-xl sm:text-xs">
                             Followers 
                                 <div className="text-sm sm:text-xs">
-                                    <button className='p-2 lg:mr-1 mt-2 text-green-900 bg-green-200 rounded-xl'>
+                                    <button className='p-2 sm:p-1 lg:mr-1 mt-2 text-green-900 bg-green-200 rounded-xl'>
                                         {(percentageIncrease > 0) && (percentageIncrease != Infinity) ? `+${percentageIncrease}%` : `0%`}
                                     </button> since last week
                                 </div>
