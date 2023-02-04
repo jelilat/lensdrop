@@ -13,12 +13,9 @@ import {
     startMoralis,
     getRecipients,
  } from '@components/utils/airdrops';
- import { collectedPost } from '@components/utils/gate';
  import { AssetTransfersResult } from 'alchemy-sdk';
  import { useAppContext } from '@components/utils/AppContext';
 import { useAccount } from 'wagmi';
-import Link from 'next/link';
-import { accessList } from './access'
 import Connect from '@components/Home/Connect';
 import Post from '@components/Sponsor/Post';
 import { useLazyQuery } from '@apollo/client';
@@ -46,20 +43,6 @@ const Dashboard = () => {
         {label: "Sat", value: "0"},
     ]);
     const [ready, setReady] = useState<boolean>(false);
-    const [hasAccess, setHasAccess] = useState<boolean>(false);
-    const [checkedAccess, setCheckedAccess] = useState<boolean>(false);
-    const [publication, setPublication] = useState<Publication>();
-
-    const [getPublication] = useLazyQuery(GET_PUBLICATION, {
-        variables: {
-            request: {
-                publicationId: "0x0187f4-0x50"
-            }
-        },
-        onCompleted(data) {
-            setPublication(data?.publication);
-        }
-    })
 
     useEffect(() => {
         // rearrange followData so today is first
@@ -118,17 +101,8 @@ const Dashboard = () => {
             }
             setReady(true)   
         }
-
-        const checkAccess = async () => {
-            if (accessList.includes(address!) || await collectedPost("0x0187f4-0x50", address!)) {
-                setHasAccess(true);
-                airdrops();
-            }
-            getPublication();
-            setCheckedAccess(true);
-        }
         if (address) {
-            checkAccess()
+            airdrops()
         } 
     }, [profiles])
 
@@ -137,33 +111,6 @@ const Dashboard = () => {
             <>
                 <div className="flex items-center justify-center h-screen">
                     <Connect />
-                </div>
-            </>
-        )
-    }
-
-    if (!hasAccess && checkedAccess) {
-        return (
-            <>
-                <div className="flex flex-col items-center justify-center h-screen">
-                    <div className="text-2xl font-bold">You do not have access to this page</div>
-                    <span>
-                    Collect <a className='text-blue-500'
-                        href="https://lenster.xyz/posts/0x0187f4-0x50" target="_blank" rel="noreferrer">this post</a> to get access.
-                    </span>
-                        {/* <Post publication={publication!} /> */}
-                    <div className='flex my-3'>
-                        <a href="https://lenster.xyz/posts/0x0187f4-0x50" target="_blank" rel="noreferrer">
-                            <button type="button" className="text-white bg-blue-500 hover:bg-blue-400 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center">
-                                Collect post
-                            </button>
-                        </a>
-                        <Link href="/">
-                            <button type="button" className="text-white bg-blue-500 hover:bg-blue-400 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center">
-                                Go back
-                            </button>
-                        </Link>
-                    </div>
                 </div>
             </>
         )

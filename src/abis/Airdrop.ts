@@ -4,132 +4,44 @@ export const LensdropAbi = [
 	  "inputs": [
 		{
 		  "indexed": true,
-		  "internalType": "address",
-		  "name": "sender",
-		  "type": "address"
-		},
-		{
-		  "indexed": false,
-		  "internalType": "address",
-		  "name": "token",
-		  "type": "address"
-		},
-		{
-		  "indexed": false,
 		  "internalType": "uint256",
-		  "name": "noOfRecipients",
-		  "type": "uint256"
-		}
-	  ],
-	  "name": "ERC1155Drop",
-	  "type": "event"
-	},
-	{
-	  "anonymous": false,
-	  "inputs": [
-		{
-		  "indexed": true,
-		  "internalType": "address",
-		  "name": "sender",
-		  "type": "address"
-		},
-		{
-		  "indexed": false,
-		  "internalType": "address",
-		  "name": "token",
-		  "type": "address"
-		},
-		{
-		  "indexed": false,
-		  "internalType": "uint256",
-		  "name": "amount",
+		  "name": "postId",
 		  "type": "uint256"
 		},
 		{
 		  "indexed": false,
-		  "internalType": "uint256",
-		  "name": "noOfRecipients",
-		  "type": "uint256"
-		}
-	  ],
-	  "name": "ERC20Drop",
-	  "type": "event"
-	},
-	{
-	  "anonymous": false,
-	  "inputs": [
-		{
-		  "indexed": true,
-		  "internalType": "address",
-		  "name": "sender",
-		  "type": "address"
-		},
-		{
-		  "indexed": false,
-		  "internalType": "address",
-		  "name": "token",
-		  "type": "address"
-		},
-		{
-		  "indexed": false,
-		  "internalType": "uint256",
-		  "name": "noOfRecipients",
-		  "type": "uint256"
-		}
-	  ],
-	  "name": "ERC721Drop",
-	  "type": "event"
-	},
-	{
-	  "anonymous": false,
-	  "inputs": [
-		{
-		  "indexed": true,
-		  "internalType": "address",
-		  "name": "sender",
-		  "type": "address"
-		},
-		{
-		  "indexed": false,
-		  "internalType": "uint256",
-		  "name": "amount",
-		  "type": "uint256"
-		},
-		{
-		  "indexed": false,
-		  "internalType": "uint256",
-		  "name": "noOfRecipients",
-		  "type": "uint256"
-		}
-	  ],
-	  "name": "NativeDrop",
-	  "type": "event"
-	},
-	{
-	  "anonymous": false,
-	  "inputs": [
-		{
-		  "indexed": true,
-		  "internalType": "address",
-		  "name": "previousOwner",
-		  "type": "address"
-		},
-		{
-		  "indexed": true,
-		  "internalType": "address",
-		  "name": "newOwner",
-		  "type": "address"
-		}
-	  ],
-	  "name": "OwnershipTransferred",
-	  "type": "event"
-	},
-	{
-	  "inputs": [
-		{
 		  "internalType": "string",
-		  "name": "",
+		  "name": "rewardDetails",
 		  "type": "string"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "deadline",
+		  "type": "uint256"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "noOfRecipients",
+		  "type": "uint256"
+		},
+		{
+		  "indexed": false,
+		  "internalType": "uint256",
+		  "name": "fee",
+		  "type": "uint256"
+		}
+	  ],
+	  "name": "AdDetails",
+	  "type": "event"
+	},
+	{
+	  "inputs": [
+		{
+		  "internalType": "uint256",
+		  "name": "",
+		  "type": "uint256"
 		}
 	  ],
 	  "name": "Escrows",
@@ -276,9 +188,9 @@ export const LensdropAbi = [
 	{
 	  "inputs": [
 		{
-		  "internalType": "string",
-		  "name": "postId",
-		  "type": "string"
+		  "internalType": "address payable",
+		  "name": "referrer",
+		  "type": "address"
 		},
 		{
 		  "internalType": "string",
@@ -307,64 +219,16 @@ export const LensdropAbi = [
 		}
 	  ],
 	  "name": "escrowErc1155Tokens",
-	  "outputs": [
-		{
-		  "components": [
-			{
-			  "internalType": "address",
-			  "name": "user",
-			  "type": "address"
-			},
-			{
-			  "internalType": "address",
-			  "name": "token",
-			  "type": "address"
-			},
-			{
-			  "internalType": "uint256[]",
-			  "name": "tokenIds",
-			  "type": "uint256[]"
-			},
-			{
-			  "internalType": "bool",
-			  "name": "paid",
-			  "type": "bool"
-			},
-			{
-			  "internalType": "string",
-			  "name": "rewardDetails",
-			  "type": "string"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "amount",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "noOfRecipients",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "deadline",
-			  "type": "uint256"
-			}
-		  ],
-		  "internalType": "struct Lensdrop.EscrowDetails",
-		  "name": "",
-		  "type": "tuple"
-		}
-	  ],
+	  "outputs": [],
 	  "stateMutability": "payable",
 	  "type": "function"
 	},
 	{
 	  "inputs": [
 		{
-		  "internalType": "string",
-		  "name": "postId",
-		  "type": "string"
+		  "internalType": "address payable",
+		  "name": "referrer",
+		  "type": "address"
 		},
 		{
 		  "internalType": "string",
@@ -393,64 +257,16 @@ export const LensdropAbi = [
 		}
 	  ],
 	  "name": "escrowErc20Tokens",
-	  "outputs": [
-		{
-		  "components": [
-			{
-			  "internalType": "address",
-			  "name": "user",
-			  "type": "address"
-			},
-			{
-			  "internalType": "address",
-			  "name": "token",
-			  "type": "address"
-			},
-			{
-			  "internalType": "uint256[]",
-			  "name": "tokenIds",
-			  "type": "uint256[]"
-			},
-			{
-			  "internalType": "bool",
-			  "name": "paid",
-			  "type": "bool"
-			},
-			{
-			  "internalType": "string",
-			  "name": "rewardDetails",
-			  "type": "string"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "amount",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "noOfRecipients",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "deadline",
-			  "type": "uint256"
-			}
-		  ],
-		  "internalType": "struct Lensdrop.EscrowDetails",
-		  "name": "",
-		  "type": "tuple"
-		}
-	  ],
+	  "outputs": [],
 	  "stateMutability": "payable",
 	  "type": "function"
 	},
 	{
 	  "inputs": [
 		{
-		  "internalType": "string",
-		  "name": "postId",
-		  "type": "string"
+		  "internalType": "address payable",
+		  "name": "referrer",
+		  "type": "address"
 		},
 		{
 		  "internalType": "string",
@@ -479,64 +295,16 @@ export const LensdropAbi = [
 		}
 	  ],
 	  "name": "escrowErc721Tokens",
-	  "outputs": [
-		{
-		  "components": [
-			{
-			  "internalType": "address",
-			  "name": "user",
-			  "type": "address"
-			},
-			{
-			  "internalType": "address",
-			  "name": "token",
-			  "type": "address"
-			},
-			{
-			  "internalType": "uint256[]",
-			  "name": "tokenIds",
-			  "type": "uint256[]"
-			},
-			{
-			  "internalType": "bool",
-			  "name": "paid",
-			  "type": "bool"
-			},
-			{
-			  "internalType": "string",
-			  "name": "rewardDetails",
-			  "type": "string"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "amount",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "noOfRecipients",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "deadline",
-			  "type": "uint256"
-			}
-		  ],
-		  "internalType": "struct Lensdrop.EscrowDetails",
-		  "name": "",
-		  "type": "tuple"
-		}
-	  ],
+	  "outputs": [],
 	  "stateMutability": "payable",
 	  "type": "function"
 	},
 	{
 	  "inputs": [
 		{
-		  "internalType": "string",
-		  "name": "postId",
-		  "type": "string"
+		  "internalType": "address payable",
+		  "name": "referrer",
+		  "type": "address"
 		},
 		{
 		  "internalType": "string",
@@ -560,55 +328,7 @@ export const LensdropAbi = [
 		}
 	  ],
 	  "name": "escrowTokens",
-	  "outputs": [
-		{
-		  "components": [
-			{
-			  "internalType": "address",
-			  "name": "user",
-			  "type": "address"
-			},
-			{
-			  "internalType": "address",
-			  "name": "token",
-			  "type": "address"
-			},
-			{
-			  "internalType": "uint256[]",
-			  "name": "tokenIds",
-			  "type": "uint256[]"
-			},
-			{
-			  "internalType": "bool",
-			  "name": "paid",
-			  "type": "bool"
-			},
-			{
-			  "internalType": "string",
-			  "name": "rewardDetails",
-			  "type": "string"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "amount",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "noOfRecipients",
-			  "type": "uint256"
-			},
-			{
-			  "internalType": "uint256",
-			  "name": "deadline",
-			  "type": "uint256"
-			}
-		  ],
-		  "internalType": "struct Lensdrop.EscrowDetails",
-		  "name": "",
-		  "type": "tuple"
-		}
-	  ],
+	  "outputs": [],
 	  "stateMutability": "payable",
 	  "type": "function"
 	},
@@ -620,12 +340,12 @@ export const LensdropAbi = [
 		  "type": "address"
 		}
 	  ],
-	  "name": "getUserEscrows",
+	  "name": "getUserAds",
 	  "outputs": [
 		{
-		  "internalType": "string[]",
+		  "internalType": "uint256[]",
 		  "name": "",
-		  "type": "string[]"
+		  "type": "uint256[]"
 		}
 	  ],
 	  "stateMutability": "view",
@@ -645,31 +365,11 @@ export const LensdropAbi = [
 	  "type": "function"
 	},
 	{
-	  "inputs": [],
-	  "name": "owner",
-	  "outputs": [
-		{
-		  "internalType": "address",
-		  "name": "",
-		  "type": "address"
-		}
-	  ],
-	  "stateMutability": "view",
-	  "type": "function"
-	},
-	{
-	  "inputs": [],
-	  "name": "renounceOwnership",
-	  "outputs": [],
-	  "stateMutability": "nonpayable",
-	  "type": "function"
-	},
-	{
 	  "inputs": [
 		{
-		  "internalType": "string",
+		  "internalType": "uint256",
 		  "name": "postId",
-		  "type": "string"
+		  "type": "uint256"
 		},
 		{
 		  "internalType": "address[]",
@@ -685,9 +385,9 @@ export const LensdropAbi = [
 	{
 	  "inputs": [
 		{
-		  "internalType": "string",
+		  "internalType": "uint256",
 		  "name": "postId",
-		  "type": "string"
+		  "type": "uint256"
 		},
 		{
 		  "internalType": "address[]",
@@ -703,9 +403,9 @@ export const LensdropAbi = [
 	{
 	  "inputs": [
 		{
-		  "internalType": "string",
+		  "internalType": "uint256",
 		  "name": "postId",
-		  "type": "string"
+		  "type": "uint256"
 		},
 		{
 		  "internalType": "address[]",
@@ -721,9 +421,9 @@ export const LensdropAbi = [
 	{
 	  "inputs": [
 		{
-		  "internalType": "string",
+		  "internalType": "uint256",
 		  "name": "postId",
-		  "type": "string"
+		  "type": "uint256"
 		},
 		{
 		  "internalType": "address[]",
@@ -747,19 +447,6 @@ export const LensdropAbi = [
 		}
 	  ],
 	  "stateMutability": "view",
-	  "type": "function"
-	},
-	{
-	  "inputs": [
-		{
-		  "internalType": "address",
-		  "name": "newOwner",
-		  "type": "address"
-		}
-	  ],
-	  "name": "transferOwnership",
-	  "outputs": [],
-	  "stateMutability": "nonpayable",
 	  "type": "function"
 	},
 	{

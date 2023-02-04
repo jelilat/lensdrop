@@ -138,17 +138,10 @@ export const dayOfWeek = (date: Date): string => {
     }
 }
 
-export const getSponsoredPosts = async(address: string): Promise<RunContractFunctionResponseAdapter> => {
-    const sponsoredPosts = await Moralis.EvmApi.utils.runContractFunction({
-        abi: LensdropAbi,
-        functionName: "getUserEscrows",
-        address: "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184",
-        chain,
-        params: {
-            user: address
-        }
-    });
-    return sponsoredPosts;
+export const getSponsoredPosts = async(address: string): Promise<string[]> => {
+    const lensdropContract = new web3.eth.Contract(LensdropAbi as unknown as AbiItem[], "0xA84b97DF8eE0aF62777dAC4EDC488694f5000184");
+    let posts = await lensdropContract.methods.getUserAds(address).call();
+    return posts;
 }
 
 export const getEarnings = async(address: string): Promise<number> => {

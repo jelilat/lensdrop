@@ -7,10 +7,8 @@ import {
     startMoralis,
     getRecipients
 } from '@components/utils/airdrops';
-import { collectedPost } from '@components/utils/gate';
 import { useAccount } from 'wagmi';
 import Link from 'next/link';
-import { accessList } from '@components/Dashboard/access'
 import Connect from '@components/Home/Connect';
 
 const Airdrops = () => {
@@ -20,8 +18,6 @@ const Airdrops = () => {
     const [tokenNames, setTokenNames] = useState<string[]>([]);
     const [tokenType, setTokenType] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [hasAccess, setHasAccess] = useState<boolean>(false);
-    const [checkedAccess, setCheckedAccess] = useState<boolean>(false);
 
     const copyToClipboard = (text: string | number) => {
         navigator.clipboard.writeText(text.toString());
@@ -49,15 +45,8 @@ const Airdrops = () => {
             setTokenType(allTokenType)
             setLoading(false);
         }
-        const checkAccess = async () => {
-            if (accessList.includes(address!) || await collectedPost("0x0187f4-0x50", address!)) {
-                setHasAccess(true);
-                airdrops();
-            }
-            setCheckedAccess(true);
-        }
         if (address) {
-            checkAccess()
+            airdrops()
         }  
     }, [address]);
 
@@ -66,33 +55,6 @@ const Airdrops = () => {
             <>
                 <div className="flex items-center justify-center h-screen">
                     <Connect />
-                </div>
-            </>
-        )
-    }
-
-    if (!hasAccess && checkedAccess) {
-        return (
-            <>
-                <div className="flex flex-col items-center justify-center h-screen">
-                    <div className="text-2xl font-bold">You do not have access to this page</div>
-                    <span>
-                    Collect <a className='text-blue-500'
-                        href="https://lenster.xyz/posts/0x0187f4-0x50" target="_blank" rel="noreferrer">this post</a> to get access.
-                    </span>
-                        {/* <Post publication={publication!} /> */}
-                    <div className='flex my-3'>
-                        <a href="https://lenster.xyz/posts/0x0187f4-0x50" target="_blank" rel="noreferrer">
-                            <button type="button" className="text-white bg-blue-500 hover:bg-blue-400 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center">
-                                Collect post
-                            </button>
-                        </a>
-                        <Link href="/">
-                            <button type="button" className="text-white bg-blue-500 hover:bg-blue-400 focus:ring-4 focus:ring-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center">
-                                Go back
-                            </button>
-                        </Link>
-                    </div>
                 </div>
             </>
         )
