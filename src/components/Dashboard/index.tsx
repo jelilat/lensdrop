@@ -74,7 +74,7 @@ const Dashboard = () => {
                 const newFollowers = await newFollows(sevenDaysAgo, profiles[0]?.followNftAddress);
                 const percentage = Math.round((newFollowers?.length * 100) / followers);
                 setPercentageIncrease(percentage);
-                const sponsoredPosts = (await getSponsoredPosts(profiles[0].ownedBy))?.result?.length;
+                const sponsoredPosts = (await getSponsoredPosts(profiles[0].ownedBy))?.length;
                 setSponsoredPosts(sponsoredPosts);
               
                 let ready = false;
