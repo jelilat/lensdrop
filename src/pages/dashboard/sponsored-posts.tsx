@@ -12,7 +12,7 @@ const SponsoredPosts = () => {
     useEffect(() => {
         const sponsoredPosts = async () => {
             startMoralis();
-            const sponsoredPosts = (await getSponsoredPosts(profiles[0]?.ownedBy!))?.result?.toString();
+            const sponsoredPosts = (await getSponsoredPosts(profiles[0]?.ownedBy!))?.toString();
             setSponsoredPosts(sponsoredPosts!);
         }
         if (profiles[0]) {
