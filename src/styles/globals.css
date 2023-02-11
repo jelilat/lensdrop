@@ -20,7 +20,11 @@ a {
 }
 
 .connectButton {  
-  background-color: black !important;  
+  --tw-gradient-from: #22d3ee !important;
+  --tw-gradient-to: rgb(34 211 238 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  --tw-gradient-to: #60a5fa !important;
+  background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important;
   padding: 0.5rem !important;
   border-color: white !important; 
 }

@@ -59,7 +59,7 @@ const Followers: FC = () => {
                     }}
                         className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 sm:w-20 mr-1" /> followers
                     { !showFollowers ? 
-                        <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                        <button className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
                         disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && isConnected) || loading}
                                 onClick={async () => {
                                     isLoading(true)
@@ -111,7 +111,7 @@ const Followers: FC = () => {
                                 extension='.csv'
                                 filename="Followers addresses"
                             >
-                                <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                                <button className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
                                     >
                                 Download as CSV
                                 </button>

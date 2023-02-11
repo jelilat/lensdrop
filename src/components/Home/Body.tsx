@@ -449,7 +449,7 @@ const Body = ()=> {
                                 <option value="batchSendERC20">FT - (ERC20)</option>
                                 <option value="batchSendNFT">NFT</option>
                             </select>
-                            <div className={`invisible ${!isConnected && "group-hover:visible"} inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 max-w-lg text-white bg-black`}>  
+                            <div className={`invisible ${!isConnected && "group-hover:visible"} inline-block absolute z-10 py-2 px-3 rounded-lg shadow-sm transition-opacity duration-300 max-w-lg text-white bg-gradient-to-r from-cyan-400 to-blue-400`}>  
                                 <div className="rounded-lg">
                                             <span>Connect wallet to select token type</span>
                                         </div>
@@ -562,7 +562,7 @@ const Body = ()=> {
                                 await _continue(); 
                                 isLoading(false)
                             }}
-                                className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                                className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
                                 data-bs-toggle="modal"
                                 disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading && isConnected) || (!profiles[0])}
                                 >
@@ -680,7 +680,7 @@ const Body = ()=> {
                                 isLoading(true); 
                                 approve()
                             }}
-                                className={`w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800`}
+                                className={`w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline bg-gradient-to-r from-cyan-400 to-blue-400`}
                                 disabled={loading}
                                 >
                                 {loading ? <div className="flex justify-center">
@@ -770,7 +770,7 @@ const Body = ()=> {
                                 }
                                 return
                             }}
-                                className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                                className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline bg-gradient-to-r from-cyan-400 to-blue-400"
                                 disabled={loading}
                                 >
                                 {loading ? <div className="flex justify-center">

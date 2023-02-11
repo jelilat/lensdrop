@@ -52,7 +52,7 @@ const PrizeDraw = ({...props}: DrawProps) => {
     return(
         <>
             <div>
-                <button className="w-full h-12 px-6 my-2 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800"
+                <button className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
                         onClick={async () => {
                             setShowPrizeDraw(true)
                         }}
@@ -73,7 +73,7 @@ const PrizeDraw = ({...props}: DrawProps) => {
                                                 await createDraw(props.type)
                                             }}
                                             disabled={disableButton}
-                                        className="w-1/2 h-12 px-6 my-2 ml-5 text-gray-100 transition-colors duration-150 bg-black rounded-lg focus:shadow-outline hover:bg-gray-800">
+                                        className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400">
                                         Draw
                                     </button>
                                 </div>
