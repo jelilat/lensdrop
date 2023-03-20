@@ -3,7 +3,6 @@ import {
     useContractWrite, 
     erc20ABI, 
     erc721ABI,
-    useBalance, 
     useContractRead, 
     useNetwork,
     useSwitchNetwork,
@@ -185,11 +184,6 @@ const Body = ()=> {
         chainId: 137
     })
 
-    const balance = useBalance({
-        address: address!,
-        chainId: 137
-    })
-
     useEffect(() => {
         if (chain?.name !== "Polygon" && address) {
             switchNetwork?.(137)
@@ -303,8 +297,7 @@ const Body = ()=> {
 
         let bal;
         if (func === "batchSendNativeToken") {
-            const formattedBalance = balance?.data?.formatted !== undefined ? balance?.data?.formatted : '0'
-            bal = parseFloat(formattedBalance)
+            bal = await alchemy.core.getBalance(address!) as unknown as number
         } else {
             const formattedBalance = balanceOf?.data?._hex
             bal = parseInt(formattedBalance!)/decimal
