@@ -8,6 +8,7 @@ import PrizeDraw from './PrizeDraw';
 import Connect from '@components/Home/Connect'
 import { Modal } from '@components/UI/Modal';
 import { useAccount } from 'wagmi'
+import { isFollowedByMe } from '@components/utils/gate'
 
 const Followers: FC = () => {
     const { profiles, followings, filters, minimumFollowers, setMinimumFollowers } = useAppContext()
@@ -22,8 +23,8 @@ const Followers: FC = () => {
         if (filters[0].reaction !== "") {
             const filteredAddresses = await Filterer(filters, minimumFollowers);
             if (filteredAddresses.length > 0) {
-                const addresses = filteredAddresses?.filter(address => {
-                    return followings.includes(address)
+                const addresses = filteredAddresses?.filter(async (address) => {
+                    return await isFollowedByMe(address, profiles[0]?.id)
                 }); 
                 setData(addresses)
                 const data = addresses.map(addr => {
@@ -32,8 +33,13 @@ const Followers: FC = () => {
                 setdatas(datas => [...datas, ...data])
             }
         } else {
-            setData(followings)
-            setdatas(followings.map(following => ({address: following})))
+            if (profiles[0]?.stats?.totalFollowing > 2000) {
+                setData(["Can't fetch too many addresses at a time. Please add filters"])
+                return
+            } else {
+                setData(followings)
+                setdatas(followings.map(following => ({address: following})))
+            }
         }
     }
 
@@ -58,7 +64,7 @@ const Followers: FC = () => {
                         className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 sm:w-20 mr-1" /> followers
                     { !showFollowing ? 
                         <button className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
-                        disabled={!((profiles[0]?.stats?.totalFollowing <= followings.length) && isConnected) || loading}
+                        disabled={!((profiles[0]?.stats?.totalFollowing <= followings.length || followings.length == 2000) && isConnected) || loading}
                                 onClick={async () => {
                                     isLoading(true)
                                     await addressFilterer()
@@ -66,7 +72,7 @@ const Followers: FC = () => {
                                     isLoading(false)
                                 }}>
                             {
-                                loading || ((profiles[0]?.stats?.totalFollowing > followings.length) && isConnected) ? 
+                                loading || !((profiles[0]?.stats?.totalFollowers <= followings.length || followings.length == 2000) && isConnected) ? 
                                 <div className="flex justify-center items-center">
                                     <span>Fetching data. This may take a while...</span>
                                     <svg className="animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

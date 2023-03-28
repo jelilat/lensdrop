@@ -11,6 +11,7 @@ const nextConfig = {
       'ipfs.io',
       'cdn.stamp.fyi',
       'lensdrop.infura-ipfs.io',
+      'images.lens.phaver.com',
     ]
   }
 }

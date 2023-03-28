@@ -209,11 +209,11 @@ export const GET_FOLLOWERS = gql`
   }
 `
 
-export const IS_FOLLOWING_ME = gql `
-    query ($request: ProfileId!) {
-        profile(request: $request) {
-            isFollowing
-        }
+export const IS_FOLLOWING = gql `
+  query ($profileId: ProfileId!, $who: ProfileId!) {
+    profile(request: { profileId: $profileId }) {
+        isFollowing(who: $who)
+    }
   }
 `
 

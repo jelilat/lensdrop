@@ -1,9 +1,11 @@
 import apolloClient from 'src/apollo'
 import { WHO_COLLECTED } from 'src/graphql/Queries/Publications';
 import { DocumentNode } from 'graphql';
+import { IS_FOLLOWING } from '@graphql/Queries/Follow'
+import { GET_DEFAULT_PROFILE } from '@graphql/Queries/Profile'
 
 type Variables = {
-    [key: string]: {
+    [key: string]: string | {
         [key: string]: string | null,
     },
 }
@@ -40,4 +42,23 @@ export const collectedPost = async (publicationId: string, address: string): Pro
     }
 
     return collected
+}
+
+export const isFollowing = async (address: string, who: string) => {
+    const profile = await queryFunction(GET_DEFAULT_PROFILE, { request: { ethereumAddress: address} })
+    const profileId = profile?.data?.defaultProfile?.id
+    const { data } = await queryFunction(IS_FOLLOWING, {
+        profileId: profileId,
+        who: who,
+    })
+    return data.profile.isFollowing
+}
+
+export const isFollowedByMe = async (userAddress: string, me: string) => {
+    const user = await queryFunction(GET_DEFAULT_PROFILE, { request: { ethereumAddress: userAddress} })
+    const { data } = await queryFunction(IS_FOLLOWING, {
+        profileId: me,
+        who: user?.data?.defaultProfile?.id,
+    })
+    return data.profile.isFollowing
 }

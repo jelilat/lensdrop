@@ -22,6 +22,7 @@ import Connect from '@components/Home/Connect'
 import PrizeDraw from '@components/Download/PrizeDraw'
 import Post from '@components/Post'
 import { Button } from '@components/UI/Button'
+import { isFollowing, isFollowedByMe } from '@components/utils/gate'
 
 const config = {
     apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
@@ -48,6 +49,7 @@ const Body = ()=> {
     const [modal, setModal] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [loading, isLoading] = useState<boolean>(false)
+    const [validate, setValidator] = useState<boolean>(false)
     const [connectModal, setConnectModal] = useState<boolean>(false)
     const [recipientType, setRecipientType] = useState<"Followers" | "Followings" | "Any">("Followers")
     const [transactionHash, setTransactionHash] = useState<string>("")
@@ -190,8 +192,18 @@ const Body = ()=> {
           }
     }, [address, chain, switchNetwork])
 
+    useEffect(() => {
+        if (recipients.length == 0 && validate) {
+            setModal(true)
+            setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
+            return
+        } else if (recipients.length > 0 && validate) {
+            setState("Approve")
+        }
+    }, [recipients])
+
     const _continue = async () => {
-        
+        setValidator(true)
         if (func !== 'batchSendNativeToken' && tokenAddress === "" as `0x${string}`) {
             setModal(true)
             setErrorMessage("Enter a token address")
@@ -222,60 +234,52 @@ const Body = ()=> {
             setNftBalances(filtered)
         }
 
-        let temporaryRecipients: Array<string> = []
-
-        if (!recipients[0]) {
-            if (recipientType === "Any") {
-                setRecipients([])
-                temporaryRecipients = []
-            } else if (recipientType === "Followings") {
-                setRecipients(followings)
-                temporaryRecipients = followings
-            } else {
-                setRecipients(followers)
-                temporaryRecipients = followers
-            }
-        }
-
+        let addresses: string[]
         if (filters[0].reaction !== "") {
             const filteredAddresses = await Filterer(filters, minimumFollowers);  
             if (filteredAddresses.length > 0) {
-                let addresses: string[]
-                if (temporaryRecipients[0]) {
-                    addresses = filteredAddresses?.filter(address => {
-                        return temporaryRecipients.includes(address)
+                if (recipientType === "Followers") {
+                    addresses = filteredAddresses?.filter(async (address) => {
+                        return await isFollowing(address, profiles[0]?.id)
                     }); 
-                } else if (!temporaryRecipients[0] && recipientType !== "Any") {
-                    if (recipientType === "Followings") {
-                        addresses = filteredAddresses?.filter(address => {
-                            return followings.includes(address)
-                        }); 
-                    } else {
-                        addresses = filteredAddresses?.filter(address => {
-                            return followers.includes(address)
-                        });
-                    }
+                } else if (recipientType === "Followings") {
+                    addresses = filteredAddresses?.filter(async (address) => {
+                        return await isFollowedByMe(address, profiles[0]?.id)
+                    });  
                 } else {
                     addresses = filteredAddresses
                 }
       
                 setRecipients(addresses)
-                if (addresses.length > 0) {
-                    setState("Approve")
-                }
                 return
             } else {
                 setRecipients([])
             }
-        } 
-
-        if (!temporaryRecipients[0] && (filters[0].reaction !== "" || recipientType === "Any")) {
-            setModal(true)
-            setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
-            return
+        } else {
+            if (recipientType === "Followings") {
+                if (profiles[0]?.stats?.totalFollowing > 2000) {
+                    setModal(true)
+                    setErrorMessage("Can't fetch too many addresses at a time. Please add filters")
+                    return
+                } else {
+                    addresses = followings
+                    setRecipients(addresses)
+                }
+            } if (recipientType == "Any") {
+                setModal(true)
+                setErrorMessage("Can't airdrop tokens to 0 addresses. Adjust your filters")
+                return
+            } else {
+                if (profiles[0]?.stats?.totalFollowers > 2000) {
+                    setModal(true)
+                    setErrorMessage("Can't fetch too many addresses at a time. Please add filters")
+                    return
+                } else {
+                    addresses = followers
+                    setRecipients(addresses)
+                }
+            }
         }
-
-        setState("Approve")
     }
 
     const approve = async () => {
@@ -503,13 +507,10 @@ const Body = ()=> {
                                 const value = e.target.value;
                                 if (value === "Followers") {
                                     setRecipientType("Followers");
-                                    setRecipients(followers);
                                 } else if (value === "Followings") {
                                     setRecipientType("Followings");
-                                    setRecipients(followings);
                                 } else {
                                     setRecipientType("Any")
-                                    setRecipients([]);
                                 }
                             }}
                                 className="my-1 p-2 border-2 border-b-black-500 px-2 rounded-lg h-10 w-full">
@@ -557,15 +558,15 @@ const Body = ()=> {
                             }}
                                 className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
                                 data-bs-toggle="modal"
-                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading && isConnected) || (!profiles[0])}
+                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length || followers.length == 2000) && (profiles[0]?.stats?.totalFollowing <= followings.length || followings.length == 2000) && !loading && isConnected) || (!profiles[0])}
                                 >
                                 {
-                                    (profiles[0]?.stats?.totalFollowers <= followers.length) && (profiles[0]?.stats?.totalFollowing <= followings.length) && !loading ?
+                                    (profiles[0]?.stats?.totalFollowers <= followers.length || followers.length == 2000) && (profiles[0]?.stats?.totalFollowing <= followings.length || followings.length == 2000) && !loading ?
                                     "Continue"
                                     :
                                     <div className="flex justify-center">
                                         {
-                                            isConnected && profiles[0] != null ? <div className="flex">Fetching data... <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
+                                            isConnected && profiles[0] != null ? <div className="flex">Fetching data. Please wait...<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-t-2 border-r-2 border-gray-100 mx-3"></div>
                                             </div>
                                              : "Continue"
                                         }
