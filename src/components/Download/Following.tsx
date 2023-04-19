@@ -64,7 +64,7 @@ const Followers: FC = () => {
                         className="border-2 border-b-black-500 my-2 px-2 rounded-lg h-10 sm:w-20 mr-1" /> followers
                     { !showFollowing ? 
                         <button className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
-                        disabled={!((profiles[0]?.stats?.totalFollowing <= followings.length || followings.length == 2000) && isConnected) || loading}
+                        disabled={!((profiles[0]?.stats?.totalFollowing <= followings.length || followings.length >= 2000) && isConnected) || loading}
                                 onClick={async () => {
                                     isLoading(true)
                                     await addressFilterer()
@@ -72,7 +72,7 @@ const Followers: FC = () => {
                                     isLoading(false)
                                 }}>
                             {
-                                loading || !((profiles[0]?.stats?.totalFollowers <= followings.length || followings.length == 2000) && isConnected) ? 
+                                loading || !((profiles[0]?.stats?.totalFollowers <= followings.length || followings.length >= 2000) && isConnected) ? 
                                 <div className="flex justify-center items-center">
                                     <span>Fetching data. This may take a while...</span>
                                     <svg className="animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

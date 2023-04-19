@@ -558,10 +558,10 @@ const Body = ()=> {
                             }}
                                 className="w-full h-12 px-6 my-2 text-white transition-colors duration-150 rounded-lg focus:shadow-outline  bg-gradient-to-r from-cyan-400 to-blue-400"
                                 data-bs-toggle="modal"
-                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length || followers.length == 2000) && (profiles[0]?.stats?.totalFollowing <= followings.length || followings.length == 2000) && !loading && isConnected) || (!profiles[0])}
+                                disabled={!((profiles[0]?.stats?.totalFollowers <= followers.length || followers.length >= 2000) && (profiles[0]?.stats?.totalFollowing <= followings.length || followings.length >= 2000) && !loading && isConnected) || (!profiles[0])}
                                 >
                                 {
-                                    (profiles[0]?.stats?.totalFollowers <= followers.length || followers.length == 2000) && (profiles[0]?.stats?.totalFollowing <= followings.length || followings.length == 2000) && !loading ?
+                                    (profiles[0]?.stats?.totalFollowers <= followers.length || followers.length >= 2000) && (profiles[0]?.stats?.totalFollowing <= followings.length || followings.length >= 2000) && !loading ?
                                     "Continue"
                                     :
                                     <div className="flex justify-center">
